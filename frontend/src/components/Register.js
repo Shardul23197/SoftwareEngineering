@@ -1,8 +1,7 @@
 import React from 'react';
-import {useNavigate, Route} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography } from 'mdb-react-ui-kit';
-import Dashboard from './Dashboard';
 
 const Register = () => {
   const [email, setEmail] = useState('')
@@ -17,11 +16,11 @@ const Register = () => {
       email: email,
       password: password,
     }
-    console.log(formData)
+    //axios request
     event.preventDefault();
-
-    return <Route path="/here" component={Dashboard} />
+    navigate('/dashboard');
   }
+
 
   const onUsernameChange = (event) => {
     setUserName(event.target.value)
