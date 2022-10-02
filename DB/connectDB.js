@@ -2,14 +2,15 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
     try {
-        const conn = await new mongoose.connect("mongodb+srv://fitocity:2RlIxUj52XAytIfb@cluster0.f9ojxk6.mongodb.net/fitocity?retryWrites=true&w=majority", {
+        const conn = await new mongoose.connect(process.env.DB, {
             useUnifiedTopology: true,
             useNewUrlParser: true
         });
-        console.log(`Your DB is connected to ${conn.connection.host}`);
+        console.log(`MongoDB Cloud Connected: ${conn.connection.host}`);
 
     } catch (error) {
         console.log(error);
+        process.exit(1);
     }
 }
 

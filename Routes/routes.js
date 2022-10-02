@@ -1,5 +1,5 @@
 const Router = require("express").Router();
-const appModel = require("../Model/appModel");
+const appModel = require("../models/appModel");
 
 Router.get("/", (req, res) => {
     res.send("Hello World");
