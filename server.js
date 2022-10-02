@@ -4,9 +4,9 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 
 const users = require("./routes/routes");
+require('dotenv').config()
 
 const app = express();
-require('dotenv').config()
 
 // Bodyparser middleware
 app.use(
