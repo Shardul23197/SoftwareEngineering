@@ -21,6 +21,7 @@ router.get('/google/callback',
 
 // @desc    Logout user
 // @route   GET /auth/logout
+// change to post
 router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {
