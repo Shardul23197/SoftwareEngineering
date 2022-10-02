@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
-
-const users = require("./routes/routes");
+const path = require("path");
+const users = require(path.join(__dirname, "./routes/routes"));
 require('dotenv').config()
 
 const app = express();
