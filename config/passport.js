@@ -1,24 +1,44 @@
-const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
-const mongoose = require("mongoose");
-const User = mongoose.model("users");
-const keys = require("../config/keys");
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const mongoose = require('mongoose');
+const User = require('../models/GoogleUser');
 
-const opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = keys.secretOrKey;
+module.exports = function(passport) {
+    // Google auth strategy for passport
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: '/auth/google/callback'
+    },
+    async (accessToken, refreshToken, profile, done) => {
+        const newGoogleUser = {
+            googleId: profile.id,
+            displayName: profile.displayName,
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName
+            // image: profile.photos[0] 
+        }
+        
+        
+        try {
+            // Try to find a user in the DB by their googleID
+            let user = await User.findOne({ googleId: profile.id });
 
-module.exports = passport => {
-  passport.use(
-    new JwtStrategy(opts, (jwt_payload, done) => {
-      User.findById(jwt_payload.id)
-        .then(user => {
-          if (user) {
-            return done(null, user);
-          }
-          return done(null, false);
-        })
-        .catch(err => console.log(err));
+            // If the user was not found, make a new one
+            if (!user)
+                user = await User.create(newGoogleUser);
+            
+            // Set req.user to the user's profile
+            done(null, user);
+        } catch (err) {
+            console.error(err);
+        }
+    }))
+
+    passport.serializeUser((user, done) => {
+        done(null, user.id);
     })
-  );
-};
+
+    passport.deserializeUser((id, done) => {
+        User.findById(id, (err, user) => done(err, user));
+    })
+}
