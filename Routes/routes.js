@@ -10,24 +10,22 @@ Router.post("/login", (req, res) => {
 
     appModel.findOne({ email: email }, (err, user) => {
         if (user) {
-            if (password === user.pwd) {
+            if (password === user.password) {
                 res.send({ message: "Logged In!!!", user: user });
             } else {
-                res.send("Incorrect Password!!!");
+                res.status(400).send("Incorrect Password!!!");
             }
         } else {
-            res.send({ message: "User not registered" });
+            res.status(400).send({ message: "User not registered" });
 
         }
     })
 });
 
 Router.post("/register", (req, res) => {
-    console.log(req)
     const { name, email, password } = req.body;
 
     appModel.findOne({ email: email }, (err, user) => {
-        console.log(user)
         if (user) {
             res.status(400).send({ message: "User Already Registered!!!" });
         } else {

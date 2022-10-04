@@ -10,10 +10,6 @@ const Login = () => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     let navigate = useNavigate();
-    const routeToGoogleAuth = () => {
-        let path = '/   ';
-        navigate(path);
-    }
 
     const onUsernameChange = (event) => {
         setUserName(event.target.value)
@@ -29,14 +25,11 @@ const Login = () => {
             name: username,
             password: password
         }
-        axios.post('http://localhost:3000/auth/login', formData)
-            .then((res) => console.log(res.json))
+        axios.post('http://localhost:3000/api/users/login', formData)
+            .then((res) => navigate('/dashboard'))
             .catch((error) => {
                 if (error.response) setError(error.response.data);
             })
-        if (error !== '') {
-            navigate('/dashboard')
-        }
     }
     return (
         <form onSubmit={onSubmit}>
@@ -78,7 +71,7 @@ const Login = () => {
                         </div>
                         {error !== '' ?
                             <MDBTypography id="danger-text" note noteColor='danger'>
-                                <strong>{error}</strong>
+                                <strong>{error.message}</strong>
                             </MDBTypography> : ""}
                         <div className='text-center text-md-start mt-4 pt-2'>
                             <MDBBtn className="mb-0 px-5" size='lg'>Login</MDBBtn>
