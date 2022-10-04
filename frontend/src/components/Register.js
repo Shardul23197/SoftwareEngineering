@@ -1,24 +1,35 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom'
-import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom'
+import { useState } from 'react';
 import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography } from 'mdb-react-ui-kit';
+import axios from 'axios'
+import './register.css'
 
 const Register = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [username, setUserName] = useState('')
+  const [error, setError] = useState('')
+  const [usernameError, setUserNameError] = useState('')
   const navigate = useNavigate();
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
+    event.preventDefault();
     let formData = {
-      username: username,
+      name: username,
       email: email,
       password: password,
+      password2: confirmPassword
     }
     //axios request
-    event.preventDefault();
-    navigate('/dashboard');
+    axios.post('http://localhost:3000/api/users/register', formData)
+      .then((res) => navigate('/dashboard'))
+      .catch((error) => {
+        if (error.response)
+          setError(error.response.data);
+      })
+
   }
 
 
@@ -36,6 +47,15 @@ const Register = () => {
 
   const onEmailChange = (event) => {
     setEmail(event.target.value)
+  }
+
+  const userNameValidation = () => {
+    if ((/^[a-z0-9_.]+$/).test(username)) {
+      setUserNameError(false)
+    }
+    else {
+      setUserNameError(true)
+    }
   }
 
   // useEffect(() => {
@@ -61,7 +81,7 @@ const Register = () => {
 
                 <div className="d-flex flex-row align-items-center mb-4 ">
                   <MDBIcon fas icon="user me-3" size='lg' />
-                  <MDBInput label='Username' id='form1' type='text' value={username} onChange={onUsernameChange} className='w-100' />
+                  <MDBInput label='Username' id='form1' type='text' value={username} onBlur={userNameValidation} onChange={onUsernameChange} className='w-100' />
                 </div>
 
                 <div className="d-flex flex-row align-items-center mb-4">
@@ -81,9 +101,21 @@ const Register = () => {
                 {confirmPassword !== password ?
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Passwords do not match</strong>
-                  </MDBTypography> : "" }
-
-                <MDBBtn className='mb-4' size='lg' disabled ={confirmPassword !== password ? true: false} >Register</MDBBtn>
+                  </MDBTypography> : ""}
+                {error !== '' ?
+                  <MDBTypography id="danger-text" note noteColor='danger'>
+                    <strong>{error.message}</strong>
+                  </MDBTypography> : ""}
+                {usernameError ?
+                  <MDBTypography id="danger-text" note noteColor='danger'>
+                    <strong>Invalid username</strong>
+                  </MDBTypography> : ""}
+                <a href="http://localhost:3000/auth/google">
+                  <MDBBtn floating size='md' tag='a' className='me-2'>
+                    <MDBIcon fab icon='google' />
+                  </MDBBtn>
+                </a>
+                <MDBBtn className='mb-4 register' size='lg' disabled={(confirmPassword !== password) || !username || !email ? true : false} >Register</MDBBtn>
 
               </MDBCol>
 

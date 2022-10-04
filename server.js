@@ -40,6 +40,7 @@ app.use(passport.session());
 // Routes
 app.use('/', require('./Routes/index'));
 app.use('/auth', require('./Routes/auth'));
+app.use('/api/users', require('./Routes/routes'))
 
 connectDB();
 

@@ -1,5 +1,5 @@
 const Router = require("express").Router();
-const appModel = require("../models/appModel");
+const appModel = require("../models/User");
 
 Router.get("/", (req, res) => {
     res.send("Hello World");
@@ -23,15 +23,18 @@ Router.post("/login", (req, res) => {
 });
 
 Router.post("/register", (req, res) => {
-    const { email, password } = req.body;
+    console.log(req)
+    const { name, email, password } = req.body;
 
     appModel.findOne({ email: email }, (err, user) => {
+        console.log(user)
         if (user) {
-            res.send({ message: "User Already Registered!!!" });
+            res.status(400).send({ message: "User Already Registered!!!" });
         } else {
             const user = new appModel({
+                name: name,
                 email: email,
-                pwd: password
+                password: password
             });
             user.save(err => {
                 if (err) {
