@@ -13,7 +13,7 @@ dotenv.config({ path: "./config/.env" });
 require('./config/passport')(passport);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // If the app is in development use Morgan to log requests to the app
 if (process.env.NODE_ENV === 'development') {

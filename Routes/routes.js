@@ -1,54 +1,112 @@
-const Router = require("express").Router();
-const appModel = require("../models/User");
+const express = require("express");
+const router = express.Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const keys = require("../config/keys");
+const passport = require("passport");
 
-Router.get("/", (req, res) => {
-    res.send("Hello World");
+// Load input validation
+const validateRegisterInput = require("../validation/registerValidation");
+const validateLoginInput = require("../validation/loginValidation");
+
+// Load User model
+const User = require("../model/User");
+
+// @route POST api/users/register
+// @desc Register user
+// @access Public
+router.post("/register", (req, res) => {
+  // Form validation
+
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  User.findOne({ email: req.body.email }).then(user => {
+    if (user) {
+      return res.status(400).json({ email: "Email already exists" });
+    } else {
+      const newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password
+      });
+
+      // Hash password before saving in database
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then(user => res.json(user))
+            .catch(err => console.log(err));
+        });
+      });
+    }
+  });
 });
 
-Router.post("/login", (req, res) => {
-    const { email, password } = req.body;
+// @route POST api/users/login
+// @desc Login user and return JWT token
+// @access Public
+router.post("/login", (req, res) => {
+  // Form validation
 
-    appModel.findOne({ email: email }, (err, user) => {
-        if (user) {
-            if (password === user.password) {
-                res.send({ message: "Logged In!!!", user: user });
-            } else {
-                res.status(400).send("Incorrect Password!!!");
-            }
-        } else {
-            res.status(400).send({ message: "User not registered" });
+  const { errors, isValid } = validateLoginInput(req.body);
 
-        }
-    })
-});
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
 
-Router.post("/register", (req, res) => {
-    const { name, email, password } = req.body;
+  const email = req.body.email;
+  const password = req.body.password;
 
-    appModel.findOne({ email: email }, (err, user) => {
-        if (user) {
-            res.status(400).send({ message: "User Already Registered!!!" });
-        } else {
-            const user = new appModel({
-                name: name,
-                email: email,
-                password: password
+  // Find user by email
+  User.findOne({ email }).then(user => {
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ emailnotfound: "Email not found" });
+    }
+
+    // Check password
+    bcrypt.compare(password, user.password).then(isMatch => {
+      if (isMatch) {
+        // User matched
+        // Create JWT Payload
+        const payload = {
+          id: user.id,
+          name: user.name
+        };
+
+        // Sign token
+        jwt.sign(
+          payload,
+          keys.secretOrKey,
+          {
+            expiresIn: 31556926 // 1 year in seconds
+          },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: "Bearer " + token
             });
-            user.save(err => {
-                if (err) {
-                    console.log(err);
-                    res.send(err)
-                } else {
-                    res.send({ message: "Successfully Registered!!!" })
-                }
-            }
-            );
-        }
+          }
+        );
+      } else {
+        return res
+          .status(400)
+          .json({ passwordincorrect: "Password incorrect" });
+      }
     });
+  });
 });
 
-Router.post("/forgetPwd", (req, res) => {
-    res.send("Hello");
-});
+module.exports = router;
 
-module.exports = Router;
+
+
