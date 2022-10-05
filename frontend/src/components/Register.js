@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
 import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography } from 'mdb-react-ui-kit';
 import axios from 'axios'
@@ -20,10 +20,10 @@ const Register = () => {
       name: username,
       email: email,
       password: password,
-      password2: confirmPassword
+      confirmpassword: confirmPassword
     }
     //axios request
-    axios.post('http://localhost:3000/api/users/register', formData)
+    axios.post('http://localhost:5000/api/users/register', formData)
       .then((res) => navigate('/dashboard'))
       .catch((error) => {
         if (error.response)
@@ -110,7 +110,7 @@ const Register = () => {
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Invalid username</strong>
                   </MDBTypography> : ""}
-                <a href="http://localhost:3000/auth/google">
+                <a href="http://localhost:5000/auth/google">
                   <MDBBtn floating size='md' tag='a' className='me-2'>
                     <MDBIcon fab icon='google' />
                   </MDBBtn>

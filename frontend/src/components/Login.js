@@ -22,10 +22,10 @@ const Login = () => {
     const onSubmit = (event) => {
         event.preventDefault()
         const formData = {
-            name: username,
+            email: username,
             password: password
         }
-        axios.post('http://localhost:3000/api/users/login', formData)
+        axios.post('http://localhost:5000/api/users/login', formData)
             .then((res) => navigate('/dashboard'))
             .catch((error) => {
                 if (error.response) setError(error.response.data);
@@ -36,7 +36,7 @@ const Login = () => {
             <MDBContainer fluid className="p-3 my-5 h-custom">
                 <MDBRow>
                     <MDBCol col='10' md='6'>
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" className="img-fluid" alt="Sample image" />
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" className="img-fluid" alt="Sample" />
                     </MDBCol>
 
                     <MDBCol col='4' md='6'>
@@ -49,7 +49,7 @@ const Login = () => {
                   <MDBIcon fab icon='facebook-f' />
                 </MDBBtn>
      */}
-                            <a href="http://localhost:3000/auth/google">
+                            <a href="http://localhost:5000/auth/google">
                                 <MDBBtn floating size='md' tag='a' className='me-2'>
                                     <MDBIcon fab icon='google' />
                                 </MDBBtn>
