@@ -11,7 +11,7 @@ router.get('/', ensureGuest, (req, res) => {
 
 // @desc    Registration
 // @route   GET /register
-router.get('/register', (req, res) => {
+router.get('/register', ensureGuest, (req, res) => {
     res.send('Register');
 });
 

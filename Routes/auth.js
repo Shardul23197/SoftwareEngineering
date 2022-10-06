@@ -1,7 +1,7 @@
 const express = require('express');
+const router = express.Router();
 const passport = require('passport');
 const { ensureGuest } = require('../middleware/auth');
-const router = express.Router();
 
 // @desc    Authenticate w/ Google
 // @route   GET /auth/google
