@@ -2,16 +2,16 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const keys = require("../config/keys");
+const keys = require("../../config/keys");
 const passport = require("passport");
-const { ensureAuth, ensureGuest } = require('../middleware/auth');
+const { ensureAuth, ensureGuest } = require("../../middleware/auth");
 
 // Load input validation
-const validateRegisterInput = require("../validation/registerValidation");
-const validateLoginInput = require("../validation/loginValidation");
+const validateRegisterInput = require("../../validation/registerValidation");
+const validateLoginInput = require("../../validation/loginValidation");
 
 // Load User model
-const User = require("../models/User");
+const User = require("../../models/User");
 
 // @route POST api/users/register
 // @desc Register user
@@ -106,6 +106,3 @@ router.post("/login", ensureGuest, (req, res) => {
 });
 
 module.exports = router;
-
-
-

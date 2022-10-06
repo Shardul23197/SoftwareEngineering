@@ -11,16 +11,18 @@ router.get('/google',
 
 // @desc    Google auth callback
 // @route   GET /auth/google/callback
+// rediredt user to React dashboard page
 router.get('/google/callback',
             ensureGuest,
             passport.authenticate('google', { scope: ['profile', 'email'], failureRedirect:'/' }), 
             (req, res) => {
-                res.redirect('/dashboard');
+                res.redirect('http://localhost:3000/dashboard');
             }
 );
 
 // @desc    Logout user
 // @route   GET /auth/logout
+// rediredt user to React login page
 // change to post
 router.get('/logout', (req, res) => {
     req.logout((err) => {
@@ -28,7 +30,7 @@ router.get('/logout', (req, res) => {
             console.error(err);
             process.exit(1);
         }
-        res.redirect('/');
+        res.redirect('http://localhost:3000/login');
     });
 });
 
