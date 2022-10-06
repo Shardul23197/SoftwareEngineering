@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../config/keys");
 const passport = require("passport");
+const { ensureAuth, ensureGuest } = require('../middleware/auth');
 
 // Load input validation
 const validateRegisterInput = require("../validation/registerValidation");
@@ -15,9 +16,8 @@ const User = require("../models/User");
 // @route POST api/users/register
 // @desc Register user
 // @access Public
-router.post("/register", (req, res) => {
+router.post("/register", ensureGuest, (req, res) => {
   // Form validation
-
   const { errors, isValid } = validateRegisterInput(req.body);
 
   // Check validation
@@ -53,9 +53,8 @@ router.post("/register", (req, res) => {
 // @route POST api/users/login
 // @desc Login user and return JWT token
 // @access Public
-router.post("/login", (req, res) => {
+router.post("/login", ensureGuest, (req, res) => {
   // Form validation
-
   const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation
