@@ -28,7 +28,10 @@ const Login = () => {
         axios.post('http://localhost:5000/api/users/login', formData)
             .then((res) => navigate('/dashboard'))
             .catch((error) => {
-                if (error.response) setError(error.response.data);
+                /**
+                 * @todo: fix error handling
+                 */
+                if (error) setError(error);
             })
     }
     return (

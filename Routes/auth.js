@@ -20,19 +20,20 @@ router.get('/google/callback',
             }
 );
 
-// @desc    Logout user
-// @route   GET /auth/logout
-// rediredt user to React login page
-// change to post
-router.get('/logout', (req, res) => {
-    req.logout((err) => {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        res.redirect('http://localhost:3000/login');
-    });
-});
+// moved to ./api/users
+// // @desc    Logout user
+// // @route   GET /auth/logout
+// // rediredt user to React login page
+// // change to post
+// router.get('/logout', (req, res) => {
+//     req.logout((err) => {
+//         if (err) {
+//             console.error(err);
+//             process.exit(1);
+//         }
+//         res.redirect('http://localhost:3000/login');
+//     });
+// });
 
 module.exports = router;
 
