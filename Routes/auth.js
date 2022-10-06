@@ -13,7 +13,7 @@ router.get('/google',
 // @route   GET /auth/google/callback
 router.get('/google/callback',
             ensureGuest,
-            passport.authenticate('google', { failureRedirect:'/' }), 
+            passport.authenticate('google', { scope: ['profile', 'email'], failureRedirect:'/' }), 
             (req, res) => {
                 res.redirect('/dashboard');
             }
