@@ -3,11 +3,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const passport = require('passport');
-const session = require('express-session');
+// const session = require('express-session');
+const session = require('cookie-session');
+const flash = require('connect-flash');
 const connectDB = require("./DB/connectDB");
-const passportCustom = require('passport-custom');
-const bcrypt = require("bcryptjs");
-const CustomStrategy = passportCustom.Strategy;
 
 // Load config
 dotenv.config({ path: "./config/.env" });
@@ -30,7 +29,8 @@ app.use(cors());
 // Sessions for google auth
 app.use(
     session({
-        secret: 'doesnt matter',
+        name: 'session',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false
     })
@@ -38,46 +38,7 @@ app.use(
 
 // Passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
-
-// Passport custom auth strategy
-passport.use(new CustomStrategy(
-    (req, done) => {
-
-        const email = req.body.email;
-        const password = req.body.password;
-
-        // Find user by email
-        User.findOne({ email }, (err, user) => {
-
-            // Check if user exists
-            if (!user) {
-                /**
-                 * @todo: fix error handling
-                 */
-                err = new Error("Could not find the given email!");
-                // Call passport's callback for error
-                done(err);
-                return;
-            }
-
-            // Check password
-            bcrypt.compare(password, user.password).then(isMatch => {
-                if (isMatch) {
-                    // Call passport's callback for success
-                    done(err, user);
-                } else {
-                    /**
-                     * @todo: fix error handling
-                     */
-                    err = new Error("Invaild password!");
-                    // Call passport's callback for error
-                    done(err);
-                }
-            });
-        });
-    }
-));
+// app.use(passport.session());
 
 // Routes
 app.use('/', require('./Routes/index'));

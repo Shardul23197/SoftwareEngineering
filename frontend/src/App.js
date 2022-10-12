@@ -16,8 +16,8 @@ function App() {
     axios.get('/auth/current-session').then(({data}) => {
       setAuth(data);
     })
-  }, [])
-  
+  });
+  console.log(`auth ${auth}`);
   if (auth === null) {
     return (
       <BrowserRouter>
@@ -45,14 +45,11 @@ function App() {
     );
   }
 
-  
-  // return <Login />;
-
   return (
     <BrowserRouter>
     <Routes>
       <Route path='/register' element={<Register/>}/>
-      <Route path='/dashboard' element={<Dashboard/>}/>
+      {/* <Route path='/dashboard' element={<Dashboard/>}/> */}
       <Route path='/' element={<Home />}/>
       <Route path='/login' element={<Login/>}/>
     </Routes>

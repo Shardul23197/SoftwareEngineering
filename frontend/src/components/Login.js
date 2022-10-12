@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import setupAuthToken from '../setAuthToken()'
+import qs from 'qs' // needed for axios post to work properly
+import util from 'util'
 
 const Login = () => {
     const [username, setUserName] = useState('')
@@ -21,17 +24,29 @@ const Login = () => {
 
     const onSubmit = (event) => {
         event.preventDefault()
+        const instance = axios.create();
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
         const formData = {
             email: username,
             password: password
         }
-        axios.post('http://localhost:5000/api/users/login', formData)
-            .then((res) => navigate('/dashboard'))
+        instance.post('http://localhost:5000/auth/login', qs.stringify(formData), { headers: headers })
+            .then((res) => {
+                // set token in local storage to the returned jwt
+                localStorage.setItem('token', res.data.token);
+                // set the axios common header
+                setAuthToken(token);
+
+                // TODO redirect user
+            })
             .catch((error) => {
                 /**
                  * @todo: fix error handling
                  */
-                if (error) setError(error);
+                if (error) this.error.message = error;
             })
     }
     return (

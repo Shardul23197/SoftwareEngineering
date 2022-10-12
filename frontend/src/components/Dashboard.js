@@ -40,7 +40,7 @@ export default function Dashboard() {
   <button className="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Hello!
   </button>
-  <a href="http://localhost:5000/api/users/logout">
+  <a href="http://localhost:5000/auth/logout">
     <button className="btn btn-primary " type="button" id="logoutButton" >
       Logout
     </button>
