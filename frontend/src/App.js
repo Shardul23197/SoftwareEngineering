@@ -1,5 +1,5 @@
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import {BrowserRouter, Route, Routes, Redirect} from 'react-router-dom'
 import './App.css';
 import Dashboard from './components/Dashboard';
 import Register from './components/Register';

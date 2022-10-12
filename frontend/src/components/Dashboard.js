@@ -1,7 +1,21 @@
 import React from 'react'
+import { useNavigate, useLocation} from "react-router-dom";
 import '../App.css'; 
+import Pagination from './Pagination';
+import {Paper, AppBar, TextField, Button} from '@material-ui/core';
+//import ChipInput from 'material-ui-chip-input';
+
+function useQuery(){
+  return new URLSearchParams(useLocation.search);
+} 
+
+
 
 export default function Dashboard() {
+  const query=useQuery();
+  //const history=useHistory();
+  const page=query.get('page')||1;
+  const searchQuery=query.get('searchQuery');
 
   return (
     <>
@@ -156,7 +170,9 @@ export default function Dashboard() {
 
 
 
-
+<Paper elevation={6}>
+  <Pagination/>
+</Paper>
     </>
   )
   
