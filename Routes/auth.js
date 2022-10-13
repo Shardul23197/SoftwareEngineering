@@ -39,7 +39,7 @@ router.post('/login',
 
                     // If the user is found and verified log them in
                     req.login(user,
-                        // { session: false }, // remove for sessions?
+                        { session: false }, // remove for sessions?
                         async (err) => {
                             if (err) return next(err);
             

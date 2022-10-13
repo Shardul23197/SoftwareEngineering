@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Sessions for google auth
+// Sessions for express
 app.use(
     session({
         name: 'session',

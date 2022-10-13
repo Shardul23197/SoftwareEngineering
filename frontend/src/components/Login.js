@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import setupAuthToken from '../setAuthToken()'
 import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
+import AuthService from "../services/auth.service";
+import { AuthProvider } from '../hooks/AuthProvider';
 
 const Login = () => {
     const [username, setUserName] = useState('')
@@ -24,30 +25,45 @@ const Login = () => {
 
     const onSubmit = (event) => {
         event.preventDefault()
-        const instance = axios.create();
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        // const instance = axios.create();
+        // const headers = {
+        //     'Content-Type': 'application/x-www-form-urlencoded'
+        // }
 
-        const formData = {
-            email: username,
-            password: password
-        }
-        instance.post('http://localhost:5000/auth/login', qs.stringify(formData), { headers: headers })
-            .then((res) => {
-                // set token in local storage to the returned jwt
-                localStorage.setItem('token', res.data.token);
-                // set the axios common header
-                setAuthToken(token);
+        AuthService.login(username, password).then(
+            () => {
+                AuthProvider.login()
+                console.log("here");
+                navigate('/dashboard')
+            //   this.props.router.navigate("/profile");
+            //   window.location.reload();
+            },
+            error => {
+                if (error)
+                    this.error.message = error.toString();
+            });
 
-                // TODO redirect user
-            })
-            .catch((error) => {
-                /**
-                 * @todo: fix error handling
-                 */
-                if (error) this.error.message = error;
-            })
+        // const formData = {
+        //     email: username,
+        //     password: password
+        // }
+        // instance.post('http://localhost:5000/auth/login', qs.stringify(formData), { headers: headers })
+        //     .then((res) => {
+        //         // get the returned jwt
+        //         const token = res.data.token;
+        //         // set token in local storage to the returned jwt
+        //         localStorage.setItem('token', token);
+
+        //         // TODO redirect user
+        //         //redirect user to home page
+        //         window.location.href = '/'
+        //     })
+        //     .catch((error) => {
+        //         /**
+        //          * @todo: fix error handling
+        //          */
+        //         if (error) this.error.message = error;
+        //     })
     }
     return (
         <form onSubmit={onSubmit}>
@@ -105,4 +121,4 @@ const Login = () => {
     );
 }
 
-export default Login
+export default Login;

@@ -3,58 +3,69 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import axios from 'axios';
 import './App.css';
 import React, { Component } from 'react';
+import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 import Register from './components/Register';
 import Home from './components/Home';
 import Login from './components/Login';
-import { useState, useEffect } from 'react';
+import { AuthProvider } from './hooks/AuthProvider'
 
 function App() {
-  const [auth, setAuth] = useState(null);
-
-  useEffect(() => {
-    axios.get('/auth/current-session').then(({data}) => {
-      setAuth(data);
-    })
-  });
-  console.log(`auth ${auth}`);
-  if (auth === null) {
     return (
-      <BrowserRouter>
-      <Routes>
-        <Route path='/register' element={<Register/>}/>
-        {/* <Route path='/dashboard' element={<Dashboard/>}/> */}
-        <Route path='/' element={<Home />}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route from='/*' element={<Home />}/>
-      </Routes>
-      </BrowserRouter>
+        <BrowserRouter>
+        <Routes>
+            <Route path='/register' element={<Register/>}/>
+            <Route path='/dashboard' element={  <ProtectedRoute>
+                                                    <Dashboard/>
+                                                </ProtectedRoute>}/>
+            <Route path='/' element={<Home />}/>
+            <Route path='/login' element={  <AuthProvider>
+                                                <Login/>
+                                            </AuthProvider>}/>
+        </Routes>
+        </BrowserRouter>
     );
-  }
-  if (auth) {
-    return (
-      <BrowserRouter>
-      <Routes>
-        {/* <Route path='/register' element={<Register/>}/> */}
-        <Route path='/dashboard' element={<Dashboard/>}/>
-        {/* <Route path='/' element={<Home />}/>
-        <Route path='/login' element={<Login/>}/> */}
-        <Route from='/*' element={<Dashboard />}/>
-      </Routes>
-      </BrowserRouter>
-    );
-  }
+    // const token = localStorage.getItem('token');
+    // if (token) {
+    //   setAuthToken(token)
+    // }
 
-  return (
-    <BrowserRouter>
-    <Routes>
-      <Route path='/register' element={<Register/>}/>
-      {/* <Route path='/dashboard' element={<Dashboard/>}/> */}
-      <Route path='/' element={<Home />}/>
-      <Route path='/login' element={<Login/>}/>
-    </Routes>
-    </BrowserRouter>
-  );
+
+    // if (auth === null) {
+    //   return (
+    //     <BrowserRouter>
+    //     <Routes>
+    //       <Route path='/register' element={<Register/>}/>
+    //       {/* <Route path='/dashboard' element={<Dashboard/>}/> */}
+    //       <Route path='/' element={<Home />}/>
+    //       <Route path='/login' element={<Login/>}/>
+    //       <Route from='/*' element={<Home />}/>
+    //     </Routes>
+    //     </BrowserRouter>
+    //   );
+    // }
+    // if (auth) {
+    //   return (
+    //     <BrowserRouter>
+    //     <Routes>
+    //       {/* <Route path='/register' element={<Register/>}/> */}
+    //       <Route path='/dashboard' element={<Dashboard/>}/>
+    //       {/* <Route path='/' element={<Home />}/>
+    //       <Route path='/login' element={<Login/>}/> */}
+    //       <Route from='/*' element={<Dashboard />}/>
+    //     </Routes>
+    //     </BrowserRouter>
+    //   );
+    // }
+
+        // {/* <BrowserRouter>
+        // <Routes>
+        //   <Route path='/register' element={<Register/>}/>
+        //   <Route path='/dashboard' element={<Dashboard/>}/>
+        //   <Route path='/' element={<Home />}/>
+        //   <Route path='/login' element={<Login/>}/>
+        // </Routes>
+        // </BrowserRouter> */}
 }
 
 export default App;
