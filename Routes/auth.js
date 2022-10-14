@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
+const util = require('util');
 const { ensureGuest } = require('../middleware/auth');
 const jwtRequired = passport.authenticate('jwt', { session: false });
 
@@ -37,20 +37,22 @@ router.post('/login',
                         return next(err);
                     }
 
-                    // If the user is found and verified log them in
-                    req.login(user,
-                        { session: false }, // remove for sessions?
-                        async (err) => {
+                    // regenerate the session, which is good practice to help
+                    // guard against forms of session fixation
+                    req.session.regenerate((err) => {
+                        if (err) next(err)
+
+                        // store user information in session, typically a user id
+                        req.session.user = req.body.user
+
+                        // save the session before redirection to ensure page
+                        // load does not happen before session is saved
+                        req.session.save((err) => {
                             if (err) return next(err);
-            
-                            // Create a JWT for the user
-                            const body = { _id: user._id, email: user.email };
-                            const token = jwt.sign({ user: body }, process.env.JWT_SECRET_KEY);
                             
-                            // req.session.jwt = token;
-                            return res.status(200).json({ token }).req.session.jwt = token;
-                        }
-                    );
+                            res.status(200).json('Login successful!');
+                        })
+                    });
                 } catch (err) {
                     return next(err);
                 }

@@ -3,10 +3,11 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const passport = require('passport');
-// const session = require('express-session');
-const session = require('cookie-session');
+const session = require('express-session');
+// const session = require('cookie-session');
 const flash = require('connect-flash');
 const connectDB = require("./DB/connectDB");
+const MongoStore = require("connect-mongo");
 
 // Load config
 dotenv.config({ path: "./config/.env" });
@@ -24,28 +25,42 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+	origin: [ 'http://localhost:3000', 'http://10.20.218.232:3000' ],
+	credentials: true,
+	exposedHeaders: [ 'Set-Cookie' ]
+}));
 
-// Sessions for express
-app.use(
-    session({
-        name: 'session',
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false
-    })
-);
+
+// Create a MongoStore for sessions and set up express-session
+connectDB.createMongoStore((mongoStore) => {
+	let secondsInDay = 24*60*60;
+	app.use(session({
+		name: 'session',
+		cookie: { 
+			maxAge: secondsInDay,
+			sameSite: 'none',
+			secure: true,
+			httpOnly: false
+		},
+		secret: process.env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: false,
+		store: mongoStore
+	}));
+});
+
+// Connect mongoost to the DB
+connectDB.createMongooseConnection();
+
 
 // Passport middleware
 app.use(passport.initialize());
-// app.use(passport.session());
 
 // Routes
 app.use('/', require('./Routes/index'));
 app.use('/auth', require('./Routes/auth'));
 app.use('/api/users', require('./Routes/api/users'))
-
-connectDB();
 
 app.listen(PORT, () => {
     console.log(`Your app is listening on http://localhost:${PORT}`);

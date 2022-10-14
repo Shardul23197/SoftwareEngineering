@@ -8,63 +8,73 @@ import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
 import AuthService from "../services/auth.service";
 import { AuthProvider } from '../hooks/AuthProvider';
+import { useCookies } from "react-cookie";
 
-const Login = () => {
+export default function Login() {
+    const [cookies, setCookie] = useCookies(["session"]);
     const [username, setUserName] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     let navigate = useNavigate();
 
     const onUsernameChange = (event) => {
-        setUserName(event.target.value)
+      setUserName(event.target.value)
     }
 
     const onPasswordChange = (event) => {
-        setPassword(event.target.value)
+      setPassword(event.target.value)
     }
 
     const onSubmit = (event) => {
-        event.preventDefault()
-        // const instance = axios.create();
-        // const headers = {
-        //     'Content-Type': 'application/x-www-form-urlencoded'
-        // }
+        
+        event.preventDefault();
+        
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        const instance = axios.create({
+            baseURL: 'http://localhost:5000',
+            withCredentials: true,
+            headers: headers
+        });
 
-        AuthService.login(username, password).then(
-            () => {
-                AuthProvider.login()
-                console.log("here");
-                navigate('/dashboard')
-            //   this.props.router.navigate("/profile");
-            //   window.location.reload();
-            },
-            error => {
-                if (error)
-                    this.error.message = error.toString();
-            });
+        const formData = {
+            email: username,
+            password: password
+        };
+        
+        instance.post('/auth/login', qs.stringify(formData)).then((res) => {
+            console.log(`res: ${util.inspect(res)}`);
+            
+            // // set token in local storage to the returned jwt
+            // localStorage.setItem('token', token);
 
-        // const formData = {
-        //     email: username,
-        //     password: password
-        // }
-        // instance.post('http://localhost:5000/auth/login', qs.stringify(formData), { headers: headers })
-        //     .then((res) => {
-        //         // get the returned jwt
-        //         const token = res.data.token;
-        //         // set token in local storage to the returned jwt
-        //         localStorage.setItem('token', token);
+            // // TODO redirect user
+            // //redirect user to home page
+            // window.location.href = '/'
+        })
+        .catch((error) => {
+            /**
+             * @todo: fix error handling
+             */
+            if (error) this.error.message = error;
+        })
 
-        //         // TODO redirect user
-        //         //redirect user to home page
-        //         window.location.href = '/'
-        //     })
-        //     .catch((error) => {
-        //         /**
-        //          * @todo: fix error handling
-        //          */
-        //         if (error) this.error.message = error;
-        //     })
+            // AuthService.login(username, password).then(
+            //     () => {
+            //         AuthProvider.login()
+            //         console.log("here");
+            //         navigate('/dashboard')
+            //     //   this.props.router.navigate("/profile");
+            //     //   window.location.reload();
+            //     },
+            //     error => {
+            //         if (error)
+            //             this.error.message = error.toString();
+            //     });
+
     }
+
     return (
         <form onSubmit={onSubmit}>
             <MDBContainer fluid className="p-3 my-5 h-custom">
@@ -78,7 +88,7 @@ const Login = () => {
                         <div className="d-flex flex-row align-items-center justify-content-center">
 
                             <p className="lead fw-normal mb-0 me-3">Sign in with</p>
-                            {/*     
+                            {/*
                 <MDBBtn floating size='md' tag='a' className='me-2'>
                   <MDBIcon fab icon='facebook-f' />
                 </MDBBtn>
@@ -119,6 +129,4 @@ const Login = () => {
             </MDBContainer>
         </form>
     );
-}
-
-export default Login;
+};
