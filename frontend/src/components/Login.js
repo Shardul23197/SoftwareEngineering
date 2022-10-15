@@ -8,10 +8,8 @@ import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
 import AuthService from "../services/auth.service";
 import { AuthProvider } from '../hooks/AuthProvider';
-import { useCookies } from "react-cookie";
 
 export default function Login() {
-    const [cookies, setCookie] = useCookies(["session"]);
     const [username, setUserName] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -45,19 +43,18 @@ export default function Login() {
         
         instance.post('/auth/login', qs.stringify(formData)).then((res) => {
             console.log(`res: ${util.inspect(res)}`);
+            const accessToken = res.data.accessToken;
+            const refreshToken = res.data.refreshToken;
             
-            // // set token in local storage to the returned jwt
-            // localStorage.setItem('token', token);
-
-            // // TODO redirect user
-            // //redirect user to home page
-            // window.location.href = '/'
+            // set token in local storage to the returned jwt
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
         })
         .catch((error) => {
             /**
              * @todo: fix error handling
              */
-            if (error) this.error.message = error;
+            if (error) setError({ message: error.response.data });
         })
 
             // AuthService.login(username, password).then(

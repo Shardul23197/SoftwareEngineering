@@ -2,9 +2,10 @@ const passportCustom = require('passport-custom');
 const CustomStrategy = passportCustom.Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy,
-ExtractJwt = require('passport-jwt').ExtractJwt;
+    ExtractJwt = require('passport-jwt').ExtractJwt;
 const bcrypt = require("bcryptjs");
 const User = require('../models/User');
+const util = require('util');
 
 module.exports = function(passport) {
     // Passport custom login strategy
@@ -18,18 +19,16 @@ module.exports = function(passport) {
 
             // Check if user exists
             if (!user) {
-                const err = new Error("Could not find the given email!");
                 // Call passport's callback for error
-                done(err);
+                done('Could not find the given email!');
                 return;
             }
 
             // Ensure the user is not a google user. If they are,
             // send error stating they need to sign in w/ google
             if (user.googleId) {
-                const err = new Error("Please sign in using your google account!");
                 // Call passport's callback for error
-                done(err);
+                done('Please sign in using your google account!');
                 return;
             }
 
@@ -41,8 +40,7 @@ module.exports = function(passport) {
                         done(null, user);
                     else {
                         // Otherwise return an error
-                        const err = new Error("Invaild password!");
-                        done(err);
+                        done('Invaild password!');
                     }
                 })
                 .catch((err) => {
@@ -114,12 +112,13 @@ module.exports = function(passport) {
     passport.use('jwt',
         new JwtStrategy(
         {
-            jwtFromRequest: ExtractJwt.fromUrlQueryParameter('secret_token'),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_SECRET_KEY,
         },
         async (token, done) => {
             try {
-                return done(null, token.user);
+                console.log(`tokenaaa: ${JSON.stringify(token)}`);
+                return done(null, token.token);
             } catch (error) {
                 done(error);
             }
