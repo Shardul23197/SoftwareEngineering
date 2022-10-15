@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { useNavigate, useLocation} from "react-router-dom";
 import '../../App.css'; 
 import Pagination from '../Pagination';
@@ -18,6 +18,30 @@ export default function Dashboard() {
   const page=query.get('page')||1;
   const searchQuery=query.get('searchQuery');
   const classes = useStyles();
+  const [search,setSearch]=useState('');
+  const [tags,setTags]=useState([]);
+  const navigate = useNavigate();
+
+  const searchWorkout=()=>{
+    if(search.trim()){
+      //dispatch->fetch workout
+    }
+    else{
+      navigate('/');
+    }
+  }
+
+  const handleKeyPress=(e)=>{
+    if(e.keyCode===13){
+      //search workout
+      searchWorkout();
+    }
+  };
+
+  const handleAdd=(tag)=>setTags([... tags, tag]);
+
+  const handleDelete=(tagtoDelete)=>setTags(tags.filter((tag)=>tag!=tagtoDelete));
+
 
   return (
     <>
@@ -27,10 +51,19 @@ export default function Dashboard() {
   variant="outlined"
   label="Search Workouts"
   fullWidth
-  value="SAMPLE"
-  onChange={()=>{}}
+  value={search}
+  onKeyPress={handleKeyPress}
+  onChange={(e)=>setSearch(e.target.value)}
   />
-
+  <ChipInput
+  style={{margin:'10px 0'}}
+  value={tags}
+  onAdd={handleAdd}
+  onDelete={handleDelete}
+  label="Search Tags"
+  variant="outlined"
+  />
+  <Button onClick={searchWorkout} className={classes.searchButton} color="primary" variant="contained">Search</Button>
 </AppBar>
 <nav className="navbar navbar-expand-lg navbar-light bg-light">
 
