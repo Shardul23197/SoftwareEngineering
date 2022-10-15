@@ -2,9 +2,9 @@ import 'mdb-react-ui-kit/dist/css/mdb.min.css'
 import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom'
 import './App.css';
 import Dashboard from '../src/components/Dashboard/Dashboard';
-import Register from './components/Register';
-import Home from './components/Home';
-import Login from './components/Login';
+import Register from '../src/components/Register/Register';
+import Home from '../src/components/Home/Home';
+import Login from '../src/components/Login/Login';
 import WorkoutDetails from './components/WorkoutDetails';
 
 function App() {
