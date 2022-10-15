@@ -1,9 +1,10 @@
 import React from 'react'
 import { useNavigate, useLocation} from "react-router-dom";
-import '../App.css'; 
-import Pagination from './Pagination';
+import '../../App.css'; 
+import Pagination from '../Pagination';
 import {Paper, AppBar, TextField, Button} from '@material-ui/core';
-//import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input';
+import useStyles from './styles'
 
 function useQuery(){
   return new URLSearchParams(useLocation.search);
@@ -16,10 +17,21 @@ export default function Dashboard() {
   //const history=useHistory();
   const page=query.get('page')||1;
   const searchQuery=query.get('searchQuery');
+  const classes = useStyles();
 
   return (
     <>
+<AppBar className={classes.appBarSearch} position="static" color="inherit">
+  <TextField 
+  name="search" 
+  variant="outlined"
+  label="Search Workouts"
+  fullWidth
+  value="SAMPLE"
+  onChange={()=>{}}
+  />
 
+</AppBar>
 <nav className="navbar navbar-expand-lg navbar-light bg-light">
 
   <div className="container-fluid">
