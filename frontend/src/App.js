@@ -6,9 +6,13 @@ import Register from '../src/components/Register/Register';
 import Home from '../src/components/Home/Home';
 import Login from '../src/components/Login/Login';
 import WorkoutDetails from './components/WorkoutDetails';
+import Profile from './components/Profile/Profile';
+import { Provider } from 'react-redux';
+import store from './state/store';
 
 function App() {
   return (
+    <Provider store={store}>
     <BrowserRouter>
     <Routes>
       <Route path='/register' element={<Register/>}/>
@@ -19,9 +23,11 @@ function App() {
       <Route path='/dashboard/search' element={<Dashboard />}/>
       <Route path='/dashboard/:id' element={<WorkoutDetails />}/>
       <Route path='/login' element={<Login/>}/>
+      <Route path='/profile' element={<Profile />}/>
     </Routes>
     </BrowserRouter>
-  );
+    </Provider>
+  )
 }
 
 export default App;

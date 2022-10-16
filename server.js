@@ -41,6 +41,8 @@ app.use(passport.session());
 app.use('/', require('./Routes/index'));
 app.use('/auth', require('./Routes/auth'));
 app.use('/api/users', require('./Routes/routes'))
+app.use('/api/users/profile', require('./Routes/profile'))
+app.use('/api/trainer', require('./Routes/trainer'))
 
 connectDB();
 

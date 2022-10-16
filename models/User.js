@@ -1,30 +1,3 @@
-// const mongoose = require("mongoose");
-// const Schema = mongoose.Schema;
-// // Create Schema
-// const UserSchema = new Schema({
-//     name: {
-//       type: String,
-//       required: true
-//     },
-//     email: {
-//       type: String,
-//       required: true
-//     },
-//     password: {
-//       type: String,
-//       required: true
-//     },
-//     date: {
-//       type: Date,
-//       default: Date.now
-//     },
-//     role: {
-//         type: String,
-//         possibleValues: ["Trainer", "Customer"],
-//         default: "Customer",
-//       },
-//   });
-//   module.exports = User = mongoose.model("users", UserSchema);
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -42,10 +15,14 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  // date: {
-  //   type: Date,
-  //   default: Date.now
-  // }
+  role: {
+    type: String,
+    enum: ['user','trainer','admin'],
+    default: 'user'
+  },
+  profile: {
+    type: Schema.Types.ObjectId,
+    ref: "userProfile"
+  }
 });
-
 module.exports = User = mongoose.model("users", UserSchema);
