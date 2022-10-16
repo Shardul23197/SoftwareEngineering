@@ -39,6 +39,9 @@ app.use(passport.initialize());
 // Routes
 app.use('/', require('./Routes/index'));
 app.use('/auth', require('./Routes/auth'));
+app.use('/api/users', require('./Routes/routes'))
+app.use('/api/users/profile', require('./Routes/profile'))
+app.use('/api/trainer', require('./Routes/trainer'))
 
 app.listen(PORT, () => {
     console.log(`Your app is listening on http://localhost:${PORT}`);

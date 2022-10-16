@@ -3,10 +3,11 @@ import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox, M
 import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from './auth/auth'
+import { useAuth } from '../auth/auth'
 import axios from 'axios'
 import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
+import store from '../../state/store'
 
 export default function Login() {
     const [username, setUserName] = useState('');
@@ -50,6 +51,7 @@ export default function Login() {
             setRefreshToken(refreshToken); // auth context provider
 
             // Redirect to the dashboard because the user is logged in
+            store.dispatch({type: 'SET_EMAIL', payload: username}) // fix-routes carried in from merge with redux
             navigate('/dashboard');
         })
         .catch((error) => {

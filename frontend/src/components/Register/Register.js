@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from './auth/auth'
-import { useState } from 'react'
-import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography } from 'mdb-react-ui-kit'
+import { useAuth } from '../auth/auth'
+import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBSwitch, MDBTypography } from 'mdb-react-ui-kit'
 import './register.css'
 import axios from 'axios'
 import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
+import store from '../../state/store'
 
 const Register = () => {
   const [email, setEmail] = useState('')
@@ -15,6 +15,7 @@ const Register = () => {
   const [username, setUserName] = useState('')
   const [error, setError] = useState('')
   const [usernameError, setUserNameError] = useState('')
+  const [isTrainer, setIsTrainer] = useState(false)
   const { setAuthToken, setRefreshToken } = useAuth();
   const navigate = useNavigate();
 
@@ -37,21 +38,25 @@ const Register = () => {
           confirmpassword: confirmPassword
       }    
       
-      instance.post('/auth/register', qs.stringify(formData)).then((res) => {
+      instance.post('/auth/register', qs.stringify(formData))
+        .then((res) => {
           console.log(`res: ${util.inspect(res)}`);
           const accessToken = res.data.accessToken;
           const refreshToken = res.data.refreshToken;
 
-          // set tokens in local storage to the returned jwts
-          setAuthToken(accessToken); // auth context provider
-          setRefreshToken(refreshToken); // auth context provider
+          // set tokens in local storage and AuthContext.Provider to the returned jwts
+          localStorage.setItem('authToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          setAuthToken(accessToken); // AuthContext.Provider
+          setRefreshToken(refreshToken); // AuthContext.Provider
 
           // Redirect to the dashboard because the user is logged in
+          store.dispatch({type: 'SET_EMAIL', payload: email}) // fix-routes carried in from merge with redux
           navigate('/dashboard');
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           if (error) setError({ message: error.response.data });
-      });
+        });
 
   }
 
@@ -70,6 +75,10 @@ const Register = () => {
 
   const onEmailChange = (event) => {
     setEmail(event.target.value)
+  }
+
+  const onSwitchChange = (event) => {
+    setIsTrainer(event.target.checked)
   }
 
   const userNameValidation = () => {
@@ -110,6 +119,10 @@ const Register = () => {
                   <MDBIcon fas icon="key me-3" size='lg' />
                   <MDBInput label='Confirm Password' value={confirmPassword} onChange={onConfirmPasswordChange} id='form4' type='password' />
                 </div>
+
+                <div className="d-flex justify-content-between mb-4">
+                  <MDBSwitch  name='flexCheck' value='' id='flexCheckDefault' checked={isTrainer} label='Register as a Trainer' onChange={onSwitchChange} />
+                </div>
                 {confirmPassword !== password ?
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Passwords do not match</strong>
@@ -122,11 +135,9 @@ const Register = () => {
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Invalid username</strong>
                   </MDBTypography> : ""}
-                <a href="http://localhost:5000/auth/google">
-                  <MDBBtn floating size='md' tag='a' className='me-2'>
+                  <MDBBtn floating size='md' tag='a' href='http://localhost:5000/auth/google' className='me-2'>
                     <MDBIcon fab icon='google' />
                   </MDBBtn>
-                </a>
                 <MDBBtn className='mb-4 register' size='lg' disabled={(confirmPassword !== password) || !username || !email ? true : false} >Register</MDBBtn>
 
               </MDBCol>

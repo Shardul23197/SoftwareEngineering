@@ -30,6 +30,15 @@ const UserSchema = new Schema({
     googleDisplayName: {
         type: String
         // required: true
+    },
+    role: {
+      type: String,
+      enum: ['user','trainer','admin'],
+      default: 'user'
+    },
+    profile: {
+      type: Schema.Types.ObjectId,
+      ref: "userProfile"
     }
 });
 
