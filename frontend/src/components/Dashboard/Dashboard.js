@@ -33,10 +33,7 @@ export default function Dashboard() {
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
-  const existingRefreshtoken = localStorage.getItem('refreshToken') || '';
   const [authToken, setAuthtoken] = useState(existingAuthtoken);
-  const [refreshToken, setRefreshtoken] = useState(existingRefreshtoken);
-  const { setAuthToken, setRefreshToken } = useAuth();
 
 
   const searchWorkout=()=>{
@@ -60,16 +57,6 @@ export default function Dashboard() {
   const handleDelete=(tagtoDelete)=>setTags(tags.filter((tag)=>tag!=tagtoDelete));
 
   useEffect(() => {
-    // Get the auth and refresh tokens from the search params if there are any
-    if (!existingAuthtoken) {
-      setAuthtoken(searchParams.get('authToken'));
-      setAuthToken(searchParams.get('authToken'));
-    }
-    if (!existingRefreshtoken) {
-      setRefreshtoken(searchParams.get('refreshToken'));
-      setRefreshToken(searchParams.get('refreshToken'));
-    }
-
     setData(selector)
     axios.get('http://localhost:5000/api/users/getrole', { params: { email: data } })
       .then((res) => {
@@ -79,8 +66,7 @@ export default function Dashboard() {
         if (error.response)
           console.log(error.response.data);
       })
-  }, [selector, role, authToken, existingAuthtoken, existingRefreshtoken, 
-      navigate, refreshToken, searchParams, setAuthToken, setRefreshToken, data]);
+  }, [selector, role, navigate, data]);
 
   const navigateToProfile = () => {
     navigate('/profile')

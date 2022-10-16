@@ -12,8 +12,7 @@ const PrivateRoute = ({ children }) => {
     const [refreshToken, setRefreshtoken] = useState(existingRefreshtoken);
     const { setAuthToken, setRefreshToken } = useAuth();
 
-    
-
+    // Set authToken for the local storage and state
     const setauthToken = (data) => {
         if (!data) {
             localStorage.removeItem('authToken');
@@ -24,6 +23,7 @@ const PrivateRoute = ({ children }) => {
         }
     };
 
+    // Set refreshToken for the local storage and state
     const setrefreshToken = (data) => {
         if (!data) {
             localStorage.removeItem('refreshToken');
@@ -35,9 +35,10 @@ const PrivateRoute = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log(`authToken: ${searchParams.get('authToken')}`);
-        console.log(`refreshToken: ${searchParams.get('refreshToken')}`);
-        // Get the auth and refresh tokens from the search params if there are any
+        // console.log(`authToken: ${searchParams.get('authToken')}`);
+        // console.log(`refreshToken: ${searchParams.get('refreshToken')}`);
+
+        // Set the auth and refresh tokens for local storage, state, and AuthContext
         if (!existingAuthtoken) {
             setauthToken(searchParams.get('authToken'));
             setAuthToken(searchParams.get('authToken'));
@@ -51,6 +52,8 @@ const PrivateRoute = ({ children }) => {
         refreshToken, searchParams, setAuthToken, setRefreshToken]);
 
 
+    // If the user has both auth and refresh tokens, proceed to the requested route
+    // Otherwise redirect to home
     return authToken && refreshToken ? children : <Navigate to='/'/>;
 }
 
