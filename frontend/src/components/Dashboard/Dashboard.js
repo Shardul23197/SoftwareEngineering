@@ -10,7 +10,8 @@ import axios from 'axios'
 import { useSelector } from 'react-redux';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
-
+import {getWorkoutsBySearch} from '../../actions/workouts'
+import { useDispatch } from 'react-redux';
 function useQuery(){
   return new URLSearchParams(useLocation.search);
 } 
@@ -18,6 +19,7 @@ function useQuery(){
 
 export default function Dashboard() {
   const query=useQuery();
+  const dispatch = useDispatch();
   //const history=useHistory();
   const page=query.get('page')||1;
   const searchQuery=query.get('searchQuery');
@@ -33,6 +35,7 @@ export default function Dashboard() {
   const searchWorkout=()=>{
     if(search.trim()){
       //dispatch->fetch workout
+      dispatch(getWorkoutsBySearch({ search, tags: tags.join(',') }));
     }
     else{
       navigate('/');
