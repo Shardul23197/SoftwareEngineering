@@ -57,9 +57,7 @@ const getRefreshToken = async (_id, email, done) => {
 
 // @desc    Authenticate w/ Google
 // @route   GET /auth/google
-router.get('/google',
-            // ensureGuest, 
-            passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // @desc    Google auth callback
 // @route   GET /auth/google/callback
@@ -73,12 +71,15 @@ router.get('/google/callback',
                 failureRedirect:'http://localhost:3000/login' 
             },
             async (err, user) => {
+                // console.log(`/google/callback user ${JSON.stringify(user)}`);
                 if (err) 
                     res.redirect('http://localhost:3000/login');
                 else {
 
                     // Get a refresh token and access token for the user
                     getRefreshToken(user._id, user.email, (err, refreshTokenObj) => {
+                        // console.log(`getRefreshToken-cb err ${err}`);
+                        // console.log(`getRefreshToken-cb refreshTokenObj ${JSON.stringify(refreshTokenObj)}`);
                         if (err) {
                             res.redirect('http://localhost:3000/login');
                         }
@@ -86,7 +87,7 @@ router.get('/google/callback',
                             const refreshToken = refreshTokenObj.refreshToken;
                             const accessToken = refreshTokenObj.accessToken;
                             // Return the tokens
-                            let theUrl = url.format({
+                            let dashboardUrl = url.format({
                                 protocol: 'http',
                                 host: 'localhost:3000',
                                 pathname: '/dashboard',
@@ -95,8 +96,8 @@ router.get('/google/callback',
                                     refreshToken: refreshToken           
                                 }
                             })
-                            // console.log(`theUrl: ${theUrl}`);
-                            res.redirect(theUrl);
+                            // console.log(`dashboardUrl: ${dashboardUrl}`);
+                            res.redirect(dashboardUrl);
                         }
                     });
                 }

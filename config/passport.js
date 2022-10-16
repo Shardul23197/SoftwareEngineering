@@ -86,11 +86,13 @@ module.exports = (passport) => {
             callbackURL: '/auth/google/callback'
         },
         async (accessToken, refreshToken, profile, done) => {
+            // console.log(`passport-google profile ${JSON.stringify(profile)}`);
             let googleId = profile.id;
             try {
                 // Try to find a googleuser in the DB by their googleID
                 await GoogleUser.findOne({ googleId: googleId }).exec()
                     .then(async (googleUser) => {
+                        // console.log(`passport-google googleUser ${JSON.stringify(googleUser)}`);
                         // If a googleUser was found return it 
                         if (googleUser) {
                             done(null, googleUser);
