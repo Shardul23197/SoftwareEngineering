@@ -12,6 +12,7 @@ const validateLoginInput = require("../validation/loginValidation");
 
 // Load User model
 const User = require("../models/User");
+const UserProfile = require("../models/UserProfile")
 
 // @route POST api/users/register
 // @desc Register user
@@ -32,14 +33,22 @@ router.post("/register", ensureGuest, (req, res) => {
       const newUser = new User({
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        role: req.body.role ? 'trainer': 'user',
       });
+
+      const profile = new UserProfile({
+        email: newUser.email,
+        id: newUser._id
+      })
+      newUser.profile = profile._id
 
       // Hash password before saving in database
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
           newUser.password = hash;
+          profile.save().then(profile => {console.log("")}).catch(err => console.log(err))
           newUser
             .save()
             .then(user => res.json(user))
@@ -47,7 +56,7 @@ router.post("/register", ensureGuest, (req, res) => {
         });
       });
     }
-  });
+  })
 });
 
 // @route POST api/users/login
@@ -102,6 +111,17 @@ router.post("/login", ensureGuest, (req, res) => {
           .json({ passwordincorrect: "Password incorrect" });
       }
     });
+  });
+});
+
+router.get('/getrole', (req, res) => {
+  const {email} = req.query;
+  User.findOne({ email }).then(user => {
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ emailnotfound: "Email not found" });
+    }
+    return res.status(200).json({role: user.role})
   });
 });
 

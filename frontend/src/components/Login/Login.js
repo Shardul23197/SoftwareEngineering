@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import store from '../../state/store'
 
 const Login = () => {
     const [username, setUserName] = useState('')
@@ -26,7 +27,10 @@ const Login = () => {
             password: password
         }
         axios.post('http://localhost:5000/api/users/login', formData)
-            .then((res) => navigate('/dashboard'))
+            .then((res) => {
+                store.dispatch({type: 'SET_EMAIL', payload: username})
+                navigate('/dashboard')
+            })
             .catch((error) => {
                 if (error.response) setError(error.response.data);
             })

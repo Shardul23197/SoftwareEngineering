@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
-import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography, MDBSwitch } from 'mdb-react-ui-kit';
 import axios from 'axios'
 import './register.css'
+import store from '../../state/store'
 
 const Register = () => {
   const [email, setEmail] = useState('')
@@ -12,6 +13,7 @@ const Register = () => {
   const [username, setUserName] = useState('')
   const [error, setError] = useState('')
   const [usernameError, setUserNameError] = useState('')
+  const [isTrainer, setIsTrainer] = useState(false)
   const navigate = useNavigate();
 
   const onSubmit = async (event) => {
@@ -20,11 +22,16 @@ const Register = () => {
       name: username,
       email: email,
       password: password,
-      confirmpassword: confirmPassword
+      confirmpassword: confirmPassword,
+      role: isTrainer
     }
+    console.log(formData)
     //axios request
     axios.post('http://localhost:5000/api/users/register', formData)
-      .then((res) => navigate('/dashboard'))
+      .then((res) =>  {
+        store.dispatch({type: 'SET_EMAIL', payload: email})
+        navigate('/dashboard')
+      })
       .catch((error) => {
         if (error.response)
           setError(error.response.data);
@@ -47,6 +54,10 @@ const Register = () => {
 
   const onEmailChange = (event) => {
     setEmail(event.target.value)
+  }
+
+  const onSwitchChange = (event) => {
+    setIsTrainer(event.target.checked)
   }
 
   const userNameValidation = () => {
@@ -98,6 +109,10 @@ const Register = () => {
                   <MDBIcon fas icon="key me-3" size='lg' />
                   <MDBInput label='Confirm Password' value={confirmPassword} onChange={onConfirmPasswordChange} id='form4' type='password' />
                 </div>
+
+                <div className="d-flex justify-content-between mb-4">
+                  <MDBSwitch  name='flexCheck' value='' id='flexCheckDefault' checked={isTrainer} label='Register as a Trainer' onChange={onSwitchChange} />
+                </div>
                 {confirmPassword !== password ?
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Passwords do not match</strong>
@@ -110,11 +125,9 @@ const Register = () => {
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Invalid username</strong>
                   </MDBTypography> : ""}
-                <a href="http://localhost:5000/auth/google">
-                  <MDBBtn floating size='md' tag='a' className='me-2'>
+                  <MDBBtn floating size='md' tag='a' href='http://localhost:5000/auth/google' className='me-2'>
                     <MDBIcon fab icon='google' />
                   </MDBBtn>
-                </a>
                 <MDBBtn className='mb-4 register' size='lg' disabled={(confirmPassword !== password) || !username || !email ? true : false} >Register</MDBBtn>
 
               </MDBCol>
