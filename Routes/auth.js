@@ -2,10 +2,58 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const url = require('url');
 const util = require('util');
-const { ensureGuest } = require('../middleware/auth');
-const jwtRequired = passport.authenticate('jwt', { session: false });
 const RefreshToken = require('../models/RefreshToken');
+
+// Makes a new RefreshToken for the user if there isn't
+// one in the database already
+const getRefreshToken = async (_id, email, done) => {
+    
+    let refreshTokenObj = undefined;
+    // If the user already has a refresh token in the db
+    // return their current access token 
+    await RefreshToken.findOne({ email: email })
+        .exec()
+        .then((doc) => {
+            refreshTokenObj = doc;
+            // console.log(`found doc: ${JSON.stringify(doc)}`);
+        })
+        .catch((err) => {
+            console.error(err);
+            done('Could not use the given email to search for a refresh token!');
+        }
+    );
+
+    if (refreshTokenObj) {
+        done(null, refreshTokenObj);
+        return;
+    }
+
+    // Generate an access token
+    const body = { _id: _id, email: email };
+    const accessToken = jwt.sign(body, process.env.JWT_SECRET_KEY, { expiresIn: '20m'});
+    const refreshToken = jwt.sign(body, process.env.JWT_REFRESH_KEY);
+    // console.log(`body: ${JSON.stringify(body)}`)
+    // console.log(`accessToken: ${accessToken}`)
+    // console.log(`refreshToken: ${accessToken}`)
+
+    // Save the refreshToken and its associated info
+    new RefreshToken({
+        email: email,
+        accessToken: accessToken,
+        refreshToken: refreshToken 
+    }).save()
+        .then((doc) => {
+            // Return the token
+            done(null, doc);
+        })
+        .catch(err => { 
+            console.error(err);
+            done('Could not save refresh JWT!');
+        }
+    );
+};
 
 // @desc    Authenticate w/ Google
 // @route   GET /auth/google
@@ -17,11 +65,44 @@ router.get('/google',
 // @route   GET /auth/google/callback
 // rediredt user to React dashboard page
 router.get('/google/callback',
-            // ensureGuest,
-            passport.authenticate('google', { scope: ['profile', 'email'], failureRedirect:'/' }), 
-            (req, res) => {
-                res.redirect('http://localhost:3000/dashboard');
+    async (req, res, next) => {
+        passport.authenticate(
+            'google', 
+            { 
+                scope: ['profile', 'email'], 
+                failureRedirect:'http://localhost:3000/login' 
+            },
+            async (err, user) => {
+                if (err) 
+                    res.redirect('http://localhost:3000/login');
+                else {
+
+                    // Get a refresh token and access token for the user
+                    getRefreshToken(user._id, user.email, (err, refreshTokenObj) => {
+                        if (err) {
+                            res.redirect('http://localhost:3000/login');
+                        }
+                        else {
+                            const refreshToken = refreshTokenObj.refreshToken;
+                            const accessToken = refreshTokenObj.accessToken;
+                            // Return the tokens
+                            let theUrl = url.format({
+                                protocol: 'http',
+                                host: 'localhost:3000',
+                                pathname: '/dashboard',
+                                query: {
+                                    authToken: accessToken,
+                                    refreshToken: refreshToken           
+                                }
+                            })
+                            // console.log(`theUrl: ${theUrl}`);
+                            res.redirect(theUrl);
+                        }
+                    });
+                }
             }
+        )(req, res, next);
+    }
 );
 
 // @route POST /auth/login
@@ -32,7 +113,9 @@ router.post('/login',
         // Authenticate the user using passport
         passport.authenticate('login', 
             async (err, user) => {
-                if (err) res.status(400).json(err);
+                if (err) {
+                    res.status(400).json(err);
+                }
                     
                 try {
                     // If the user isn't found log the error and return it
@@ -40,65 +123,23 @@ router.post('/login',
                         return next(err);
                     }
 
+                    const _id = user._id; // store the user's _id for easy access
                     const email = user.email; // store the user's eamil for easy access
 
-                    let alreadyHasSession = false;
-                    // If the user already has a refresh token in the db
-                    // return their current access token 
-                    await RefreshToken.findOne({ email: email }).exec()
-                        .then((refreshTokenObj) => {
-                            console.log(`found refreshTokenObj: ${JSON.stringify(refreshTokenObj)}`)
-                            if (refreshTokenObj) {
-                                alreadyHasSession = true;
-
-                                const refreshToken = refreshTokenObj.refreshToken;
-                                const accessToken = refreshTokenObj.accessToken;
-                                // Return the token
-                                res.status(200).json({
-                                    accessToken,
-                                    refreshToken
-                                });
-                            }
-                        })
-                        .catch((err) => {
-
+                    // Get a refresh token and access token for the user
+                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                        if (err)
+                            res.status(500).json(err);
+                        else {
+                            const refreshToken = refreshTokenObj.refreshToken;
+                            const accessToken = refreshTokenObj.accessToken;
+                            // Return the tokens
+                            res.status(200).json({
+                                accessToken,
+                                refreshToken
+                            });
                         }
-                    );
-            
-                    // If the email is not found in a current refresh token db entry, make a new one
-                    // and send it
-                    if (!alreadyHasSession) {
-
-                        // Generate an access token
-                        const body = { _id: user._id, email: email };
-                        console.log(`body: ${JSON.stringify(body)}`)
-                        const accessToken = jwt.sign(body, process.env.JWT_SECRET_KEY, { expiresIn: '20m'});
-                        const refreshToken = jwt.sign(body, process.env.JWT_REFRESH_KEY);
-                        console.log(`accessToken: ${accessToken}`)
-                        console.log(`refreshToken: ${accessToken}`)
-
-                        
-                        // Save the refreshToken and it's associated info
-                        const refreshTokenObj = new RefreshToken({
-                            email: email,
-                            accessToken: accessToken,
-                            refreshToken: refreshToken 
-                        });
-                        await refreshTokenObj
-                            .save()
-                            .then((doc) => {
-                                // Return the token
-                                res.status(200).json({
-                                    accessToken, 
-                                    refreshToken
-                                });
-                            })
-                            .catch(err => { 
-                                console.error(err);
-                                res.status(500).json('Could not save refresh JWT!');
-                            }
-                        );
-                    }
+                    });
                 } catch (err) {
                     res.status(500).json('Could not issue JWT!');
                 }
@@ -181,10 +222,9 @@ router.post('/token',
     }
 );
 
+// @route   POST /auth/logout
 // @desc    Logout user
-// @route   GET /api/users/logout
-// rediredt user to React login page
-// change to post
+// removes user's refresh token entry from the db
 router.post('/logout', 
     (req, res, next) => {
         // Get the access token from the header
@@ -200,8 +240,7 @@ router.post('/logout',
                 RefreshToken.findOneAndRemove({ accessToken: accessToken }, (err, doc) => {
                     if (!doc)
                         res.status(500).json(`User was not logged in!`);
-
-                    if (err)
+                    else if (err)
                         res.status(500).json(`Could not log out user with access token: ${accessToken}`);
                     else
                         res.status(200).json('Logout sucessful!');
@@ -211,16 +250,43 @@ router.post('/logout',
     }
 );
 
-router.get('/current-session', 
+// @route POST /auth/register
+// @desc Register user
+// @access Public
+router.post("/register",
     (req, res, next) => {
         passport.authenticate(
-            'jwt',
+            'register',
             { session: false },
-            (err, token) => {
-                if (err || !token)
-                    res.send(false)
-                else
-                    res.send(token);
+            (err, user) => {
+                try {
+                    // If the user wasn't created log the error and return it
+                    if (err || !user) {
+                        res.status(400).json(err);
+                        return;
+                    }
+
+                    const _id = user._id; // store the user's _id for easy access
+                    const email = user.email; // store the user's eamil for easy access
+
+                    // Get a refresh token and access token for the user
+                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                        if (err)
+                            res.status(500).json(err);
+                        else {
+                            const refreshToken = refreshTokenObj.refreshToken;
+                            const accessToken = refreshTokenObj.accessToken;
+                            // Return the tokens
+                            res.status(200).json({
+                                accessToken,
+                                refreshToken
+                            });
+                        }
+                    });
+                } catch (err) {
+                    console.error(err);
+                    res.status(500).json('Could not issue JWT!');
+                }
             }
         )(req, res, next);
     }

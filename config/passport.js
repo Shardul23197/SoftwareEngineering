@@ -3,11 +3,11 @@ const CustomStrategy = passportCustom.Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
-const bcrypt = require("bcryptjs");
 const User = require('../models/User');
+const GoogleUser = require('../models/GoogleUser');
 const util = require('util');
 
-module.exports = function(passport) {
+module.exports = (passport) => {
     // Passport custom login strategy
     passport.use('login', new CustomStrategy(
         async (req, done) => {
@@ -33,7 +33,7 @@ module.exports = function(passport) {
             }
 
             // Check the user's password
-            user.isValidPassword(password, user)
+            user.isValidPassword(password)
                 .then((isValid) => {
                     // if the password is valid, return the user
                     if (isValid)
@@ -54,17 +54,27 @@ module.exports = function(passport) {
     passport.use(
         'register',
         new CustomStrategy(
-            async (req, res) => {
-                const user = await User.findOne({ email: req.body.email });
-                if (user)
-                    return res.status(400).json({ email: "Email already exists" });
+            async (req, done) => {
+                const email = req.body.email;
+                const user = await User.findOne({ email: email });
+                if (user) {
+                    done('Email already exists!');
+                    return;
+                }
 
-                const newUser = new User({
+                new User({
                     username: req.body.username,
                     name: req.body.name,
-                    email: req.body.email,
+                    email: email,
                     password: req.body.password
-                });
+                }).save()
+                    .then((doc) => {
+                        done(null, doc);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        done(err);
+                    });
             }
         ))
 
@@ -76,33 +86,38 @@ module.exports = function(passport) {
             callbackURL: '/auth/google/callback'
         },
         async (accessToken, refreshToken, profile, done) => {
-            let googleUser = {
-                name: `${profile.name.givenName} ${profile.name.familyName}`,
-                email: profile.emails[0].value,
-                password: profile.id, // never used w/ google accounts (required for every user)
-                googleId: profile.id,
-                displayName: profile.displayName
-            }
-            
+            let googleId = profile.id;
             try {
-                // Try to find a user in the DB by their googleID
-                let user = await User.findOne({ googleId: profile.id });
+                // Try to find a googleuser in the DB by their googleID
+                await GoogleUser.findOne({ googleId: googleId }).exec()
+                    .then(async (googleUser) => {
+                        // If a googleUser was found return it 
+                        if (googleUser) {
+                            done(null, googleUser);
+                        }
+                        else {
+                            // Create a googleUser 
+                            let googleUser = new GoogleUser({
+                                googleId: googleId,
+                                email: profile.emails[0].value,
+                                displayName: profile.displayName,
+                                firstName: profile.name.givenName,
+                                lastName: profile.name.familyName,
+                                image: profile.photos[0].value
+                            });
 
-                // If the user was not found, hash their password
-                if (!user) {
-                    bcrypt.genSalt(10, (err, salt) => {
-                        bcrypt.hash(googleUser.password, salt, async (err, hash) => {
-                            if (err) throw err;
-
-                            // Update the user's password with the hash
-                            googleUser.password = hash;
-                            // Create the user in the db and store the result
-                            user = await User.create(googleUser);
-                            // Set req.user to the user's profile
-                            done(null, user);
-                        });
+                            // Save the new GoogleUser then return it
+                            await googleUser
+                                .save()
+                                .then((googleUserDoc) => {
+                                    done(null, googleUserDoc);
+                                })
+                                .catch(err => { 
+                                    done(err);
+                                }
+                            );
+                        }
                     });
-                }
             } catch (err) {
                 console.error(err);
             }
@@ -117,7 +132,7 @@ module.exports = function(passport) {
         },
         async (token, done) => {
             try {
-                console.log(`tokenaaa: ${JSON.stringify(token)}`);
+                // console.log(`jwt-strategy-token: ${JSON.stringify(token)}`);
                 return done(null, token.token);
             } catch (error) {
                 done(error);

@@ -1,7 +1,58 @@
-import React from 'react'
+import React, { useEffect, useState }  from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useAuth } from './auth/auth'
+import axios from 'axios'
 import '../App.css'; 
 
 export default function Dashboard() {
+  const existingAuthtoken = localStorage.getItem('authToken') || '';
+  const existingRefreshtoken = localStorage.getItem('refreshToken') || '';
+  const [authToken, setAuthtoken] = useState(existingAuthtoken);
+  const [refreshToken, setRefreshtoken] = useState(existingRefreshtoken);
+  const { setAuthToken, setRefreshToken } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  let navigate = useNavigate();
+
+  /* If there are are no auth or refresh tokens in local storage get them
+   * from the query parameters (from the google callback). If there are
+   * still no tokens, navigate to the login screen.
+   */
+  useEffect(() => {
+    if (!existingAuthtoken) {
+      setAuthtoken(searchParams.get('authToken'));
+      setAuthToken(searchParams.get('authToken'));
+    }
+    if (!existingRefreshtoken) {
+      setRefreshtoken(searchParams.get('refreshToken'));
+      setRefreshToken(searchParams.get('refreshToken'));
+    }
+    // if (!authToken || !refreshToken)
+    //   navigate('/login');
+  }, [authToken, existingAuthtoken, existingRefreshtoken, navigate, refreshToken, searchParams, setAuthToken, setRefreshToken]);
+
+  const onLogout = (event) => {
+      const headers = {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      const instance = axios.create({
+          baseURL: 'http://localhost:5000',
+          withCredentials: true,
+          headers: headers
+      });
+      
+      instance.post('/auth/logout', {}).then((res) => {
+          // set token in local storage to the returned jwt
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          
+          // Redirect to the dashboard because the user is logged in
+          navigate('/');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <>
@@ -40,16 +91,15 @@ export default function Dashboard() {
   <button className="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Hello!
   </button>
-  <a href="http://localhost:5000/auth/logout">
-    <button className="btn btn-primary " type="button" id="logoutButton" >
-      Logout
-    </button>
-  </a>
   <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a className="dropdown-item" href="#">Profile</a>
     <a className="dropdown-item" href="#">Settings</a>
     <a className="dropdown-item" href="#">Logout</a>
   </div>
+
+  <button className="btn btn-primary " type="button" id="logoutButton" onClick={() => onLogout()}>
+    Logout
+  </button>
 </div>
         
       </div>
@@ -164,5 +214,5 @@ export default function Dashboard() {
 
     </>
   )
-  
+
 }

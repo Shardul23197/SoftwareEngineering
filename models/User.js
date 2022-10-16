@@ -37,7 +37,8 @@ const UserSchema = new Schema({
 // calls the callback
 UserSchema.pre(
     'save',
-    async (next) => {
+    async function (next) {
+        console.log(this.password);
         // const user = this;
         const hash = await bcrypt.hash(this.password, 10);
         
@@ -47,9 +48,9 @@ UserSchema.pre(
 );
 
 // Checks if the user provided the valid password
-UserSchema.methods.isValidPassword = async (password, user) => {
-    console.log(JSON.stringify(user));
-    const compare = await bcrypt.compare(password, user.password);
+UserSchema.methods.isValidPassword = async function (password) {
+    // console.log(`User-user: ${JSON.stringify(user)}`);
+    const compare = await bcrypt.compare(password, this.password);
     return compare;
 };
 

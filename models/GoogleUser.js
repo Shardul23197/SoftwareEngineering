@@ -6,6 +6,11 @@ const GoogleUserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
     displayName: {
         type: String,
         required: true
@@ -19,12 +24,9 @@ const GoogleUserSchema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: String
+        type: String,
+        required: true
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
 });
 
 module.exports = new mongoose.model('GoogleUser', GoogleUserSchema);
