@@ -48,6 +48,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
 
     app.get('*', function(request, response) {
+        console.log(`frontend-filepath: ${path.resolve(__dirname, '../react-ui/build', 'index.html')}`;
         response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
     });
 
