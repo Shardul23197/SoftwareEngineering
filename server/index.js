@@ -1,18 +1,16 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
-const dotenv = require("dotenv");
+require("dotenv").config({ path: path.resolve(__dirname, './config/.env') }); // Load env variables;
 const morgan = require("morgan");
+const connectDB = require("./DB/connectDB");
 const passport = require('passport');
-const connectDB = require("../DB/connectDB");
-
-dotenv.config({ path: "./config/.env" }); // Load config
 require('./config/passport')(passport); // Passport config
+console.log(__dirname);
 
-const isDev = process.env.NODE_ENV !== 'production';
+
 const PORT = process.env.PORT || 5000;
-
-
-
+const isDev = process.env.NODE_ENV !== 'production';
 // Multi-process to utilize all CPU cores.
 if (!isDev && cluster.isMaster) {
     console.error(`Node cluster master ${process.pid} is running`);
@@ -44,11 +42,11 @@ if (!isDev && cluster.isMaster) {
         app.use(passport.initialize()); // Passport middleware
 
         // Routes
-        app.use('/', require('../Routes/index'));
-        app.use('/auth', require('../Routes/auth'));
-        app.use('/api/users', require('../Routes/routes'))
-        app.use('/api/users/profile', require('../Routes/profile'))
-        app.use('/api/trainer', require('../Routes/trainer'))
+        app.use('/', require(path.resolve(__dirname, './Routes/index')));
+        app.use('/auth', require(path.resolve(__dirname, './Routes/auth')));
+        app.use('/api/users', require(path.resolve(__dirname, './Routes/routes')));
+        app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
+        app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
 
         app.listen(PORT, () => {
             console.log(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: ` + 

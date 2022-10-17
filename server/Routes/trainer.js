@@ -1,6 +1,7 @@
 const express = require('express');
+const path = require("path");
 const router = express.Router();
-const TrainerApproval = require('../server/models/TrainerApproval')
+const TrainerApproval = require('../models/TrainerApproval');
 
 router.post('/approval', (req, res) => {
     TrainerApproval.findOne({ email: req.body.email }).then(user => {
