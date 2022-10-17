@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Multer = require("multer")
-const gcsMiddlewares = require('../middleware/google-cloud-helper')
+const Multer = require("multer");
+const gcsMiddlewares = require('../middleware/google-cloud-helper');
 const multer = Multer({
   storage: Multer.MemoryStorage,
   limits: {
@@ -9,7 +9,7 @@ const multer = Multer({
   },
 });
 
-const UserProfile = require('../models/UserProfile')
+const UserProfile = require('../models/UserProfile');
 
 router.get('/getdetails', (req, res) => {
   const { email } = req.query
@@ -18,9 +18,9 @@ router.get('/getdetails', (req, res) => {
     if (!user) {
       return res.status(404).json({ emailnotfound: "Email not found" });
     }
-    return res.status(200).json({ data: user })
+    return res.status(200).json({ data: user });
   });
-})
+});
 
 router.post('/updatedetails', (req, res) => {
   const { email, fullName, phone, city } = req.body;
@@ -29,9 +29,9 @@ router.post('/updatedetails', (req, res) => {
     if (err) {
       console.log("Something wrong when updating data!");
     }
-    return res.status(200).json({ data: doc })
+    return res.status(200).json({ data: doc });
   })
-})
+});
 
 router.post('/upload', multer.single('image'), gcsMiddlewares.sendUploadToGCS, (req, res, next) => {
   const { email } = req.body;
@@ -41,9 +41,9 @@ router.post('/upload', multer.single('image'), gcsMiddlewares.sendUploadToGCS, (
         return res.status(500).send('Unable to upload');
       }
       else
-        return res.status(200).json({ data: req.file.gcsUrl })
+        return res.status(200).json({ data: req.file.gcsUrl });
     })
   }
-},
-);
+});
+
 module.exports = router;

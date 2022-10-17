@@ -3,38 +3,64 @@ import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox, M
 import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/auth'
 import axios from 'axios'
+import qs from 'qs' // needed for axios post to work properly
+import util from 'util'
 import store from '../../state/store'
 
-const Login = () => {
-    const [username, setUserName] = useState('')
-    const [password, setPassword] = useState('')
-    const [error, setError] = useState('')
-    let navigate = useNavigate();
+export default function Login() {
+    const [username, setUserName] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const { setAuthToken, setRefreshToken } = useAuth();
+    const navigate = useNavigate();
 
     const onUsernameChange = (event) => {
-        setUserName(event.target.value)
+      setUserName(event.target.value)
     }
 
     const onPasswordChange = (event) => {
-        setPassword(event.target.value)
+      setPassword(event.target.value)
     }
 
     const onSubmit = (event) => {
-        event.preventDefault()
+        event.preventDefault();
+        
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        const instance = axios.create({
+            baseURL: 'http://localhost:5000',
+            withCredentials: true,
+            headers: headers
+        });
+
         const formData = {
             email: username,
             password: password
-        }
-        axios.post('http://localhost:5000/api/users/login', formData)
-            .then((res) => {
-                store.dispatch({type: 'SET_EMAIL', payload: username})
-                navigate('/dashboard')
-            })
-            .catch((error) => {
-                if (error.response) setError(error.response.data);
-            })
-    }
+        };
+        
+        instance.post('/auth/login', qs.stringify(formData)).then((res) => {
+            console.log(`res: ${util.inspect(res)}`);
+            const accessToken = res.data.accessToken;
+            const refreshToken = res.data.refreshToken;
+
+            // set tokens in local storage to the returned jwts
+            setAuthToken(accessToken); // auth context provider
+            setRefreshToken(refreshToken); // auth context provider
+            localStorage.setItem('authToken', accessToken); // for browser
+            localStorage.setItem('refreshToken', refreshToken); // for browser
+
+            // Redirect to the dashboard because the user is logged in
+            store.dispatch({type: 'SET_EMAIL', payload: username}) // fix-routes carried in from merge with redux
+            navigate('/dashboard');
+        })
+        .catch((error) => {
+            if (error) setError({ message: error.response.data });
+        });
+    };
+
     return (
         <form onSubmit={onSubmit}>
             <MDBContainer fluid className="p-3 my-5 h-custom">
@@ -48,11 +74,6 @@ const Login = () => {
                         <div className="d-flex flex-row align-items-center justify-content-center">
 
                             <p className="lead fw-normal mb-0 me-3">Sign in with</p>
-                            {/*     
-                <MDBBtn floating size='md' tag='a' className='me-2'>
-                  <MDBIcon fab icon='facebook-f' />
-                </MDBBtn>
-     */}
                             <a href="http://localhost:5000/auth/google">
                                 <MDBBtn floating size='md' tag='a' className='me-2'>
                                     <MDBIcon fab icon='google' />
@@ -81,14 +102,9 @@ const Login = () => {
                             <MDBBtn className="mb-0 px-5" size='lg'>Login</MDBBtn>
                             <p className="small fw-bold mt-2 pt-1 mb-2">Don't have an account? <Link to="/register" className="link-danger">Register</Link></p>
                         </div>
-
                     </MDBCol>
-
                 </MDBRow>
-
             </MDBContainer>
         </form>
     );
-}
-
-export default Login
+};

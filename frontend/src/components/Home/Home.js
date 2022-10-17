@@ -5,13 +5,11 @@ import '../../App.css';
 export default function Home() {
   let navigate = useNavigate(); 
   const routeToRegister = () =>{ 
-    let path = '/register'; 
-    navigate(path);
+    navigate('/register');
   }
 
   const routeToLogin = () => {
-    let path = '/login'
-    navigate(path)
+    navigate('/login')
   }
   return (
     

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react';
-import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBTypography, MDBSwitch } from 'mdb-react-ui-kit';
-import axios from 'axios'
+import { useAuth } from '../auth/auth'
+import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBSwitch, MDBTypography } from 'mdb-react-ui-kit'
 import './register.css'
+import axios from 'axios'
+import qs from 'qs' // needed for axios post to work properly
+import util from 'util'
 import store from '../../state/store'
 
 const Register = () => {
@@ -14,28 +16,47 @@ const Register = () => {
   const [error, setError] = useState('')
   const [usernameError, setUserNameError] = useState('')
   const [isTrainer, setIsTrainer] = useState(false)
+  const { setAuthToken, setRefreshToken } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (event) => {
-    event.preventDefault();
-    let formData = {
-      name: username,
-      email: email,
-      password: password,
-      confirmpassword: confirmPassword,
-      role: isTrainer
-    }
-    console.log(formData)
-    //axios request
-    axios.post('http://localhost:5000/api/users/register', formData)
-      .then((res) =>  {
-        store.dispatch({type: 'SET_EMAIL', payload: email})
-        navigate('/dashboard')
-      })
-      .catch((error) => {
-        if (error.response)
-          setError(error.response.data);
-      })
+      event.preventDefault();
+      
+      const headers = {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      const instance = axios.create({
+          baseURL: 'http://localhost:5000',
+          withCredentials: true,
+          headers: headers
+      });
+
+      const formData = {
+          name: username,
+          email: email,
+          password: password,
+          confirmpassword: confirmPassword
+      }    
+      
+      instance.post('/auth/register', qs.stringify(formData))
+        .then((res) => {
+          console.log(`res: ${util.inspect(res)}`);
+          const accessToken = res.data.accessToken;
+          const refreshToken = res.data.refreshToken;
+
+          // set tokens in local storage and AuthContext.Provider to the returned jwts
+          localStorage.setItem('authToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          setAuthToken(accessToken); // AuthContext.Provider
+          setRefreshToken(refreshToken); // AuthContext.Provider
+
+          // Redirect to the dashboard because the user is logged in
+          store.dispatch({type: 'SET_EMAIL', payload: email}) // fix-routes carried in from merge with redux
+          navigate('/dashboard');
+        })
+        .catch((error) => {
+          if (error) setError({ message: error.response.data });
+        });
 
   }
 
@@ -68,18 +89,7 @@ const Register = () => {
       setUserNameError(true)
     }
   }
-
-  // useEffect(() => {
-  //   let warning = document.getElementById("danger-text");
-  //   if (confirmPassword !== password) {
-  //     warning.display = "block"
-  //   }
-  //   else{
-  //     warning.display = "none"
-  //   }
-  // }, [confirmPassword, password])
-
-
+  
   return (
     <form onSubmit={onSubmit}>
       <MDBContainer fluid>

@@ -3,7 +3,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const passport = require('passport');
-const session = require('express-session');
 const connectDB = require("./DB/connectDB");
 
 // Load config
@@ -22,20 +21,16 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+    origin: [ 'http://localhost:3000', 'http://10.20.218.232:3000' ],
+	credentials: true
+}));
 
-// Sessions for google auth
-app.use(
-    session({
-        secret: 'doesnt matter',
-        resave: false,
-        saveUninitialized: false
-    })
-);
+// Connect mongoos to the DB
+connectDB.createMongooseConnection();
 
 // Passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
 app.use('/', require('./Routes/index'));
@@ -43,12 +38,6 @@ app.use('/auth', require('./Routes/auth'));
 app.use('/api/users', require('./Routes/routes'))
 app.use('/api/users/profile', require('./Routes/profile'))
 app.use('/api/trainer', require('./Routes/trainer'))
-
-app.get('/',(req, res)=>{
-    res.send("App is now running")
-});
-
-connectDB();
 
 app.listen(PORT, () => {
     console.log(`Your app is listening on http://localhost:${PORT}`);

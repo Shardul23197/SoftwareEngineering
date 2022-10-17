@@ -1,28 +1,25 @@
-import React,{useState, useEffect} from 'react'
-import { useNavigate, useLocation} from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from "react-router-dom";
 import '../../App.css'; 
 import Alert from 'react-bootstrap/Alert';
 import Pagination from '../Pagination';
-import {Paper, AppBar, TextField, Button} from '@material-ui/core';
+import { Paper, AppBar, TextField, Button } from '@material-ui/core';
 import ChipInput from 'material-ui-chip-input';
 import useStyles from './styles'
 import axios from 'axios'
+import { useAuth } from '../auth/auth'
 import { useSelector } from 'react-redux';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import {getWorkoutsBySearch} from '../../actions/workouts'
 import { useDispatch } from 'react-redux';
-function useQuery(){
-  return new URLSearchParams(useLocation.search);
-} 
 
 
 export default function Dashboard() {
-  const query=useQuery();
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
-  //const history=useHistory();
-  const page=query.get('page')||1;
-  const searchQuery=query.get('searchQuery');
+  const page=searchParams.get('page')||1;
+  const searchQuery=searchParams.get('searchQuery');
   const classes = useStyles();
   const [search,setSearch]=useState('');
   const [tags,setTags]=useState([]);
@@ -30,6 +27,10 @@ export default function Dashboard() {
   const selector = useSelector(state => state.email)
   const [data, setData] = useState(selector)
   const [role, setRole] = useState('')
+
+  // Auth token and refresh token state
+  const existingAuthtoken = localStorage.getItem('authToken') || '';
+  const [authToken, setAuthtoken] = useState(existingAuthtoken);
 
 
   const searchWorkout=()=>{
@@ -63,11 +64,38 @@ export default function Dashboard() {
         if (error.response)
           console.log(error.response.data);
       })
-  }, [selector, role])
+  }, [selector, role, navigate, data]);
 
   const navigateToProfile = () => {
     navigate('/profile')
-  }
+  };
+
+  /* When the user clicks log out, send post to {backend base url}/auth/logout
+   * and remove authToken and refreshToken from local storage.
+   */
+  const onLogout = (event) => {
+      const headers = {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      const instance = axios.create({
+          baseURL: 'http://localhost:5000',
+          withCredentials: true,
+          headers: headers
+      });
+      
+      instance.post('/auth/logout', {}).then((res) => {
+          // set token in local storage to the returned jwt
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          
+          // Redirect to the dashboard because the user is logged in
+          navigate('/');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
 
   return (
@@ -130,7 +158,7 @@ export default function Dashboard() {
 
             <DropdownButton id="dropdown-basic-button" title="Profile">
               <Dropdown.Item onClick={navigateToProfile} >Settings</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Logout</Dropdown.Item>
+              <Dropdown.Item onClick={onLogout}>Logout</Dropdown.Item>
             </DropdownButton>
 
           </div>
