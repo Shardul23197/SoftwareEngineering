@@ -35,8 +35,8 @@ const PrivateRoute = ({ children }) => {
     };
 
     useEffect(() => {
-        // console.log(`authToken: ${searchParams.get('authToken')}`);
-        // console.log(`refreshToken: ${searchParams.get('refreshToken')}`);
+        console.log(`PriveteRoute-authToken: ${searchParams.get('authToken')}`);
+        console.log(`PriveteRoute-refreshToken: ${searchParams.get('refreshToken')}`);
 
         // Set the auth and refresh tokens for local storage, state, and AuthContext
         if (!existingAuthtoken) {

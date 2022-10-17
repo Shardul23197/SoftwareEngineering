@@ -49,6 +49,8 @@ export default function Login() {
             // set tokens in local storage to the returned jwts
             setAuthToken(accessToken); // auth context provider
             setRefreshToken(refreshToken); // auth context provider
+            localStorage.setItem('authToken', accessToken); // for browser
+            localStorage.setItem('refreshToken', refreshToken); // for browser
 
             // Redirect to the dashboard because the user is logged in
             store.dispatch({type: 'SET_EMAIL', payload: username}) // fix-routes carried in from merge with redux
