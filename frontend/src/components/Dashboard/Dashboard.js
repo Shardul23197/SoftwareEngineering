@@ -11,16 +11,13 @@ import { useAuth } from '../auth/auth'
 import { useSelector } from 'react-redux';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
-
-// function useQuery(){
-//   return new URLSearchParams(useLocation.search);
-// } 
+import {getWorkoutsBySearch} from '../../actions/workouts'
+import { useDispatch } from 'react-redux';
 
 
 export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
-  // const query=useQuery();
-  //const history=useHistory();
+  const dispatch = useDispatch();
   const page=searchParams.get('page')||1;
   const searchQuery=searchParams.get('searchQuery');
   const classes = useStyles();
@@ -39,6 +36,7 @@ export default function Dashboard() {
   const searchWorkout=()=>{
     if(search.trim()){
       //dispatch->fetch workout
+      dispatch(getWorkoutsBySearch({ search, tags: tags.join(',') }));
     }
     else{
       navigate('/');

@@ -3,11 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const passport = require('passport');
-// const session = require('express-session');
-// const session = require('cookie-session');
-const flash = require('connect-flash');
 const connectDB = require("./DB/connectDB");
-const MongoStore = require("connect-mongo");
 
 // Load config
 dotenv.config({ path: "./config/.env" });
@@ -30,7 +26,7 @@ app.use(cors({
 	credentials: true
 }));
 
-// Connect mongoost to the DB
+// Connect mongoos to the DB
 connectDB.createMongooseConnection();
 
 // Passport middleware
