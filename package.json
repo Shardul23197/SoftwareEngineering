@@ -1,6 +1,6 @@
 {
   "name": "fitocity-backend",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "This package deals with the backend functionality of the project",
   "scripts": {
     "start": "nodemon server",
