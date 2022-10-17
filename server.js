@@ -44,6 +44,10 @@ app.use('/api/users', require('./Routes/routes'))
 app.use('/api/users/profile', require('./Routes/profile'))
 app.use('/api/trainer', require('./Routes/trainer'))
 
+app.get('/',(req, res)=>{
+    res.send("App is now running")
+});
+
 connectDB();
 
 app.listen(PORT, () => {
