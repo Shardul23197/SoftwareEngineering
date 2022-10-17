@@ -41,11 +41,15 @@ if (!isDev && cluster.isMaster) {
     app.use(passport.initialize()); // Passport middleware
 
     // Routes
-    app.use('/', require(path.resolve(__dirname, './Routes/index')));
+    // app.use('/', require(path.resolve(__dirname, './Routes/index')));
     app.use('/auth', require(path.resolve(__dirname, './Routes/auth')));
     app.use('/api/users', require(path.resolve(__dirname, './Routes/routes')));
     app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
     app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
+
+    app.get('*', function(request, response) {
+        response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+    });
 
     app.listen(PORT, () => {
         console.log(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: ` + 
