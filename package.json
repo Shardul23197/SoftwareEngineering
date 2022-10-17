@@ -12,6 +12,10 @@
     "type": "git",
     "url": "https://github.iu.edu/sdabhane/SEGroup4Fitocity"
   },
+  "engines": {
+    "node": "18.9.1",
+    "npm": "8.19.2"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
