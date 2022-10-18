@@ -82,7 +82,7 @@ module.exports = (passport) => {
         new GoogleStrategy({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'https://fitocity.herokuapp.com/auth/google/callback'
+            callbackURL: 'http://localhost:5000/auth/google/callback'
         },
         async (accessToken, refreshToken, profile, done) => {
             // console.log(`passport-google profile ${JSON.stringify(profile)}`);
@@ -99,16 +99,15 @@ module.exports = (passport) => {
                         else {
                             // Create a User 
                             let newUser = new User({
-                                googleId: googleId,
+                                name: `${profile.name.givenName} ${profile.name.familyName}`,
                                 email: profile.emails[0].value,
-                                displayName: profile.displayName,
-                                firstName: profile.name.givenName,
-                                lastName: profile.name.familyName,
-                                image: profile.photos[0].value
+                                password: googleId, // required but will never be used
+                                googleId: googleId,
+                                googleDisplayName: profile.displayName,
                             });
 
                             // Save the new User then return it
-                            await user
+                            await newUser
                                 .save()
                                 .then((userDoc) => {
                                     done(null, userDoc);

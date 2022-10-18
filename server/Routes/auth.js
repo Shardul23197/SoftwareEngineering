@@ -68,12 +68,12 @@ router.get('/google/callback',
             'google', 
             { 
                 scope: ['profile', 'email'], 
-                failureRedirect:'https://fitocity.herokuapp.com/login' 
+                failureRedirect:'http://localhost:3000/login' 
             },
             async (err, user) => {
                 // console.log(`/google/callback user ${JSON.stringify(user)}`);
                 if (err) 
-                    res.redirect('https://fitocity.herokuapp.com/login');
+                    res.redirect('http://localhost:3000/login');
                 else {
 
                     // Get a refresh token and access token for the user
@@ -81,7 +81,7 @@ router.get('/google/callback',
                         // console.log(`getRefreshToken-cb err ${err}`);
                         // console.log(`getRefreshToken-cb refreshTokenObj ${JSON.stringify(refreshTokenObj)}`);
                         if (err) {
-                            res.redirect('https://fitocity.herokuapp.com/login');
+                            res.redirect('http://localhost:3000/login');
                         }
                         else {
                             const refreshToken = refreshTokenObj.refreshToken;
@@ -89,7 +89,7 @@ router.get('/google/callback',
                             // Return the tokens
                             let dashboardUrl = url.format({
                                 protocol: 'http',
-                                host: 'fitocity.herokuapp.com',
+                                host: 'localhost:3000',
                                 pathname: '/dashboard',
                                 query: {
                                     authToken: accessToken,

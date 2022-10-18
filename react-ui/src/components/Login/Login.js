@@ -31,7 +31,7 @@ export default function Login() {
             'Content-Type': 'application/x-www-form-urlencoded'
         };
         const instance = axios.create({
-            baseURL: 'https://fitocity.herokuapp.com',
+            baseURL: 'http://localhost:5000',
             withCredentials: true,
             headers: headers
         });
@@ -74,7 +74,7 @@ export default function Login() {
                         <div className="d-flex flex-row align-items-center justify-content-center">
 
                             <p className="lead fw-normal mb-0 me-3">Sign in with</p>
-                            <a href="https://fitocity.herokuapp.com/auth/google">
+                            <a href="http://localhost:5000/auth/google">
                                 <MDBBtn floating size='md' tag='a' className='me-2'>
                                     <MDBIcon fab icon='google' />
                                 </MDBBtn>
