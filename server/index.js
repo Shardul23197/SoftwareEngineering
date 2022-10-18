@@ -33,7 +33,7 @@ if (!isDev && cluster.isMaster) {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
     app.use(cors({
-        origin: [ 'http://fitocity.herokuapp.com' ],
+        origin: [ 'https://fitocity.herokuapp.com' ],
         credentials: true
     }));
 
