@@ -10,7 +10,7 @@ require('./config/passport')(passport); // Passport config
 // Multi-process to utilize all CPU cores.
 const cluster = require('cluster');
 const numCPUs = 1;//require('os').cpus().length;
-const isDev = process.env.NODE_ENV !== 'production';
+const isDev = process.env.NODE_ENV !== 'prod';
 if (!isDev && cluster.isMaster) {
     console.error(`Node cluster master ${process.pid} is running`);
   
@@ -26,7 +26,7 @@ if (!isDev && cluster.isMaster) {
     const app = express();
 
     // If the app is in development use Morgan to log requests to the app
-    if (process.env.NODE_ENV === 'development')
+    if (process.env.NODE_ENV === 'dev')
         app.use(morgan('dev'));
 
     app.use(express.json());

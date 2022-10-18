@@ -4,7 +4,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('../models/User');
-const GoogleUser = require('../models/GoogleUser');
 const util = require('util');
 
 module.exports = (passport) => {
@@ -89,17 +88,17 @@ module.exports = (passport) => {
             // console.log(`passport-google profile ${JSON.stringify(profile)}`);
             let googleId = profile.id;
             try {
-                // Try to find a googleuser in the DB by their googleID
-                await GoogleUser.findOne({ googleId: googleId }).exec()
-                    .then(async (googleUser) => {
-                        // console.log(`passport-google googleUser ${JSON.stringify(googleUser)}`);
-                        // If a googleUser was found return it 
-                        if (googleUser) {
-                            done(null, googleUser);
+                // Try to find a user in the DB by their googleID
+                await User.findOne({ googleId: googleId }).exec()
+                    .then(async (user) => {
+                        // console.log(`passport-google User ${JSON.stringify(user)}`);
+                        // If a User was found return it 
+                        if (user) {
+                            done(null, user);
                         }
                         else {
-                            // Create a googleUser 
-                            let googleUser = new GoogleUser({
+                            // Create a User 
+                            let newUser = new User({
                                 googleId: googleId,
                                 email: profile.emails[0].value,
                                 displayName: profile.displayName,
@@ -108,11 +107,11 @@ module.exports = (passport) => {
                                 image: profile.photos[0].value
                             });
 
-                            // Save the new GoogleUser then return it
-                            await googleUser
+                            // Save the new User then return it
+                            await user
                                 .save()
-                                .then((googleUserDoc) => {
-                                    done(null, googleUserDoc);
+                                .then((userDoc) => {
+                                    done(null, userDoc);
                                 })
                                 .catch(err => { 
                                     done(err);
