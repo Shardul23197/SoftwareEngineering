@@ -56,7 +56,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     setData(selector)
-    axios.get('http://arcane-oasis-13539.herokuapp.com/api/users/getrole', { params: { email: data } })
+    axios.get('http://fitocity.herokuapp.com/api/users/getrole', { params: { email: data } })
       .then((res) => {
         setRole(res.data.role)
       })
@@ -79,7 +79,7 @@ export default function Dashboard() {
           'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'http://arcane-oasis-13539.herokuapp.com',
+          baseURL: 'http://fitocity.herokuapp.com',
           withCredentials: true,
           headers: headers
       });

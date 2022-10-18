@@ -26,7 +26,7 @@ const Register = () => {
           'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'http://arcane-oasis-13539.herokuapp.com',
+          baseURL: 'http://fitocity.herokuapp.com',
           withCredentials: true,
           headers: headers
       });
@@ -135,7 +135,7 @@ const Register = () => {
                   <MDBTypography id="danger-text" note noteColor='danger'>
                     <strong>Invalid username</strong>
                   </MDBTypography> : ""}
-                  <MDBBtn floating size='md' tag='a' href='http://arcane-oasis-13539.herokuapp.com/auth/google' className='me-2'>
+                  <MDBBtn floating size='md' tag='a' href='http://fitocity.herokuapp.com/auth/google' className='me-2'>
                     <MDBIcon fab icon='google' />
                   </MDBBtn>
                 <MDBBtn className='mb-4 register' size='lg' disabled={(confirmPassword !== password) || !username || !email ? true : false} >Register</MDBBtn>

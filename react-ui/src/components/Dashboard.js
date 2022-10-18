@@ -36,7 +36,7 @@ export default function Dashboard() {
           'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'http://arcane-oasis-13539.herokuapp.com',
+          baseURL: 'http://fitocity.herokuapp.com',
           withCredentials: true,
           headers: headers
       });
