@@ -9,7 +9,7 @@ require('./config/passport')(passport); // Passport config
 
 // Multi-process to utilize all CPU cores.
 const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
+const numCPUs = 1;//require('os').cpus().length;
 const isDev = process.env.NODE_ENV !== 'production';
 if (!isDev && cluster.isMaster) {
     console.error(`Node cluster master ${process.pid} is running`);
@@ -31,8 +31,9 @@ if (!isDev && cluster.isMaster) {
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
     app.use(cors({
-        origin: [ 'http://localhost:3000', 'http://10.20.218.232:3000' ],
+        origin: [ 'http://localhost:3000' ],
         credentials: true
     }));
 
@@ -47,8 +48,9 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
     app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
 
-    app.get('*', function(request, response) {
-        response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+    app.get('*', function(req, res) {
+        console.log(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+        res.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
     });
 
     app.listen(PORT, () => {
