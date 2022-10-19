@@ -32,7 +32,7 @@ export default function Profile() {
   //get user data
   useEffect(() => {
     setDataFromState(selector)
-    axios.get('https://fitocity.herokuapp.comkuapp.comkuapp.com/api/users/profile/getdetails', { params: { email: dataFromState } })
+    axios.get('https://localhost:5000/api/users/profile/getdetails', { params: { email: dataFromState } })
       .then((res) => {
         setUserEmail(res.data.data.email)
         setUserCity(res.data.data.city)
