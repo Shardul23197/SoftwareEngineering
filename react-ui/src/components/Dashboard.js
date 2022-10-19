@@ -36,7 +36,7 @@ export default function Dashboard() {
           'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'http://localhost:5000',
+          baseURL: 'htttp://fitocity.herokuapp.com',
           withCredentials: true,
           headers: headers
       });
