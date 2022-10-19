@@ -88,7 +88,7 @@ router.get('/google/callback',
                             const accessToken = refreshTokenObj.accessToken;
                             // Return the tokens
                             let dashboardUrl = url.format({
-                                protocol: 'http',
+                                protocol: 'https',
                                 host: 'fitocity.herokuapp.com',
                                 pathname: '/dashboard',
                                 query: {
