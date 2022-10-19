@@ -15,7 +15,7 @@ const UserSchema = new Schema({
     },
     email: {
         type: String,
-        // unique: true
+        unique: true,
         required: true
     },
     password: {
@@ -23,13 +23,11 @@ const UserSchema = new Schema({
         required: true
     },
     googleId: {
-        type: String
-        // required: true,
-        // unique: true
+        type: String,
+        unique: true
     },
     googleDisplayName: {
         type: String
-        // required: true
     },
     role: {
       type: String,
