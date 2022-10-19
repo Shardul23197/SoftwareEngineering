@@ -9,13 +9,14 @@ require('./config/passport')(passport); // Passport config
 
 // Multi-process to utilize all CPU cores.
 const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
+const NUM_CPUS = require('os').cpus().length;
 const isDev = process.env.NODE_ENV !== 'prod';
 if (!isDev && cluster.isMaster) {
     console.error(`Node cluster master ${process.pid} is running`);
   
     // Fork workers.
-    for (let i = 0; i < numCPUs; i++) 
+    console.log(`NUM_CPUS: ${NUM_CPUS}`);
+    for (let i = 0; i < NUM_CPUS; i++) 
         cluster.fork();
   
     cluster.on('exit', (worker, code, signal) => {

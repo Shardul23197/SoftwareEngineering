@@ -8,4 +8,6 @@
 4) Replace instances of `http://localhost:3000` with `https://fitocity.herokuapp.com` (don't replace in `README.md`)
 5) Replace instances of `http://localhost:5000` with `https://fitocity.herokuapp.com` (don't replace in `README.md`)
 6) Create a new commit
-7) Run `git push heroku prod:main`
+7) Run `git push heroku prod:main` (this assumes you have a remote pointing to the fitocity heroku repo, see bolow image)
+
+   ![1666186503496](image/README/1666186503496.png)
