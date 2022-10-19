@@ -10,18 +10,22 @@ import util from 'util'
 import store from '../../state/store'
 
 export default function Login() {
-    const [username, setUserName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { setAuthToken, setRefreshToken } = useAuth();
     const navigate = useNavigate();
 
-    const onUsernameChange = (event) => {
-      setUserName(event.target.value)
+    const onEmailChange = (event) => {
+      setEmail(event.target.value)
     }
 
     const onPasswordChange = (event) => {
       setPassword(event.target.value)
+    }
+
+    const emailValidation = (event) => {
+      setError(!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i).test(email));
     }
 
     const onSubmit = (event) => {
@@ -37,7 +41,7 @@ export default function Login() {
         });
 
         const formData = {
-            email: username,
+            email: email,
             password: password
         };
         
@@ -53,7 +57,7 @@ export default function Login() {
             localStorage.setItem('refreshToken', refreshToken); // for browser
 
             // Redirect to the dashboard because the user is logged in
-            store.dispatch({type: 'SET_EMAIL', payload: username}) // fix-routes carried in from merge with redux
+            store.dispatch({type: 'SET_EMAIL', payload: email})
             navigate('/dashboard');
         })
         .catch((error) => {
@@ -87,16 +91,16 @@ export default function Login() {
                             <p className="text-center fw-bold mx-3 mb-0">Or</p>
                         </div>
 
-                        <MDBInput wrapperClass='mb-4' label='Email address' id='formControlLg' value={username} onChange={onUsernameChange} type='email' size="lg" />
+                        <MDBInput wrapperClass='mb-4' label='Email address' id='formControlLg' value={email} onBlur={emailValidation}   onChange={onEmailChange} type='email' size="lg" />
                         <MDBInput wrapperClass='mb-4' label='Password' value={password} onChange={onPasswordChange} id='formControlLg' type='password' size="lg" />
 
                         <div className="d-flex justify-content-between mb-4">
                             <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
                             <a href="!#">Forgot password?</a>
                         </div>
-                        {error !== '' ?
+                        {error ?
                             <MDBTypography id="danger-text" note noteColor='danger'>
-                                <strong>{error.message}</strong>
+                                <strong>Invalid email</strong>
                             </MDBTypography> : ""}
                         <div className='text-center text-md-start mt-4 pt-2'>
                             <MDBBtn className="mb-0 px-5" size='lg'>Login</MDBBtn>
