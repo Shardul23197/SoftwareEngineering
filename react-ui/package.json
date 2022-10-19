@@ -51,5 +51,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "htttp://fitocity.herokuapp.com"
+  "proxy": "https://fitocity.herokuapp.com"
 }

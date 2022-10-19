@@ -56,7 +56,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     setData(selector)
-    axios.get('htttp://fitocity.herokuapp.com/api/users/getrole', { params: { email: data } })
+    axios.get('https://fitocity.herokuapp.com/api/users/getrole', { params: { email: data } })
       .then((res) => {
         setRole(res.data.role)
       })
@@ -79,7 +79,7 @@ export default function Dashboard() {
           'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'htttp://fitocity.herokuapp.com',
+          baseURL: 'https://fitocity.herokuapp.com',
           withCredentials: true,
           headers: headers
       });

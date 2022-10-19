@@ -50,7 +50,7 @@ export default function Profile() {
           console.log(error.response.data);
       })
 
-    axios.get('htttp://fitocity.herokuapp.com/api/trainer/approvals', { params: { email: dataFromState } })
+    axios.get('https://fitocity.herokuapp.com/api/trainer/approvals', { params: { email: dataFromState } })
       .then((res) => {
         setStatus(res.data.status)
       }).catch((error) => {
@@ -67,7 +67,7 @@ export default function Profile() {
       city: userCity,
       email: userEmail
     }
-    axios.post('htttp://fitocity.herokuapp.com/api/users/profile/updatedetails', formData).then((res) => {
+    axios.post('https://fitocity.herokuapp.com/api/users/profile/updatedetails', formData).then((res) => {
       toast('Profile Updated!')
     }).catch((err) => {
       toast('Something went wrong!')
@@ -95,7 +95,7 @@ export default function Profile() {
     var imagefile = document.getElementById('customFile');
     formData.append("image", imagefile.files[0]);
     formData.append('email', userEmail)
-    axios.post('htttp://fitocity.herokuapp.com/api/users/profile/upload', formData).then((res) => {
+    axios.post('https://fitocity.herokuapp.com/api/users/profile/upload', formData).then((res) => {
       toast('Profile Updated!')
       setUserImage(res.data.data)
     }).catch((err) => {
@@ -113,7 +113,7 @@ export default function Profile() {
       email: userEmail,
       description: trainerDetails
     }
-    axios.post('htttp://fitocity.herokuapp.com/api/trainer/approval', formData).then((res) => {
+    axios.post('https://fitocity.herokuapp.com/api/trainer/approval', formData).then((res) => {
       toast('Thank you for submitting the form!')
       setStatus(res.data.status)
     }).catch((err) => {
