@@ -83,74 +83,206 @@ export default function Home() {
 
 
 
+<section className="home" id="home">
+        <div className="content">
+          <h1>About Fitocity</h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat.
+          </p>
+          <button className="button">Know More</button>
+        </div>
 
-<div className="conatiner">
-<div className="container-fluid">
-  <div className="text-center">
-    <h2>Pricing</h2>
-    <h4>Choose a payment plan that works for you</h4>
+        <div className="image">
+          <img
+            className="burger"
+            src="https://www.muscleandfitness.com/wp-content/uploads/2019/12/1109-Home-Gtm-Dumbbells-shutterstock_1132401518.jpg?quality=86&strip=all"
+          ></img>
+        </div>
+      </section>
+
+
+
+
+
+      <h1 className="demo-title my-4">
+  Our Prices<br/>
+  
+</h1>
+<div className="pricing-table">
+  <div className="ptable-item">
+    <div className="ptable-single">
+      <div className="ptable-header">
+        <div className="ptable-title">
+          <h2>Silver</h2>
+        </div>
+        <div className="ptable-price">
+          <h2><small>$</small>99<span>/ M</span></h2>
+        </div>
+      </div>
+      <div className="ptable-body">
+        <div className="ptable-description">
+          <ul>
+            <li>Pure HTML & CSS</li>
+            <li>Responsive Design</li>
+            <li>Well-commented Code</li>
+            <li>Easy to Use</li>
+          </ul>
+        </div>
+      </div>
+      <div className="ptable-footer">
+        <div className="ptable-action">
+          <a href="">Buy Now</a>
+        </div>
+      </div>
+    </div>
   </div>
-  <div className="row">
-    <div className="col-sm-4">
-      <div className="panel panel-default text-center">
-        <div className="panel-heading">
-          <h1>Basic</h1>
+
+  <div className="ptable-item featured-item">
+    <div className="ptable-single">
+      <div className="ptable-header">
+      
+        <div className="ptable-title">
+          <h2>Gold</h2>
         </div>
-        <div className="panel-body">
-          <p><strong>20</strong> Lorem</p>
-          <p><strong>15</strong> Ipsum</p>
-          <p><strong>5</strong> Dolor</p>
-          <p><strong>2</strong> Sit</p>
-          <p><strong>Endless</strong> Amet</p>
+        <div className="ptable-price">
+          <h2><small>$</small>199<span>/ M</span></h2>
         </div>
-        <div className="panel-footer">
-          <h3>$19</h3>
-          <h4>per month</h4>
-          <button className="btn btn-lg">Sign Up</button>
+      </div>
+      <div className="ptable-body">
+        <div className="ptable-description">
+          <ul>
+            <li>Pure HTML & CSS</li>
+            <li>Responsive Design</li>
+            <li>Well-commented Code</li>
+            <li>Easy to Use</li>
+          </ul>
+        </div>
+      </div>
+      <div className="ptable-footer">
+        <div className="ptable-action">
+          <a href="">Buy Now</a>
         </div>
       </div>
     </div>
-    <div className="col-sm-4">
-      <div className="panel panel-default text-center">
-        <div className="panel-heading">
-          <h1>Pro</h1>
+  </div>
+
+  <div className="ptable-item">
+    <div className="ptable-single">
+      <div className="ptable-header">
+        <div className="ptable-title">
+          <h2>Platinum</h2>
         </div>
-        <div className="panel-body">
-          <p><strong>50</strong> Lorem</p>
-          <p><strong>25</strong> Ipsum</p>
-          <p><strong>10</strong> Dolor</p>
-          <p><strong>5</strong> Sit</p>
-          <p><strong>Endless</strong> Amet</p>
-        </div>
-        <div className="panel-footer">
-          <h3>$29</h3>
-          <h4>per month</h4>
-          <button className="btn btn-lg">Sign Up</button>
+        <div className="ptable-price">
+          <h2><small>$</small>299<span>/ M</span></h2>
         </div>
       </div>
-    </div>
-   <div className="col-sm-4">
-      <div className="panel panel-default text-center">
-        <div className="panel-heading">
-          <h1>Premium</h1>
+      <div className="ptable-body">
+        <div className="ptable-description">
+          <ul>
+            <li>Pure HTML & CSS</li>
+            <li>Responsive Design</li>
+            <li>Well-commented Code</li>
+            <li>Easy to Use</li>
+          </ul>
         </div>
-        <div className="panel-body">
-          <p><strong>100</strong> Lorem</p>
-          <p><strong>50</strong> Ipsum</p>
-          <p><strong>25</strong> Dolor</p>
-          <p><strong>10</strong> Sit</p>
-          <p><strong>Endless</strong> Amet</p>
-        </div>
-        <div className="panel-footer">
-          <h3>$49</h3>
-          <h4>per month</h4>
-          <button className="btn btn-lg">Sign Up</button>
+      </div>
+      <div className="ptable-footer">
+        <div className="ptable-action">
+          <a href="">Buy Now</a>
         </div>
       </div>
     </div>
   </div>
 </div>
-</div>
+
+
+
+
+
+
+<section className="review" id="review">
+        <h2 className="special-head">
+          Our Customers <span>Reviews</span>
+        </h2>
+        <div className="container">
+          <div className="box">
+            <img src="https://static01.nyt.com/newsgraphics/2020/11/12/fake-people/4b806cf591a8a76adfc88d19e90c8c634345bf3d/fallbacks/mobile-03.jpg" />
+            <h3>Harry Williamson</h3>
+            <div className="stars">
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="far fa-star"></i>
+            </div>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+          </div>
+
+          <div className="box">
+            <img src="https://images.fastcompany.net/image/upload/w_596,c_limit,q_auto:best,f_auto/wp-cms/uploads/2019/02/5-create-fake-people-in-2-seconds-on-this-insane-site.jpg" />
+            <h3>Victoria Skyes</h3>
+            <div className="stars">
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="far fa-star"></i>
+            </div>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+          </div>
+
+          <div className="box">
+            <img src="https://media.istockphoto.com/photos/shot-of-a-handsome-young-man-standing-against-a-grey-background-picture-id1335941248?b=1&k=20&m=1335941248&s=170667a&w=0&h=sn_An6VRQBtK3BuHnG1w9UmhTzwTqM3xLnKcqLW-mzw=" />
+            <h3>Jarod Tonte</h3>
+            <div className="stars">
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="far fa-star"></i>
+            </div>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="order" id="order">
+        <h2 className="special-head">
+          <span>Contact</span> Us
+        </h2>
+
+        <div className="container">
+          <div className="order-img">
+            <img src="https://media.self.com/photos/58a34a76c29288190cbe7ba3/master/w_896,h_598,c_limit/Screen%20Shot%202017-02-14%20at%201.13.45%20PM.png" />
+          </div>
+          <div className="form">
+            <div className="input">
+              <input placeholder="Name:" />
+              <input placeholder="Email:" />
+
+              <input placeholder="Ph No:" />
+              <input placeholder="Comment:" />
+
+              <input className="button" placeholder="Send" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
 
 
 
