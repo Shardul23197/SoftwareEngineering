@@ -126,6 +126,37 @@ router.get('/getrole', (req, res) => {
   });
 });
 
+router.post('/resetpassword', (req, res) => {
+  const {email} = req.body.email;
+  const newData = {
+    password: ''
+  }
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(req.body.password, salt, (err, hash) => {
+      if (err) throw err;
+      newData.password = hash;
+    });
+  });
+  User.findOneAndUpdate({ email: email }, { $set: { password: newData.password} }, { new: true }, (err, doc) => {
+    if (err) {
+      return res.status(400).json({error: 'Something went wrong!'});
+    }
+    // Sign token
+    jwt.sign(
+      payload,
+      keys.secretOrKey,
+      {
+        expiresIn: 31556926 // 1 year in seconds
+      },
+      (err, token) => {
+        res.json({
+          success: true,
+          token: "Bearer " + token
+        });
+      }
+    );
+  })
+});
 module.exports = router;
 
 

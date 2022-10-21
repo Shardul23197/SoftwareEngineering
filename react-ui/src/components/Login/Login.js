@@ -92,7 +92,7 @@ export default function Login() {
 
                         <div className="d-flex justify-content-between mb-4">
                             <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
-                            <a href="!#">Forgot password?</a>
+                            <Link to="/forgotpassword">Forgot password?</Link>
                         </div>
                         {error !== '' ?
                             <MDBTypography id="danger-text" note noteColor='danger'>

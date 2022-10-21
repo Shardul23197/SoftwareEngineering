@@ -13,6 +13,8 @@ import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
+import ForgotPassword from './components/PasswordReset/ForgotPassword';
+import ResetPassword from './components/PasswordReset/ResetPassword';
 
 function App() {
     // Auth token and refresh token state
@@ -60,6 +62,16 @@ function App() {
                 <PrivateRoute>
                     <Profile />
                 </PrivateRoute>    
+            }/>
+            <Route path='/forgotpassword' element={
+                <UnauthenticatedRoute>
+                    <ForgotPassword/>
+                </UnauthenticatedRoute>    
+            }/>
+            <Route path='/resetpassword' element={
+                <UnauthenticatedRoute>
+                    <ResetPassword />
+                </UnauthenticatedRoute>    
             }/>
         </Routes>
         </BrowserRouter>
