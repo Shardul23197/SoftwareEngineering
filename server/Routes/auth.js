@@ -3,8 +3,11 @@ const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const url = require('url');
-const util = require('util');
+const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const util = require('util');
 
 // Makes a new RefreshToken for the user if there isn't
 // one in the database already
@@ -254,7 +257,7 @@ router.post('/logout',
 // @route POST /auth/register
 // @desc Register user
 // @access Public
-router.post("/register",
+router.post('/register',
     (req, res, next) => {
         passport.authenticate(
             'register',
@@ -293,7 +296,64 @@ router.post("/register",
     }
 );
 
-// router.post("/")
+router.post('/forgotPassword',
+    async (req, res, next) => {
+        // Get the email from the body
+        let email = req.body.email;
+        if (email === '')
+            res.status(400).send('Email required!');
+
+        let user = await User.findOne({ email: email });
+        // Check if user exists
+        if (!user) {
+            // Call passport's callback for error
+            res.status(400).send('Could not find the given email!');
+            next();
+        }
+
+        // Ensure the user is not a google user. If they are,
+        // send error stating they need to sign in w/ google
+        if (user.googleId) {
+            // Call passport's callback for error
+            res.status(400).send('Please sign in using your google account!');
+            next();
+        }
+
+        const token = crypto.randomBytes(20).toString('hex');
+        user.update({
+            resetPasswordToken: token,
+            resetPasswordExpires: Date.now() + 60 * 60 * 1000 // One hour in milliseconds
+        });
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: `${process.env.FORGOT_PASSWORD_EMAIL_ADDRESS}`,
+                pass: `${process.env.FORGOT_PASSWORD_EMAIL_PASSWORD}`
+            }
+        });
+
+        const mailOptions = {
+            from: `${process.env.FORGOT_PASSWORD_EMAIL_ADDRESS}`,
+            to: email,
+            subject: 'Link To Reset Password',
+            text:
+            'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
+            + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
+            + `http://localhost:3000/reset?token=${token}\n\n`
+            + 'If you did not request this, please ignore this email and your password will remain unchanged!\n',
+        };
+
+        transporter.sendMail(mailOptions, (err, response) => {
+            if (err) {
+                console.error(err);
+                next(err);
+            } else {
+                res.status(200).json('Recovery email sent!');
+                next();
+            }
+        });
+    }
+);
 
 module.exports = router;
 
