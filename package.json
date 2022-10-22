@@ -22,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^6.5.2",
+    "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
     "concurrently": "^7.4.0",
@@ -48,6 +49,7 @@
     "passport-custom": "^1.1.1",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
+    "sequelize": "^6.25.3",
     "validator": "^13.7.0"
   },
   "nodemonConfig": {

@@ -10,9 +10,9 @@ import util from 'util'
 import store from '../../state/store'
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [email, setEmail] = useState(''); // String
+    const [password, setPassword] = useState(''); // String
+    const [error, setError] = useState(''); // String
     const { setAuthToken, setRefreshToken } = useAuth();
     const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ export default function Login() {
     }
 
     const emailValidation = (event) => {
-      setError(!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i).test(email));
+      setError(!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i).test(email) ? 'Invalid email!' : '');
     }
 
     const onSubmit = (event) => {
@@ -61,7 +61,7 @@ export default function Login() {
             navigate('/dashboard');
         })
         .catch((error) => {
-            if (error) setError({ message: error.response.data });
+            if (error) setError(error.response.data);
         });
     };
 
@@ -100,7 +100,7 @@ export default function Login() {
                         </div>
                         {error ?
                             <MDBTypography id="danger-text" note noteColor='danger'>
-                                <strong>Invalid email</strong>
+                                <strong>{error}</strong>
                             </MDBTypography> : ""}
                         <div className='text-center text-md-start mt-4 pt-2'>
                             <MDBBtn className="mb-0 px-5" size='lg'>Login</MDBBtn>

@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Dashboard from './components/Dashboard/Dashboard';
 import Register from './components/Register/Register';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
-import RecoverPassword from './components/RecoverPassword/RecoverPassword';
+import ResetPassword from './components/ResetPassword/ResetPassword';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 import WorkoutDetails from './components/WorkoutDetails';
@@ -48,9 +48,9 @@ function App() {
                     <ForgotPassword />
                 </UnauthenticatedRoute>    
             }/>
-            <Route path='/recoverPassword' element={
+            <Route path='/resetPassword' element={
                 <UnauthenticatedRoute>
-                    <RecoverPassword />
+                    <ResetPassword />
                 </UnauthenticatedRoute>    
             }/>
             <Route path='/dashboard' element={
