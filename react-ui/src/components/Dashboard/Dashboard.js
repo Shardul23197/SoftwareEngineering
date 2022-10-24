@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import '../../App.css'; 
 import Alert from 'react-bootstrap/Alert';
 import Pagination from '../Pagination';
@@ -208,10 +208,10 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <a href="#">
+          <Link to="/profile">
             <i class='bx bx-coin-stack' ></i>
-            <span class="links_name" onClick={navigateToProfile}>Profile</span>
-          </a>
+            <span class="links_name">Profile</span>
+          </Link>
         </li>
         <li>
           <a href="#">
@@ -222,7 +222,7 @@ export default function Dashboard() {
         <li>
           <a href="#">
             <i class='bx bx-log-out'></i>
-            <span class="links_name" onClick={onLogout}>Log out</span>
+            <button class="links_name" onClick={onLogout}>Log out</button>
           </a>
         </li>
       </ul>

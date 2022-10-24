@@ -32,7 +32,7 @@ export default function Profile() {
   //get user data
   useEffect(() => {
     setDataFromState(selector)
-    axios.get('https://localhost:5000/api/users/profile/getdetails', { params: { email: dataFromState } })
+    axios.get('/api/users/profile/getdetails', { params: { email: dataFromState } })
       .then((res) => {
         setUserEmail(res.data.data.email)
         setUserCity(res.data.data.city)
@@ -50,7 +50,7 @@ export default function Profile() {
           console.log(error.response.data);
       })
 
-    axios.get('http://localhost:5000/api/trainer/approvals', { params: { email: dataFromState } })
+    axios.get('/api/trainer/approvals', { params: { email: dataFromState } })
       .then((res) => {
         setStatus(res.data.status)
       }).catch((error) => {
@@ -67,7 +67,7 @@ export default function Profile() {
       city: userCity,
       email: userEmail
     }
-    axios.post('http://localhost:5000/api/users/profile/updatedetails', formData).then((res) => {
+    axios.post('/api/users/profile/updatedetails', formData).then((res) => {
       toast('Profile Updated!')
     }).catch((err) => {
       toast('Something went wrong!')
@@ -95,9 +95,22 @@ export default function Profile() {
     var imagefile = document.getElementById('customFile');
     formData.append("image", imagefile.files[0]);
     formData.append('email', userEmail)
-    axios.post('http://localhost:5000/api/users/profile/upload', formData).then((res) => {
+    axios.post('/api/users/profile/upload', formData).then((res) => {
       toast('Profile Updated!')
       setUserImage(res.data.data)
+    }).catch((err) => {
+      toast('Something went wrong!')
+    })
+  }
+
+  const uploadVideo = (event) => {
+    var formData = new FormData();
+    var video = document.getElementById('video');
+    formData.append("video", video.files[0]);
+    formData.append('email', userEmail)
+    axios.post('/api/trainer/upload', formData).then((res) => {
+      toast('Profile Updated!')
+      //setUserImage(res.data.data)
     }).catch((err) => {
       toast('Something went wrong!')
     })
@@ -113,7 +126,7 @@ export default function Profile() {
       email: userEmail,
       description: trainerDetails
     }
-    axios.post('http://localhost:5000/api/trainer/approval', formData).then((res) => {
+    axios.post('/api/trainer/approval', formData).then((res) => {
       toast('Thank you for submitting the form!')
       setStatus(res.data.status)
     }).catch((err) => {
@@ -221,6 +234,9 @@ export default function Profile() {
                     </form>
                   </MDBCol>
                   : <h1>Your profile is under Review</h1>}
+                  <div>
+                  <MDBFile size='sm' id='video' onChange={uploadVideo} />
+                  </div>
               </MDBRow>
             </MDBCardBody>
           </MDBCard>
