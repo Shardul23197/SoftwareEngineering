@@ -3,7 +3,6 @@ const path = require("path");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const keys = require(path.resolve(__dirname, "../config/keys"));
 const passport = require("passport");
 const { ensureAuth, ensureGuest } = require('../middleware/auth');
 
@@ -42,7 +41,7 @@ router.post("/register", ensureGuest, (req, res) => {
         email: newUser.email,
         id: newUser._id
       })
-      newUser.profile = profile._id
+      newUser.profile = profile._id;
 
       // Hash password before saving in database
       bcrypt.genSalt(10, (err, salt) => {

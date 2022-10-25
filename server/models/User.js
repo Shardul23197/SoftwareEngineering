@@ -37,7 +37,13 @@ const UserSchema = new Schema({
     profile: {
       type: Schema.Types.ObjectId,
       ref: "userProfile"
-    }
+    },
+    resetPasswordToken: {
+        type: String
+    },
+    resetPasswordExpires: {
+        type: Number
+    },
 });
 
 // Prehook called before user is save to database. Hashes the password then
