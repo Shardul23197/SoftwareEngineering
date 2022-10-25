@@ -6,7 +6,7 @@ const url = require('url');
 const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
 const crypto = require('crypto');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const util = require('util');
 
@@ -38,9 +38,6 @@ const getRefreshToken = async (_id, email, done) => {
     const body = { _id: _id, email: email };
     const accessToken = jwt.sign(body, process.env.JWT_SECRET_KEY, { expiresIn: '20m'});
     const refreshToken = jwt.sign(body, process.env.JWT_REFRESH_KEY);
-    // console.log(`body: ${JSON.stringify(body)}`)
-    // console.log(`accessToken: ${accessToken}`)
-    // console.log(`refreshToken: ${accessToken}`)
 
     // Save the refreshToken and its associated info
     new RefreshToken({
@@ -327,7 +324,7 @@ router.post('/forgotPassword',
         const resetPasswordToken = crypto.randomBytes(20).toString('hex');
         await user.updateOne({
             resetPasswordToken: resetPasswordToken,
-            resetPasswordExpires: Date.now() //+ 60 * 60 * 1000 // One hour in milliseconds
+            resetPasswordExpires: Date.now() + 60 * 60 * 1000 // One hour in milliseconds
         });
 
         // Create a SMTP transporter to send mail to the user
