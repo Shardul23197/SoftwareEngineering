@@ -4,7 +4,6 @@ import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImag
 import './resetPassword.css'
 import axios from 'axios'
 import qs from 'qs' // needed for axios post to work properly
-import util from 'util'
 
   const ResetPassword = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,13 +84,7 @@ import util from 'util'
                       <strong>Password reset successfully! Click <Link to='/login'>here</Link> to log in!</strong>
                     </MDBTypography> : ""
                 }
-
               </MDBCol>
-
-              <MDBCol md='10' lg='6' className='order-1 order-lg-2 d-flex align-items-center'>
-                <MDBCardImage src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp' fluid />
-              </MDBCol>
-
             </MDBRow>
           </MDBCardBody>
         </MDBCard>

@@ -50,9 +50,6 @@ const ForgotPassword = () => {
         <MDBCard className='text-black m-5' style={{ borderRadius: '25px' }}>
           <MDBCardBody>
             <MDBCol>
-              {/* <MDBRow row='10' md='6' className='align-items-center'>
-                  <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" className="img-fluid" alt="Sample" />
-              </MDBRow> */}
               <MDBRow md='10' lg='6' className='order-2 order-lg-1 d-flex flex-column align-items-center'>
 
                 <p className="text-center h1 fw-bold mb-2 mx-1 mx-md-4 mt-4">Forgot your password?</p>

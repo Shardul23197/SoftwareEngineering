@@ -327,7 +327,7 @@ router.post('/forgotPassword',
         const resetPasswordToken = crypto.randomBytes(20).toString('hex');
         await user.updateOne({
             resetPasswordToken: resetPasswordToken,
-            resetPasswordExpires: Date.now() + 60 * 60 * 1000 // One hour in milliseconds
+            resetPasswordExpires: Date.now() //+ 60 * 60 * 1000 // One hour in milliseconds
         });
 
         // Create a SMTP transporter to send mail to the user
@@ -376,12 +376,10 @@ router.post('/resetPassword',
         if (resetPasswordToken === '')
             res.status(400).send('Password required!');
 
-        console.log(Date.now());
         // Search for the user by resetPasswordToken (and verify it is with
         // 1 hour of being issued)
         let u = await User.findOne({email:'dylanh.3006@gmail.com'}).then((u) => console.log(u))
-        console.log(resetPasswordToken);
-        console.log(Date.now());
+        
         let user = await User.findOne({ 
             resetPasswordToken: resetPasswordToken,
             resetPasswordExpires: {
