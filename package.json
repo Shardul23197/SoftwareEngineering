@@ -1,17 +1,23 @@
 {
   "name": "fitocity-backend",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "This package deals with the backend functionality of the project",
-  "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server",
+    "build": "cd react-ui/ && npm install --force && npm run build"
   },
   "repository": {
     "type": "git",
     "url": "https://github.iu.edu/sdabhane/SEGroup4Fitocity"
   },
+  "engines": {
+    "node": "18.9.1",
+    "npm": "8.19.2"
+  },
+  "cacheDirectories": [
+    "node_modules",
+    "react-ui/node_modules"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -24,6 +30,7 @@
     "connect-mongo": "^4.6.0",
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-openid-connect": "^2.8.0",
@@ -32,20 +39,24 @@
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongod": "^2.0.0",
+    "mongodb": "^4.10.0",
     "mongoose": "^6.6.3",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "node-2fa": "^2.0.3",
+    "node": "^18.11.0",
+    "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
     "passport": "^0.6.0",
     "passport-custom": "^1.1.1",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
+    "sequelize": "^6.25.3",
     "validator": "^13.7.0"
   },
   "nodemonConfig": {
     "ignore": [
-      "./frontend/*"
+      "./react-ui/*"
     ]
   }
 }
