@@ -22,10 +22,14 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    isEnrolledInDuo: {
+        type: Boolean,
+        required: false
+    },
     googleId: {
-        type: String
+        type: String,
         // required: true,
-        // unique: true
+        unique: true
     },
     googleDisplayName: {
         type: String

@@ -4,7 +4,13 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const url = require('url');
 const util = require('util');
+const duoConfig = require('../config/duoConfig');
+const { Client } = require('@duosecurity/duo_universal');
 const RefreshToken = require('../models/RefreshToken');
+
+// Duo client
+const { clientId, clientSecret, apiHost, redirectUrl } = duoConfig;
+const duoClient = new Client({ clientId, clientSecret, apiHost, redirectUrl });
 
 // Makes a new RefreshToken for the user if there isn't
 // one in the database already
@@ -127,20 +133,33 @@ router.post('/login',
                     const _id = user._id; // store the user's _id for easy access
                     const email = user.email; // store the user's eamil for easy access
 
-                    // Get a refresh token and access token for the user
-                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
-                        if (err)
-                            res.status(500).json(err);
-                        else {
-                            const refreshToken = refreshTokenObj.refreshToken;
-                            const accessToken = refreshTokenObj.accessToken;
-                            // Return the tokens
-                            res.status(200).json({
-                                accessToken,
-                                refreshToken
-                            });
-                        }
-                    });
+
+                    if (user.isEnrolledInDuo ) {
+                        // Get a refresh token and access token for the user
+                        getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                            if (err)
+                                res.status(500).json(err);
+                            else {
+                                const refreshToken = refreshTokenObj.refreshToken;
+                                const accessToken = refreshTokenObj.accessToken;
+                                // Return the tokens
+                                res.status(200).json({
+                                    accessToken,
+                                    refreshToken
+                                });
+                            }
+                        });
+
+                    }
+                    else {
+                        await duoClient.healthCheck();
+                        const state = duoClient.generateState();
+                        console.log(`state: ${JSON.stringify(state)}`);
+                        req.session.duo = state;
+                        console.log(`req.session.duo: ${JSON.stringify(req.session.duo)}`);
+                        const url = duoClient.createAuthUrl(email, state); // username: email
+                        res.redirect(302, url);
+                    }
                 } catch (err) {
                     res.status(500).json('Could not issue JWT!');
                 }

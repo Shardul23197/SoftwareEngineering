@@ -66,7 +66,8 @@ module.exports = (passport) => {
                     username: req.body.username,
                     name: req.body.name,
                     email: email,
-                    password: req.body.password
+                    password: req.body.password,
+                    isEnrolledInDuo: true
                 }).save()
                     .then((doc) => {
                         done(null, doc);

@@ -1,13 +1,10 @@
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const passport = require('passport');
-// const session = require('express-session');
-// const session = require('cookie-session');
-const flash = require('connect-flash');
 const connectDB = require("./DB/connectDB");
-const MongoStore = require("connect-mongo");
 
 // Load config
 dotenv.config({ path: "./config/.env" });
@@ -23,10 +20,13 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
+// For Duo 2fa
+app.use(session({ secret: 'super-secret-phrase', resave: false, saveUninitialized: true }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: [ 'http://localhost:3000', 'http://10.20.218.232:3000' ],
+    origin: [ 'http://localhost:3000' ],
 	credentials: true
 }));
 
@@ -37,7 +37,6 @@ connectDB.createMongooseConnection();
 app.use(passport.initialize());
 
 // Routes
-app.use('/', require('./Routes/index'));
 app.use('/auth', require('./Routes/auth'));
 app.use('/api/users', require('./Routes/routes'))
 app.use('/api/users/profile', require('./Routes/profile'))

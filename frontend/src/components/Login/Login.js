@@ -49,15 +49,26 @@ export default function Login() {
             // set tokens in local storage to the returned jwts
             setAuthToken(accessToken); // auth context provider
             setRefreshToken(refreshToken); // auth context provider
+            
 
             // Redirect to the dashboard because the user is logged in
             store.dispatch({type: 'SET_EMAIL', payload: username}) // fix-routes carried in from merge with redux
-            navigate('/dashboard');
+            navigate('https://localhost:5000/auth/login');
         })
         .catch((error) => {
             if (error) setError({ message: error.response.data });
         });
     };
+
+    /**
+     * Generates a header to make a request to the Duo API. Details about
+     * the header can be found here: https://duo.com/docs/authapi#authentication
+     * @param method Uppercase HTTP method the request will use (i.e. post, get, etc.)
+     * @param method Uppercase HTTP method the request will use (i.e. post, get, etc.)
+     */
+    const generateDuoHeader = (method, host) => {
+        
+    }
 
     return (
         <form onSubmit={onSubmit}>
