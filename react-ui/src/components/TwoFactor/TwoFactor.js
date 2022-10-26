@@ -1,7 +1,7 @@
 import { React, useState } from 'react'
 import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox, MDBTypography } from 'mdb-react-ui-kit';
 import { Link } from 'react-router-dom'
-import './login.css'
+import './twoFactor.css'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/auth'
 import axios from 'axios'
@@ -9,7 +9,7 @@ import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
 import store from '../../state/store'
 
-export default function Login() {
+export default function TwoFactor() {
     const [email, setEmail] = useState(''); // String
     const [password, setPassword] = useState(''); // String
     const [error, setError] = useState(''); // String
@@ -49,8 +49,6 @@ export default function Login() {
             console.log(`res: ${util.inspect(res)}`);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
-            const tfaSetupRequired = res.data.tfaSetupRequired;
-
 
             // set tokens in local storage to the returned jwts
             setAuthToken(accessToken); // auth context provider
@@ -60,28 +58,12 @@ export default function Login() {
 
             // Redirect to the dashboard because the user is logged in
             store.dispatch({type: 'SET_EMAIL', payload: email})
-            
-            if (tfaSetupRequired) {
-                navigate('/profile');
-            }
-            else {
-                navigate('/twoFactor');
-            }
+            navigate('/dashboard');
         })
         .catch((error) => {
             if (error) setError(error.response.data);
         });
     };
-
-    /**
-     * Generates a header to make a request to the Duo API. Details about
-     * the header can be found here: https://duo.com/docs/authapi#authentication
-     * @param method Uppercase HTTP method the request will use (i.e. post, get, etc.)
-     * @param method Uppercase HTTP method the request will use (i.e. post, get, etc.)
-     */
-    const generateDuoHeader = (method, host) => {
-        
-    }
 
     return (
         <form onSubmit={onSubmit}>

@@ -8,6 +8,7 @@ import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login';
+import TwoFactor from './components/TwoFactor/TwoFactor';
 import WorkoutDetails from './components/WorkoutDetails';
 import Profile from './components/Profile/Profile';
 import PrivateRoute from './route_types/PrivateRoute';
@@ -37,6 +38,11 @@ function App() {
                 <UnauthenticatedRoute>
                     <Login />
                 </UnauthenticatedRoute>    
+            }/>
+            <Route path='/twoFactor' element={
+                <PrivateRoute>
+                    <TwoFactor />
+                </PrivateRoute>    
             }/>
             <Route path='/register' element={
                 <UnauthenticatedRoute>

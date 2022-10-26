@@ -12,10 +12,6 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const util = require('util');
 
-// Duo client
-const { clientId, clientSecret, apiHost, redirectUrl } = duoConfig;
-const duoClient = new Client({ clientId, clientSecret, apiHost, redirectUrl });
-
 // Makes a new RefreshToken for the user if there isn't
 // one in the database already
 const getRefreshToken = async (_id, email, done) => {
@@ -121,6 +117,61 @@ router.post('/login',
         // Authenticate the user using passport
         passport.authenticate('login', 
             async (err, user) => {
+                if (err)
+                    res.status(400).json(err);
+                    
+                try {
+                    // If the user isn't found log the error and return it
+                    if (err || !user)
+                        return next(err);
+
+                    const _id = user._id; // store the user's _id for easy access
+                    const email = user.email; // store the user's eamil for easy access
+                    const enrolled = user.enrolled;
+
+                    if (enrolled) {
+                        const refreshToken = null;
+                        const accessToken = null;
+                        const tfa = true;
+                        res.status(200).json({
+                            accessToken,
+                            refreshToken,
+                            tfa
+                        });
+                    }
+
+                    // Get a refresh token and access token for the user
+                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                        if (err)
+                            res.status(500).json(err);
+                        else {
+                            const refreshToken = refreshTokenObj.refreshToken;
+                            const accessToken = refreshTokenObj.accessToken;
+                            const tfaSetupRequired = false;
+                            // Return the tokens
+                            res.status(200).json({
+                                accessToken,
+                                refreshToken,
+                                tfaSetupRequired
+                            });
+                        }
+                    });
+                } catch (err) {
+                    res.status(500).json('Could not issue JWT!');
+                }
+            }
+        )(req, res, next);
+    }
+);
+
+// @route POST /auth/login
+// @desc begin passport custom auth process
+// @access Public
+router.post('/login/2fa', 
+    async (req, res, next) => {
+        // Authenticate the user using passport
+        passport.authenticate('login', 
+            async (err, user) => {
                 if (err) {
                     res.status(400).json(err);
                 }
@@ -135,32 +186,20 @@ router.post('/login',
                     const email = user.email; // store the user's eamil for easy access
 
 
-                    if (user.isEnrolledInDuo ) {
-                        // Get a refresh token and access token for the user
-                        getRefreshToken(_id, email, (err, refreshTokenObj) => {
-                            if (err)
-                                res.status(500).json(err);
-                            else {
-                                const refreshToken = refreshTokenObj.refreshToken;
-                                const accessToken = refreshTokenObj.accessToken;
-                                // Return the tokens
-                                res.status(200).json({
-                                    accessToken,
-                                    refreshToken
-                                });
-                            }
-                        });
-
-                    }
-                    else {
-                        await duoClient.healthCheck();
-                        const state = duoClient.generateState();
-                        console.log(`state: ${JSON.stringify(state)}`);
-                        req.session.duo = state;
-                        console.log(`req.session.duo: ${JSON.stringify(req.session.duo)}`);
-                        const url = duoClient.createAuthUrl(email, state); // username: email
-                        res.redirect(302, url);
-                    }
+                    // Get a refresh token and access token for the user
+                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                        if (err)
+                            res.status(500).json(err);
+                        else {
+                            const refreshToken = refreshTokenObj.refreshToken;
+                            const accessToken = refreshTokenObj.accessToken;
+                            // Return the tokens
+                            res.status(200).json({
+                                accessToken,
+                                refreshToken
+                            });
+                        }
+                    });
                 } catch (err) {
                     res.status(500).json('Could not issue JWT!');
                 }
@@ -424,6 +463,40 @@ router.post('/resetPassword',
 
 
 
+    }
+);
+
+router.get('/tfa/enroll',
+    async (req, res, next) => {
+        
+        // Get the access token from the header
+        const authHeader = req.headers.authorization;
+        const accessToken = authHeader.split(' ')[1];
+
+        // Verify the jwt with passport
+        passport.authenticate(
+            'jwt',
+            { session: false },
+            async (err, email) => {
+                let user = await User.findOne({ email: email });
+                // Check if user exists
+                if (!user) {
+                    // Call passport's callback for error
+                    res.status(400).send('Could not find the given email!');
+                    return;
+                }
+                
+                let enrolled = user.enrolled;
+                if (!enrolled) {
+                    let key = crypto.randomBytes(20);
+                    let otpUrl = 'otpauth://totp/' + email + '?secret=' + key + '&period=30';
+                    let qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
+                    
+                    // Return the tokens
+                    res.status(200).json({ qrImage });
+                }
+            }
+        )(req, res, next);
     }
 );
 

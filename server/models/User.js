@@ -22,10 +22,6 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    isEnrolledInDuo: {
-        type: Boolean,
-        required: false
-    },
     googleId: {
         type: String,
         unique: true
@@ -48,6 +44,10 @@ const UserSchema = new Schema({
     resetPasswordExpires: {
         type: Number
     },
+    enrolled: {
+        type: Boolean,
+        default: false
+    }
 });
 
 // Prehook called before user is save to database. Hashes the password then

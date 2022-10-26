@@ -125,6 +125,7 @@ module.exports = (passport) => {
         })
     );
 
+    // Returns the email associated with a user's authToken
     passport.use('jwt',
         new JwtStrategy(
         {
@@ -133,8 +134,8 @@ module.exports = (passport) => {
         },
         async (token, done) => {
             try {
-                // console.log(`jwt-strategy-token: ${JSON.stringify(token)}`);
-                return done(null, token.token);
+                console.log(`jwt-strategy-token: ${token.email}`);
+                return done(null, token.email);
             } catch (error) {
                 done(error);
             }

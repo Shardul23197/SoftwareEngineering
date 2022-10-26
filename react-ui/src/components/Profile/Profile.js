@@ -28,6 +28,10 @@ export default function Profile() {
   const [trainerDetails, setTrainerDetails] = useState('')
   const [status, setStatus] = useState('todo')
 
+  // Auth token and refresh token state
+  const existingAuthtoken = localStorage.getItem('authToken') || '';
+  const [authToken, setAuthtoken] = useState(existingAuthtoken);
+
   //todo
   //get user data
   useEffect(() => {
@@ -119,6 +123,27 @@ export default function Profile() {
     }).catch((err) => {
       toast('Something went wrong!')
     })
+  }
+
+  const enroll = (event) => {
+    event.preventDefault()
+
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
+    
+    instance.get('/auth/tfa/enroll', {}).then((res) => {
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   return (
@@ -221,6 +246,16 @@ export default function Profile() {
                     </form>
                   </MDBCol>
                   : <h1>Your profile is under Review</h1>}
+              </MDBRow>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBContainer><MDBContainer className="py-5">
+        <MDBCol lg="8">
+          <MDBCard className="mb-4">
+            <MDBCardBody>
+              <MDBRow>
+                <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
               </MDBRow>
             </MDBCardBody>
           </MDBCard>
