@@ -24,6 +24,7 @@ export default function Profile() {
   const [userPhone, setUserPhone] = useState('')
   const [userCity, setUserCity] = useState('')
   const [userImage, setUserImage] = useState('')
+  const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
   const [dataFromState, setDataFromState] = useState(selector)
   const [trainerDetails, setTrainerDetails] = useState('')
   const [status, setStatus] = useState('todo')
@@ -138,8 +139,8 @@ export default function Profile() {
         headers: headers
     });
     
-    instance.get('/auth/tfa/enroll', {}).then((res) => {
-      console.log(res.data);
+    instance.get('/auth/tfa/info', {}).then((res) => {
+      setMfaQrCodeUrl(res.data.qrImage)
     })
     .catch((error) => {
       console.error(error);
@@ -257,6 +258,34 @@ export default function Profile() {
               <MDBRow>
                 <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
               </MDBRow>
+              
+              <hr />
+              <MDBRow sm="8">
+                <MDBCardText>
+                  Please download the Google Authenticator app and use the qr code below to set up
+                  mfa! You will be required to enter a code each time you log in
+                </MDBCardText>
+              </MDBRow>
+              <MDBCol>
+                {/* <MDBRow sm="5">
+                  <MDBCardImage src={'../../../public/app-store-images/US/Download_on_App_Store/Black_lockup/SVG/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg'} 
+                                alt="Download on the app store" 
+                                style={{ width: '200px' }} 
+                                fluid
+                                 />
+                </MDBRow> */}
+                <MDBRow sm="5">
+                  <MDBCardImage src={mfaQrCodeUrl} 
+                                alt="avatar" 
+                                style={{ 
+                                  width: '200px',
+                                  marginLeft:'auto',
+                                  marginRight:'auto' 
+                                }} 
+                                fluid />
+                </MDBRow>
+              </MDBCol>
+              <hr />
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

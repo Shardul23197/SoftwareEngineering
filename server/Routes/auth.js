@@ -10,6 +10,7 @@ const RefreshToken = require('../models/RefreshToken');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
+const base32 = require('thirty-two')
 const util = require('util');
 
 // Makes a new RefreshToken for the user if there isn't
@@ -291,22 +292,15 @@ router.post('/logout',
         const authHeader = req.headers.authorization;
         const accessToken = authHeader.split(' ')[1];
 
-        // Verify the jwt with passport
-        passport.authenticate(
-            'jwt',
-            { session: false },
-            (err, token) => {
-                // Remove the refresh token entry from the db
-                RefreshToken.findOneAndRemove({ accessToken: accessToken }, (err, doc) => {
-                    if (!doc)
-                        res.status(500).json(`User was not logged in!`);
-                    else if (err)
-                        res.status(500).json(`Could not log out user with access token: ${accessToken}`);
-                    else
-                        res.status(200).json('Logout sucessful!');
-                });
-            }
-        )(req, res, next);
+        // Remove the refresh token entry from the db
+        RefreshToken.findOneAndRemove({ accessToken: accessToken }, (err, doc) => {
+            if (!doc)
+                res.status(500).json(`User was not logged in!`);
+            else if (err)
+                res.status(500).json(`Could not log out user with access token: ${accessToken}`);
+            else
+                res.status(200).json('Logout sucessful!');
+        });
     }
 );
 
@@ -466,37 +460,62 @@ router.post('/resetPassword',
     }
 );
 
-router.get('/tfa/enroll',
+router.get('/tfa/info',
     async (req, res, next) => {
-        
         // Get the access token from the header
         const authHeader = req.headers.authorization;
         const accessToken = authHeader.split(' ')[1];
 
-        // Verify the jwt with passport
-        passport.authenticate(
-            'jwt',
-            { session: false },
-            async (err, email) => {
-                let user = await User.findOne({ email: email });
-                // Check if user exists
-                if (!user) {
-                    // Call passport's callback for error
-                    res.status(400).send('Could not find the given email!');
-                    return;
-                }
-                
-                let enrolled = user.enrolled;
-                if (!enrolled) {
-                    let key = crypto.randomBytes(20);
-                    let otpUrl = 'otpauth://totp/' + email + '?secret=' + key + '&period=30';
-                    let qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
-                    
-                    // Return the tokens
-                    res.status(200).json({ qrImage });
-                }
+        RefreshToken.findOne({ accessToken: accessToken }, async (err, refreshTokenDoc) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Could not query the database!');
             }
-        )(req, res, next);
+            
+            let email = refreshTokenDoc.email;
+            console.log(`email: ${email}`);
+            let user = await User.findOne({ email: email });
+            // Check if user exists
+            if (!user) {
+                // Call passport's callback for error
+                res.status(401).send('Could not find the given email!');
+                return;
+            }
+            
+            if (user.enrolled_in_mfa) {
+
+                let mfa_key = user.mfa_key; // Retrieve stored mfa_key
+                let encodedKey = base32.encode(mfa_key); // Base 32 encode it
+                // Create otpUrl and a qr code for a Google Authenticator account
+                let otpUrl = `otpauth://totp/${process.env.APP_NAME}:${email}?issuer=${process.env.APP_NAME}&secret=${encodedKey}`;
+                let qrImage = `https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=${encodeURIComponent(otpUrl)}`;
+                
+                // Return qr code url
+                res.status(200).json({ qrImage });
+            }
+            else {
+                let mfa_key = crypto.randomBytes(10).toString(); // Generate random 10-byte key
+                let encodedKey = base32.encode(mfa_key); // Base 32 encode it
+                // Create otpUrl and a qr code for a Google Authenticator account
+                let otpUrl = `otpauth://totp/${process.env.APP_NAME}:${email}?issuer=${process.env.APP_NAME}&secret=${encodedKey}`;
+                let qrImage = `https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=${encodeURIComponent(otpUrl)}`;
+                
+                // Update the user to enrolled and store their mfa key
+                user.updateOne({
+                    enrolled_in_mfa: true,
+                    mfa_key: mfa_key
+                }, (err, doc) => {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).send('Could not query the database!');
+                    }
+                    else
+                        // Return qr code url
+                        res.status(200).json({ qrImage });
+                });
+            }
+        });
+        
     }
 );
 

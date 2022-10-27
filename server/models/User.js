@@ -44,9 +44,12 @@ const UserSchema = new Schema({
     resetPasswordExpires: {
         type: Number
     },
-    enrolled: {
+    enrolled_in_mfa: {
         type: Boolean,
         default: false
+    },
+    mfa_key: {
+        type: String
     }
 });
 

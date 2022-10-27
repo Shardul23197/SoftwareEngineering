@@ -133,6 +133,7 @@ module.exports = (passport) => {
             secretOrKey: process.env.JWT_SECRET_KEY,
         },
         async (token, done) => {
+            console.log('here');
             try {
                 console.log(`jwt-strategy-token: ${token.email}`);
                 return done(null, token.email);
