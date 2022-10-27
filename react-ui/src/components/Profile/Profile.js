@@ -17,6 +17,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
+import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
+
 export default function Profile() {
   const selector = useSelector(state => state.email)
   const [userEmail, setUserEmail] = useState('')
@@ -62,6 +64,25 @@ export default function Profile() {
         setStatus('notfound')
         console.log(error)
       })
+
+      
+
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
+    
+    instance.get('/auth/tfa/info', {}).then((res) => {
+      // setMfaQrCodeUrl(res.data.qrImage)
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }, [dataFromState, selector ])
 
   const updateProfile = (event) => {
@@ -251,41 +272,48 @@ export default function Profile() {
             </MDBCardBody>
           </MDBCard>
         </MDBCol>
-      </MDBContainer><MDBContainer className="py-5">
+      </MDBContainer>
+      <MDBContainer className="py-5">
         <MDBCol lg="8">
           <MDBCard className="mb-4">
             <MDBCardBody>
-              <MDBRow>
-                <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
-              </MDBRow>
-              
-              <hr />
-              <MDBRow sm="8">
-                <MDBCardText>
-                  Please download the Google Authenticator app and use the qr code below to set up
-                  mfa! You will be required to enter a code each time you log in
-                </MDBCardText>
-              </MDBRow>
-              <MDBCol>
-                {/* <MDBRow sm="5">
-                  <MDBCardImage src={'../../../public/app-store-images/US/Download_on_App_Store/Black_lockup/SVG/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg'} 
-                                alt="Download on the app store" 
-                                style={{ width: '200px' }} 
-                                fluid
-                                 />
-                </MDBRow> */}
-                <MDBRow sm="5">
-                  <MDBCardImage src={mfaQrCodeUrl} 
-                                alt="avatar" 
-                                style={{ 
-                                  width: '200px',
-                                  marginLeft:'auto',
-                                  marginRight:'auto' 
-                                }} 
-                                fluid />
+
+              <h1>MFA</h1>
+
+              {/* Display mfa qrcode and code if the user is enrolled in mfa */}
+              {mfaQrCodeUrl ? 
+                <MDBRow>
+                <MDBRow sm="8">
+                  <MDBCardText>
+                    Please download the Google Authenticator app and use the qr code below to set up
+                    mfa! You will be required to enter a code each time you log in
+                  </MDBCardText>
                 </MDBRow>
-              </MDBCol>
-              <hr />
+                <MDBRow>
+                  <MDBCol sm="5">
+                    <MDBCardImage src={downloadFromAppStoreSVG}
+                                  alt='Download Google Authenticator on the app store' 
+                                  style={{ width: '200px' }} 
+                                  fluid
+                                  />
+                  </MDBCol>
+                  <MDBCol sm="5">
+                    <MDBCardImage src={mfaQrCodeUrl} 
+                                  alt="MFA QR Code Url" 
+                                  style={{ 
+                                    width: '200px',
+                                    marginLeft:'auto',
+                                    marginRight:'auto' 
+                                  }} 
+                                  fluid />
+                  </MDBCol>
+                </MDBRow>
+                </MDBRow>
+              :
+                <MDBRow>
+                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
+                </MDBRow>
+              }
             </MDBCardBody>
           </MDBCard>
         </MDBCol>
