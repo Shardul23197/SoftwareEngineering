@@ -67,23 +67,23 @@ export default function Profile() {
 
       
 
-    const headers = {
-      'Authorization': `Bearer ${authToken}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true,
-        headers: headers
-    });
-    
-    instance.get('/auth/tfa/info', {}).then((res) => {
-      // setMfaQrCodeUrl(res.data.qrImage)
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }, [dataFromState, selector ])
+      const headers = {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      const instance = axios.create({
+          baseURL: 'http://localhost:5000',
+          withCredentials: true,
+          headers: headers
+      });
+      
+      instance.get('/auth/tfa/info', {}).then((res) => {
+        setMfaQrCodeUrl(res.data.qrImage)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [authToken, dataFromState, selector])
 
   const updateProfile = (event) => {
     event.preventDefault()
@@ -286,16 +286,29 @@ export default function Profile() {
                 <MDBRow sm="8">
                   <MDBCardText>
                     Please download the Google Authenticator app and use the qr code below to set up
-                    mfa! You will be required to enter a code each time you log in
+                    mfa! You will be required to enter a 6-digit code each time you log in
                   </MDBCardText>
                 </MDBRow>
                 <MDBRow>
                   <MDBCol sm="5">
+                    <MDBRow>
+                    <a href='https://apps.apple.com/us/app/google-authenticator/id388497605'>
                     <MDBCardImage src={downloadFromAppStoreSVG}
-                                  alt='Download Google Authenticator on the app store' 
+                                  alt='Download Google Authenticator from the App Store!' 
                                   style={{ width: '200px' }} 
                                   fluid
                                   />
+                    </a>
+                    </MDBRow>
+                    <MDBRow>
+                    <a href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                    <MDBCardImage src={'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'}
+                                  alt='Get it on Google Play' 
+                                  style={{ width: '200px' }} 
+                                  fluid
+                                  />
+                    </a>
+                    </MDBRow>
                   </MDBCol>
                   <MDBCol sm="5">
                     <MDBCardImage src={mfaQrCodeUrl} 

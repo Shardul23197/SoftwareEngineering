@@ -163,6 +163,31 @@ router.post('/login',
     }
 );
 
+
+
+// TODO: impelement the following get an post methods from the example app
+
+// app.get('/login-otp', loggedin.ensureLoggedIn(),
+//   function(req, res, next) {
+//     // If user hasn't set up two-factor auth, redirect
+//     findKeyForUserId(req.user.id, function(err, obj) {
+//       if (err) { return next(err); }
+//       if (!obj) { return res.redirect('/setup'); }
+//       return next();
+//     });
+//   },
+//   function(req, res) {
+//     console.log('render: login-otp');
+//     res.render('login-otp', { user: req.user, message: req.flash('error') });
+//   });
+
+// app.post('/login-otp', 
+//   passport.authenticate('totp', { failureRedirect: '/login-otp', failureFlash: true }),
+//   function(req, res) {
+//     req.session.secondFactor = 'totp';
+//     res.redirect('/');
+//   });
+
 // @route POST /auth/login
 // @desc begin passport custom auth process
 // @access Public

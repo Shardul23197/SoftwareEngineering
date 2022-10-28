@@ -49,6 +49,21 @@ module.exports = (passport) => {
         }
     ))
 
+    // Passport Strategy for MFA
+    passport.use(new TotpStrategy(
+        function(user, done) {
+            // TODO: implement this method
+
+
+// From the example app
+        //   // setup function, supply key and period to done callback
+        //   findKeyForUserId(user.id, function(err, obj) {
+        //     if (err) { return done(err); }
+        //     return done(null, obj.key, obj.period);
+        //   });
+        }
+      ));
+
     // Passport custom register strategy
     passport.use(
         'register',
