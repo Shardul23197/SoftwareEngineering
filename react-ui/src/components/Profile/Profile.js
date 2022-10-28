@@ -283,6 +283,10 @@ export default function Profile() {
               {/* Display mfa qrcode and code if the user is enrolled in mfa */}
               {mfaQrCodeUrl ? 
                 <MDBRow>
+                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
+                </MDBRow>
+              :
+                <MDBRow>
                 <MDBRow sm="8">
                   <MDBCardText>
                     Please download the Google Authenticator app and use the qr code below to set up
@@ -321,10 +325,6 @@ export default function Profile() {
                                   fluid />
                   </MDBCol>
                 </MDBRow>
-                </MDBRow>
-              :
-                <MDBRow>
-                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
                 </MDBRow>
               }
             </MDBCardBody>

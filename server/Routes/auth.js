@@ -113,7 +113,7 @@ router.get('/google/callback',
 // @access Public
 router.post('/login', 
     async (req, res, next) => {
-        // Authenticate the user using passport
+        // Authenticate the user using passport-local
         passport.authenticate('login', 
             async (err, user) => {
                 if (err)
@@ -128,10 +128,11 @@ router.post('/login',
                     const email = user.email; // store the user's eamil for easy access
                     const enrolled = user.enrolled;
 
+                    // If the user is enrolled in 2fa, set a flag to navigate to the 2fa screen
                     if (enrolled) {
                         const refreshToken = null;
                         const accessToken = null;
-                        const tfa = true;
+                        const tfa = user.enrolled;
                         res.status(200).json({
                             accessToken,
                             refreshToken,
@@ -164,22 +165,17 @@ router.post('/login',
 );
 
 
+// log in should 
+
 
 // TODO: impelement the following get an post methods from the example app
 
-// app.get('/login-otp', loggedin.ensureLoggedIn(),
-//   function(req, res, next) {
-//     // If user hasn't set up two-factor auth, redirect
-//     findKeyForUserId(req.user.id, function(err, obj) {
-//       if (err) { return next(err); }
-//       if (!obj) { return res.redirect('/setup'); }
-//       return next();
-//     });
-//   },
-//   function(req, res) {
-//     console.log('render: login-otp');
-//     res.render('login-otp', { user: req.user, message: req.flash('error') });
-//   });
+/*
+ * take user's auth token to verify logged in
+ * check if enrolled in 2fa
+ *  if enrolled send to 2fa screen (set flag in res)
+ *  else return 
+ */
 
 // app.post('/login-otp', 
 //   passport.authenticate('totp', { failureRedirect: '/login-otp', failureFlash: true }),
@@ -188,45 +184,35 @@ router.post('/login',
 //     res.redirect('/');
 //   });
 
-// @route POST /auth/login
+// @route POST /auth/login/2fa
 // @desc begin passport custom auth process
 // @access Public
 router.post('/login/2fa', 
     async (req, res, next) => {
-        // Authenticate the user using passport
-        passport.authenticate('login', 
+
+        // TODO: check for valid access token first
+
+
+        // Authenticate the user using passport-totp
+        passport.authenticate('totp', 
             async (err, user) => {
                 if (err) {
                     res.status(400).json(err);
                 }
-                    
-                try {
-                    // If the user isn't found log the error and return it
-                    if (err || !user) {
-                        return next(err);
-                    }
+                    console.log(`/login/2fa user: ${JSON.stringify(user)}`);
+                // try {
+                //     // If the user isn't found log the error and return it
+                //     if (err || !user) {
+                //         return next(err);
+                //     }
 
-                    const _id = user._id; // store the user's _id for easy access
-                    const email = user.email; // store the user's eamil for easy access
+                //     const _id = user._id; // store the user's _id for easy access
+                //     const email = user.email; // store the user's eamil for easy access
 
 
-                    // Get a refresh token and access token for the user
-                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
-                        if (err)
-                            res.status(500).json(err);
-                        else {
-                            const refreshToken = refreshTokenObj.refreshToken;
-                            const accessToken = refreshTokenObj.accessToken;
-                            // Return the tokens
-                            res.status(200).json({
-                                accessToken,
-                                refreshToken
-                            });
-                        }
-                    });
-                } catch (err) {
-                    res.status(500).json('Could not issue JWT!');
-                }
+                // } catch (err) {
+                //     res.status(500).json('Could not issue JWT!');
+                // }
             }
         )(req, res, next);
     }
