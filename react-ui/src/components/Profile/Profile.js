@@ -20,15 +20,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
 
 export default function Profile() {
-  const existingMfaRequired = localStorage.getItem('mfaRequired') || 'false';
+  let mfaRequired = localStorage.getItem('mfaRequired');
   const selector = useSelector(state => state.email)
   const [userEmail, setUserEmail] = useState('')
   const [userFullName, setUserFullName] = useState('')
   const [userPhone, setUserPhone] = useState('')
   const [userCity, setUserCity] = useState('')
   const [userImage, setUserImage] = useState('')
-  const [mfaRequired, setMfaRequired] = useState(existingMfaRequired);
   const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
+  const [mfaSecret, setMfaSecret] = useState('')
   const [dataFromState, setDataFromState] = useState(selector)
   const [trainerDetails, setTrainerDetails] = useState('')
   const [status, setStatus] = useState('todo')
@@ -79,14 +79,15 @@ export default function Profile() {
         headers: headers
       });
       
-      instance.get('/auth/mfa/qrCodeUrl', {}).then((res) => {
-        setMfaQrCodeUrl(res.data.qrImage)
+      instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
+        setMfaQrCodeUrl(res.data.qrImage);
+        setMfaSecret(res.data.mfa_secret);
       })
       .catch((error) => {
         console.error(error);
       });
     }
-  }, [authToken, dataFromState, selector, setMfaQrCodeUrl])
+  }, [authToken, dataFromState, mfaRequired, selector, setMfaQrCodeUrl])
 
   const updateProfile = (event) => {
     event.preventDefault()
@@ -163,9 +164,10 @@ export default function Profile() {
         headers: headers
     });
     
-    instance.get('/auth/mfa/qrCodeUrl', {}).then((res) => {
+    // Get authenticator for the user from the backend
+    instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
       setMfaQrCodeUrl(res.data.qrImage);
-      setMfaRequired('true');
+      mfaRequired = 'true'; 
       localStorage.setItem('mfaRequired', 'true');
     })
     .catch((error) => {
@@ -279,7 +281,7 @@ export default function Profile() {
         </MDBCol>
       </MDBContainer>
       <MDBContainer className="py-5">
-        <MDBCol lg="8">
+        <MDBCol lg="12">
           <MDBCard className="mb-4">
             <MDBCardBody>
 
@@ -295,11 +297,12 @@ export default function Profile() {
                 <MDBRow sm="8">
                   <MDBCardText>
                     Please download the Google Authenticator app and use the qr code below to set up
-                    mfa! You will be required to enter a 6-digit code each time you log in
+                    mfa! You will be required to enter a 6-digit code each time you log in to increase
+                    the security of your account.
                   </MDBCardText>
                 </MDBRow>
                 <MDBRow>
-                  <MDBCol sm="5">
+                  <MDBCol sm="3">
                     <MDBRow>
                     <a href='https://apps.apple.com/us/app/google-authenticator/id388497605'>
                     <MDBCardImage src={downloadFromAppStoreSVG}
@@ -319,7 +322,7 @@ export default function Profile() {
                     </a>
                     </MDBRow>
                   </MDBCol>
-                  <MDBCol sm="5">
+                  <MDBCol sm="9">
                     <MDBCardImage src={mfaQrCodeUrl} 
                                   alt="MFA QR Code Url" 
                                   style={{ 
@@ -328,6 +331,7 @@ export default function Profile() {
                                     marginRight:'auto' 
                                   }} 
                                   fluid />
+                    <h2>{mfaSecret}</h2>
                   </MDBCol>
                 </MDBRow>
                 </MDBRow>

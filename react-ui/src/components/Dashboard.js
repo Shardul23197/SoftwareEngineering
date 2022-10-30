@@ -1,41 +1,13 @@
-import React, { useEffect, useState }  from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import '../App.css'; 
 
 export default function Dashboard() {
-  const existingAuthtoken = localStorage.getItem('authToken') || '';
-  const existingRefreshtoken = localStorage.getItem('refreshToken') || '';
-  const existingMfaVerified = localStorage.getItem('mfaVerified') || 'false';
-  const existingMfaRequired = localStorage.getItem('mfaRequired') || 'false';
-  const [authToken, setAuthToken] = useState(existingAuthtoken);
-  const [refreshToken, setRefreshToken] = useState(existingRefreshtoken);
-  const [mfaVerified, setMfaVerified] = useState(existingMfaVerified);
-  const [mfaRequired, setMfaRequired] = useState(existingMfaRequired);
-  const [searchParams] = useSearchParams();
+  const authToken = localStorage.getItem('authToken');
   let navigate = useNavigate();
 
-  /* If there are are no auth or refresh tokens in local storage get them
-   * from the query parameters (from the google callback). If there are
-   * still no tokens, navigate to the login screen.
-   */
-  useEffect(() => {
-    if (!existingAuthtoken) {
-      setAuthToken(searchParams.get('authToken'));
-    }
-    if (!existingRefreshtoken) {
-      setRefreshToken(searchParams.get('refreshToken'));
-    }
-    if (!existingMfaVerified) {
-      setAuthToken(searchParams.get('mfaVerified'));
-    }
-    if (!existingMfaRequired) {
-      setRefreshToken(searchParams.get('mfaRequired'));
-    }
-  }, [existingAuthtoken, existingMfaRequired, existingMfaVerified, 
-    existingRefreshtoken, refreshToken, searchParams]);
-
-  const onLogout = (event) => {
+  const onLogout = async (event) => {
       const headers = {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -46,19 +18,13 @@ export default function Dashboard() {
           headers: headers
       });
       
-      instance.post('/auth/logout', {}).then((res) => {
-          // set token in local storage to the returned jwt
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('mfaVerified');
-          localStorage.removeItem('mfaRequired');
-          
-          // Redirect to home
-          navigate('/');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      // Terminate the user's session information
+      await instance.post('/auth/logout', {}).then((res) => {})
+        .catch((error) => console.error(error));
+
+      localStorage.clear();
+      // Redirect to home
+      navigate('/');
   };
 
   return (

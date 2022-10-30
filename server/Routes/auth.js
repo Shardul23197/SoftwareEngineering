@@ -8,7 +8,6 @@ const Session = require('../models/Session');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const base32 = require('thirty-two');
 const authenticator = require('otplib').authenticator;
 const util = require('util');
 
@@ -85,8 +84,7 @@ router.get('/google/callback',
                 if (err) 
                     res.redirect('http://localhost:3000/login');
                 else {
-
-                    // Get a refresh token and access token for the user
+                    // Get the session information for the user
                     getSession(user, (err, session) => {
                         if (err)
                             res.redirect('http://localhost:3000/login');
@@ -94,12 +92,16 @@ router.get('/google/callback',
                             const refreshToken = session.refreshToken;
                             const accessToken = session.accessToken;
                             const mfaRequired = session.mfaRequired;
-                            const mfaVerified = session.accessToken;
+                            const mfaVerified = session.mfaVerified;
+
+                            // Determine where to route the user based on MFA
+                            const pathname = mfaRequired ? '/twoFactor' : '/dashboard';
+
                             // Return the tokens
-                            let dashboardUrl = url.format({
+                            const dashboardUrl = url.format({
                                 protocol: 'http',
                                 host: 'localhost:3000',
-                                pathname: '/dashboard',
+                                pathname: pathname,
                                 query: {
                                     authToken: accessToken,
                                     refreshToken: refreshToken,
@@ -135,7 +137,7 @@ router.post('/login',
                     const _id = user._id; // store the user's _id for easy access
                     const email = user.email; // store the user's eamil for easy access
 
-                    // Get a refresh token and access token for the user
+                    // Get the session information for the user
                     getSession(user, (err, session) => {
                         if (err)
                             res.status(500).json(err);
@@ -187,9 +189,8 @@ router.post('/login/mfa',
             res.status(401).send(err);
             return;
         }
-        console.log(`/login/mfa token: ${token}`);
-        console.log(`/login/mfa user.mfa_secret: ${token}`);
 
+        // If the token is valid, mark the user as verified in the DB and return the verification
         let isValid = authenticator.check(token, user.mfa_secret);
         if (isValid) {
             const mfaVerified = true;
@@ -457,10 +458,10 @@ router.post('/resetPassword',
     }
 );
 
-// @route GET /auth/mfa/qrCodeUrl
-// @desc Returns a qr code URL for Google Authenticator for the user
+// @route GET /auth/mfa/google/authenticator/info
+// @desc Returns a qr code URL and secret for Google Authenticator for the user
 // @access Public
-router.get('/mfa/qrCodeUrl',
+router.get('/mfa/google/authenticator/info',
     async (req, res, next) => {
         // Get the access token from the header
         const authHeader = req.headers.authorization;
@@ -473,7 +474,6 @@ router.get('/mfa/qrCodeUrl',
             }
             
             let email = session.email;
-            console.log(`email: ${email}`);
             let user = await User.findOne({ email: email });
             // Check if user exists
             if (!user) {
@@ -488,7 +488,7 @@ router.get('/mfa/qrCodeUrl',
             
             if (user.enrolled_in_mfa) 
                 // Return qr code url
-                res.status(200).json({ qrImage });
+                res.status(200).json({ qrImage, mfa_secret });
             else {
                 // Update the user to enrolled and store their mfa key
                 user.updateOne({
@@ -530,15 +530,11 @@ router.get('/sessionInfo',
                 res.status(500).send('Could not query the database!');
                 return;
             }
-            
-            const authTokenValid = true; // The auth token is valid because it was found in the db 
+
+            // The auth token is valid because it was found in the db 
+            const authTokenValid = true; 
             const mfaRequired = session.mfaRequired;
             const mfaVerified = session.mfaVerified;
-            console.log(JSON.stringify({ 
-                authTokenValid, 
-                mfaRequired, 
-                mfaVerified 
-            }));
             res.status(200).json({ 
                 authTokenValid, 
                 mfaRequired, 

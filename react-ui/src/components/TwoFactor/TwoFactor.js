@@ -7,18 +7,34 @@ import qs from 'qs'
 import util from 'util'
 
 export default function TwoFactor() {
-    const [code, setCode] = useState(''); // String
-    const [error, setError] = useState(''); // String
+    const [code, setCode] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
-    
-
-    // Auth token and refresh token state
-    const existingAuthtoken = localStorage.getItem('authToken') || '';
-    const [authToken] = useState(existingAuthtoken);
+    const authToken = localStorage.getItem('authToken') || '';
 
     const onCode = (event) => {
       setCode(event.target.value);
-    }
+    };
+
+    const onLogout = async (event) => {
+        const headers = {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        const instance = axios.create({
+            baseURL: 'http://localhost:5000',
+            withCredentials: true,
+            headers: headers
+        });
+        
+        // Terminate the user's session information
+        await instance.post('/auth/logout', {}).then((res) => {})
+          .catch((error) => console.error(error));
+  
+        localStorage.clear();
+        // Redirect to home
+        navigate('/');
+    };
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -50,7 +66,7 @@ export default function TwoFactor() {
             <MDBContainer fluid className="p-3 my-5 h-custom">
                 <MDBRow>
                     <MDBCol col='4' md='6' style={{ width: '400px', marginLeft:'auto', marginRight:'auto' }} >
-
+                        <MDBRow>
                         <div>
                         <h1 className='text-center text-md-start mt-4 pt-2' >MFA</h1>
 
@@ -65,6 +81,12 @@ export default function TwoFactor() {
                         <div className='text-center text-md-start mt-4 pt-2'>
                             <MDBBtn className="mb-0 px-5" size='lg'>Submit</MDBBtn>
                         </div>
+                        </MDBRow>
+                        <MDBRow>
+                        <div className='text-center text-md-start mt-4 pt-2'>
+                            <MDBBtn className="mb-0 px-5" size='lg' onClick={onLogout}>Logout</MDBBtn>
+                        </div>
+                        </MDBRow>
                     </MDBCol>
                 </MDBRow>
             </MDBContainer>

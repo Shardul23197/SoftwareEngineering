@@ -76,7 +76,8 @@ module.exports = (passport) => {
                         done(err);
                     });
             }
-        ));
+        )
+    );
 
     // Passport Google auth strategy
     passport.use('google',
@@ -142,19 +143,4 @@ module.exports = (passport) => {
             }
         }
     ));
-
-    passport.serializeUser((user, done) => {
-        console.log(`serializeUser user: ${JSON.stringify(user)}`);
-        done(null, user.id);
-    });
-
-    passport.deserializeUser((id, done) => {
-        console.log(`deserializeUser id: ${JSON.stringify(id)}`);
-        
-        User.findById(id, (err, user) => {
-            console.log(`deserializeUser user: ${JSON.stringify(user)}`);
-
-            done(err, user);
-        })
-    });
 }

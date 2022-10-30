@@ -29,6 +29,7 @@ export default function Login() {
     const onSubmit = (event) => {
         event.preventDefault();
         
+        localStorage.clear();
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         };

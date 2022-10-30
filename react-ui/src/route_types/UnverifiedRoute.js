@@ -1,18 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
+import { Navigate, useSearchParams }  from 'react-router-dom'
 import axios from 'axios'
-import { Navigate } from 'react-router';
+import util from 'util'
 
-// If the user's auth and refresh tokens are missing redirect them to the home page
 function UnverifiedRoute({ children }) {
-    const existingAuthtoken = localStorage.getItem('authToken') || '';
-    const existingRefreshtoken = localStorage.getItem('refreshToken') || '';
-    const existingMfaRequired = localStorage.getItem('mfaRequired') || 'false';
-    const existingMfaVerified = localStorage.getItem('mfaVerified') || 'false';
-    const [authToken, setAuthToken] = useState(existingAuthtoken);
-    const [refreshToken, setRefreshToken] = useState(existingRefreshtoken);
-    const [mfaVerified, setMfaVerified] = useState(existingMfaVerified);
-    const [mfaRequired, setMfaRequired] = useState(existingMfaRequired);
+    // Get session infomation from local storage or from searchParameters if not present in local storage
+    const [searchParams] = useSearchParams();
+    const authToken = localStorage.getItem('authToken') ? localStorage.getItem('authToken')
+                                                            : searchParams.get('authToken');
+    const refreshToken = localStorage.getItem('refreshToken') ? localStorage.getItem('refreshToken')
+                                                                  : searchParams.get('refreshToken') || '';
+    const mfaRequired = localStorage.getItem('mfaRequired') ? localStorage.getItem('mfaRequired')
+                                                                : searchParams.get('mfaRequired') || '';
+    const mfaVerified = localStorage.getItem('mfaVerified') ? localStorage.getItem('mfaVerified')
+                                                                : searchParams.get('mfaVerified') || '';
+    
+    // If the session info came from the search params it needs to be set in local storage
+    if (authToken !== '')
+        localStorage.setItem('authToken', authToken);
+    if (refreshToken !== '')
+        localStorage.setItem('refreshToken', refreshToken);
+    if (mfaRequired !== '')
+        localStorage.setItem('mfaRequired', mfaRequired);
+    if (mfaVerified !== '')
+        localStorage.setItem('mfaVerified', mfaVerified);
 
+    // Make a request to the backend to check the validity of the user's session information
     useEffect(() => {
         const headers = {
             'Authorization': `Bearer ${authToken}`,
@@ -29,33 +42,29 @@ function UnverifiedRoute({ children }) {
             const mfaRequired = res.data.mfaRequired;
             const mfaVerified = res.data.mfaVerified;
 
-            // If the auth token is not valid set 
+            // If the auth token is not valid remove session info from local storage
             if (!authTokenValid) {
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('refreshToken');
-                localStorage.removeItem('mfaRequired');
                 localStorage.removeItem('mfaVerified');
-                setAuthToken('');
-                setRefreshToken('');
-                setMfaRequired('false');
-                setMfaVerified('false');
+                localStorage.removeItem('mfaRequired');
             }
             else {
                 localStorage.setItem('mfaRequired', mfaRequired+'');
                 localStorage.setItem('mfaVerified', mfaVerified+'');
-                setMfaRequired(mfaRequired+'');
-                setMfaVerified(mfaVerified+'');
             }
         })
         .catch((err) => {
             if (err) console.error(err);
         });
+
     }, [authToken]);
 
     // If the user has both auth and refresh tokens and if the user is required to use
-    // mfa and but has not been verified proceed to the requested route
-    // Otherwise redirect to home
-    return authToken.length > 0 && refreshToken.length > 0 && mfaRequired === 'true' && mfaVerified === 'false' ? children : <Navigate to='/'/>;
+    // mfa and but has not been verified proceed to the requested route. Otherwise 
+    // redirect to home
+    return authToken.length > 0 && refreshToken.length > 0 && mfaRequired === 'true' && 
+            mfaVerified === 'false' ? children : <Navigate to='/'/>;
 }
 
 export default UnverifiedRoute;
