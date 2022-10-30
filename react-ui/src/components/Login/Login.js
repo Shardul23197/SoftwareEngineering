@@ -3,7 +3,6 @@ import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox, M
 import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../auth/auth'
 import axios from 'axios'
 import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
@@ -13,15 +12,14 @@ export default function Login() {
     const [email, setEmail] = useState(''); // String
     const [password, setPassword] = useState(''); // String
     const [error, setError] = useState(''); // String
-    const { setAuthToken, setRefreshToken } = useAuth();
     const navigate = useNavigate();
 
     const onEmailChange = (event) => {
-      setEmail(event.target.value)
+      setEmail(event.target.value);
     }
 
     const onPasswordChange = (event) => {
-      setPassword(event.target.value)
+      setPassword(event.target.value);
     }
 
     const emailValidation = (event) => {
@@ -31,6 +29,7 @@ export default function Login() {
     const onSubmit = (event) => {
         event.preventDefault();
         
+        localStorage.clear();
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         };
@@ -46,19 +45,27 @@ export default function Login() {
         };
         
         instance.post('/auth/login', qs.stringify(formData)).then((res) => {
-            console.log(`res: ${util.inspect(res)}`);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
+            const mfaRequired = res.data.mfaRequired;
+            const mfaVerified = res.data.mfaVerified;
 
-            // set tokens in local storage to the returned jwts
-            setAuthToken(accessToken); // auth context provider
-            setRefreshToken(refreshToken); // auth context provider
+
             localStorage.setItem('authToken', accessToken); // for browser
             localStorage.setItem('refreshToken', refreshToken); // for browser
+            localStorage.setItem('mfaRequired', mfaRequired); // for browser
+            localStorage.setItem('mfaVerified', mfaVerified); // for browser
+            store.dispatch({type: 'SET_EMAIL', payload: email});
 
-            // Redirect to the dashboard because the user is logged in
-            store.dispatch({type: 'SET_EMAIL', payload: email})
-            navigate('/dashboard');
+            console.log(mfaRequired);
+            if (mfaRequired) {
+                navigate('/twoFactor');
+                return;
+            }
+            else {
+                navigate('/dashboard');
+                return;
+            }
         })
         .catch((error) => {
             if (error) setError(error.response.data);

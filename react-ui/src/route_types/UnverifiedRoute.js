@@ -3,7 +3,7 @@ import { Navigate, useSearchParams }  from 'react-router-dom'
 import axios from 'axios'
 import util from 'util'
 
-function PrivateRoute({ children }) {
+function UnverifiedRoute({ children }) {
     // Get session infomation from local storage or from searchParameters if not present in local storage
     const [searchParams] = useSearchParams();
     const authToken = localStorage.getItem('authToken') ? localStorage.getItem('authToken')
@@ -60,14 +60,11 @@ function PrivateRoute({ children }) {
 
     }, [authToken]);
 
-
     // If the user has both auth and refresh tokens and if the user is required to use
-    // mfa and has been verified, proceed to the requested route. Otherwise redirect 
-    // to twoFactor (if the user has an invalid auth token they are sent home from 
-    // UnverifiedRoute)
-    return authToken.length > 0 && refreshToken.length > 0 && 
-            (mfaRequired === 'true' ? mfaVerified === 'true' : true) ? 
-            children : <Navigate to='/twoFactor'/>;
+    // mfa and but has not been verified proceed to the requested route. Otherwise 
+    // redirect to home
+    return authToken.length > 0 && refreshToken.length > 0 && mfaRequired === 'true' && 
+            mfaVerified === 'false' ? children : <Navigate to='/'/>;
 }
 
-export default PrivateRoute;
+export default UnverifiedRoute;

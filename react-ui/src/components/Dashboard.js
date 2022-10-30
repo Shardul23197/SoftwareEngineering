@@ -1,36 +1,13 @@
-import React, { useEffect, useState }  from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from './auth/auth'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import '../App.css'; 
 
 export default function Dashboard() {
-  const existingAuthtoken = localStorage.getItem('authToken') || '';
-  const existingRefreshtoken = localStorage.getItem('refreshToken') || '';
-  const [authToken, setAuthtoken] = useState(existingAuthtoken);
-  const [refreshToken, setRefreshtoken] = useState(existingRefreshtoken);
-  const { setAuthToken, setRefreshToken } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const authToken = localStorage.getItem('authToken');
   let navigate = useNavigate();
 
-  /* If there are are no auth or refresh tokens in local storage get them
-   * from the query parameters (from the google callback). If there are
-   * still no tokens, navigate to the login screen.
-   */
-  useEffect(() => {
-    if (!existingAuthtoken) {
-      setAuthtoken(searchParams.get('authToken'));
-      setAuthToken(searchParams.get('authToken'));
-    }
-    if (!existingRefreshtoken) {
-      setRefreshtoken(searchParams.get('refreshToken'));
-      setRefreshToken(searchParams.get('refreshToken'));
-    }
-    // if (!authToken || !refreshToken)
-    //   navigate('/login');
-  }, [authToken, existingAuthtoken, existingRefreshtoken, navigate, refreshToken, searchParams, setAuthToken, setRefreshToken]);
-
-  const onLogout = (event) => {
+  const onLogout = async (event) => {
       const headers = {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -41,17 +18,13 @@ export default function Dashboard() {
           headers: headers
       });
       
-      instance.post('/auth/logout', {}).then((res) => {
-          // set token in local storage to the returned jwt
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          
-          // Redirect to the dashboard because the user is logged in
-          navigate('/');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      // Terminate the user's session information
+      await instance.post('/auth/logout', {}).then((res) => {})
+        .catch((error) => console.error(error));
+
+      localStorage.clear();
+      // Redirect to home
+      navigate('/');
   };
 
   return (

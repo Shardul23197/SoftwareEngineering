@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
 
-// Create Schema
 const UserSchema = new Schema({
     username: {
         type: String
@@ -44,6 +43,13 @@ const UserSchema = new Schema({
     resetPasswordExpires: {
         type: Number
     },
+    enrolled_in_mfa: {
+        type: Boolean,
+        default: false
+    },
+    mfa_secret: {
+        type: String
+    }
 });
 
 // Prehook called before user is save to database. Hashes the password then
@@ -51,7 +57,6 @@ const UserSchema = new Schema({
 UserSchema.pre(
     'save',
     async function (next) {
-        console.log(this.password);
         // const user = this;
         const hash = await bcrypt.hash(this.password, 10);
         

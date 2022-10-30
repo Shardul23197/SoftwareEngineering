@@ -9,7 +9,7 @@ export default function Home() {
   }
 
   const routeToLogin = () => {
-    navigate('/login')
+    navigate('/login');
   }
   return (
     

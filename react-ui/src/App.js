@@ -8,10 +8,12 @@ import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login';
+import TwoFactor from './components/TwoFactor/TwoFactor';
 import WorkoutDetails from './components/WorkoutDetails';
 import Profile from './components/Profile/Profile';
 import PrivateRoute from './route_types/PrivateRoute';
 import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
+import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
@@ -37,6 +39,11 @@ function App() {
                 <UnauthenticatedRoute>
                     <Login />
                 </UnauthenticatedRoute>    
+            }/>
+            <Route path='/twoFactor' element={
+                <UnverifiedRoute>
+                    <TwoFactor />
+                </UnverifiedRoute>    
             }/>
             <Route path='/register' element={
                 <UnauthenticatedRoute>
