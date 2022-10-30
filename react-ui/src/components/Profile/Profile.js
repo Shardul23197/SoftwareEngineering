@@ -20,12 +20,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
 
 export default function Profile() {
+  const existingMfaRequired = localStorage.getItem('mfaRequired') || 'false';
   const selector = useSelector(state => state.email)
   const [userEmail, setUserEmail] = useState('')
   const [userFullName, setUserFullName] = useState('')
   const [userPhone, setUserPhone] = useState('')
   const [userCity, setUserCity] = useState('')
   const [userImage, setUserImage] = useState('')
+  const [mfaRequired, setMfaRequired] = useState(existingMfaRequired);
   const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
   const [dataFromState, setDataFromState] = useState(selector)
   const [trainerDetails, setTrainerDetails] = useState('')
@@ -33,7 +35,7 @@ export default function Profile() {
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
-  const [authToken, setAuthtoken] = useState(existingAuthtoken);
+  const [authToken] = useState(existingAuthtoken);
 
   //todo
   //get user data
@@ -65,25 +67,26 @@ export default function Profile() {
         console.log(error)
       })
 
-      
-
+    // If the user has mfa enabled, get the google authenticator qr code url from the server
+    if (mfaRequired === 'true') {
       const headers = {
         'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'http://localhost:5000',
-          withCredentials: true,
-          headers: headers
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
       });
       
-      instance.get('/auth/tfa/info', {}).then((res) => {
+      instance.get('/auth/mfa/qrCodeUrl', {}).then((res) => {
         setMfaQrCodeUrl(res.data.qrImage)
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [authToken, dataFromState, selector])
+    }
+  }, [authToken, dataFromState, selector, setMfaQrCodeUrl])
 
   const updateProfile = (event) => {
     event.preventDefault()
@@ -160,8 +163,10 @@ export default function Profile() {
         headers: headers
     });
     
-    instance.get('/auth/tfa/info', {}).then((res) => {
-      setMfaQrCodeUrl(res.data.qrImage)
+    instance.get('/auth/mfa/qrCodeUrl', {}).then((res) => {
+      setMfaQrCodeUrl(res.data.qrImage);
+      setMfaRequired('true');
+      localStorage.setItem('mfaRequired', 'true');
     })
     .catch((error) => {
       console.error(error);
@@ -281,9 +286,9 @@ export default function Profile() {
               <h1>MFA</h1>
 
               {/* Display mfa qrcode and code if the user is enrolled in mfa */}
-              {mfaQrCodeUrl ? 
+              {mfaRequired === 'false' ? 
                 <MDBRow>
-                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable 2FA</MDBBtn>
+                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable MFA</MDBBtn>
                 </MDBRow>
               :
                 <MDBRow>

@@ -2,8 +2,7 @@ const passportCustom = require('passport-custom');
 const CustomStrategy = passportCustom.Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy,
-    ExtractJwt = require('passport-jwt').ExtractJwt,
-    TotpStrategy = require('passport-totp').Strategy;
+    ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('../models/User');
 const util = require('util');
 
@@ -48,22 +47,6 @@ module.exports = (passport) => {
                     done(err);
                 })
         }
-    ))
-
-    // Passport Strategy for MFA
-    passport.use(new TotpStrategy(
-        function(user, done) {
-            // TODO: implement this method
-            console.log(`passport-totp user: ${JSON.stringify(user)}`);
-
-
-// From the example app
-        //   // setup function, supply key and period to done callback
-        //   findKeyForUserId(user.id, function(err, obj) {
-        //     if (err) { return done(err); }
-        //     return done(null, obj.key, obj.period);
-        //   });
-        }
     ));
 
     // Passport custom register strategy
@@ -93,7 +76,7 @@ module.exports = (passport) => {
                         done(err);
                     });
             }
-        ))
+        ));
 
     // Passport Google auth strategy
     passport.use('google',

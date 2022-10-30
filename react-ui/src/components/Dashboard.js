@@ -1,16 +1,18 @@
 import React, { useEffect, useState }  from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from './auth/auth'
 import axios from 'axios'
 import '../App.css'; 
 
 export default function Dashboard() {
   const existingAuthtoken = localStorage.getItem('authToken') || '';
   const existingRefreshtoken = localStorage.getItem('refreshToken') || '';
-  const [authToken, setAuthtoken] = useState(existingAuthtoken);
-  const [refreshToken, setRefreshtoken] = useState(existingRefreshtoken);
-  const { setAuthToken, setRefreshToken } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const existingMfaVerified = localStorage.getItem('mfaVerified') || 'false';
+  const existingMfaRequired = localStorage.getItem('mfaRequired') || 'false';
+  const [authToken, setAuthToken] = useState(existingAuthtoken);
+  const [refreshToken, setRefreshToken] = useState(existingRefreshtoken);
+  const [mfaVerified, setMfaVerified] = useState(existingMfaVerified);
+  const [mfaRequired, setMfaRequired] = useState(existingMfaRequired);
+  const [searchParams] = useSearchParams();
   let navigate = useNavigate();
 
   /* If there are are no auth or refresh tokens in local storage get them
@@ -19,16 +21,19 @@ export default function Dashboard() {
    */
   useEffect(() => {
     if (!existingAuthtoken) {
-      setAuthtoken(searchParams.get('authToken'));
       setAuthToken(searchParams.get('authToken'));
     }
     if (!existingRefreshtoken) {
-      setRefreshtoken(searchParams.get('refreshToken'));
       setRefreshToken(searchParams.get('refreshToken'));
     }
-    // if (!authToken || !refreshToken)
-    //   navigate('/login');
-  }, [authToken, existingAuthtoken, existingRefreshtoken, navigate, refreshToken, searchParams, setAuthToken, setRefreshToken]);
+    if (!existingMfaVerified) {
+      setAuthToken(searchParams.get('mfaVerified'));
+    }
+    if (!existingMfaRequired) {
+      setRefreshToken(searchParams.get('mfaRequired'));
+    }
+  }, [existingAuthtoken, existingMfaRequired, existingMfaVerified, 
+    existingRefreshtoken, refreshToken, searchParams]);
 
   const onLogout = (event) => {
       const headers = {
@@ -45,8 +50,10 @@ export default function Dashboard() {
           // set token in local storage to the returned jwt
           localStorage.removeItem('authToken');
           localStorage.removeItem('refreshToken');
+          localStorage.removeItem('mfaVerified');
+          localStorage.removeItem('mfaRequired');
           
-          // Redirect to the dashboard because the user is logged in
+          // Redirect to home
           navigate('/');
       })
       .catch((error) => {

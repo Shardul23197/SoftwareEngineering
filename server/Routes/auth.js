@@ -4,47 +4,55 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const url = require('url');
 const User = require('../models/User');
-const RefreshToken = require('../models/RefreshToken');
+const Session = require('../models/Session');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const base32 = require('thirty-two')
+const base32 = require('thirty-two');
+const authenticator = require('otplib').authenticator;
 const util = require('util');
 
-// Makes a new RefreshToken for the user if there isn't
+// Makes a new Session for the user if there isn't
 // one in the database already
-const getRefreshToken = async (_id, email, done) => {
-    
-    let refreshTokenObj = undefined;
+const getSession = async (user, done) => {
+    console.log(JSON.stringify(user));
+    // Store the user's id and email
+    const _id = user._id;
+    const email = user.email;
+    const mfaRequired = user.enrolled_in_mfa;
+
+    let session = undefined;
     // If the user already has a refresh token in the db
     // return their current access token 
-    await RefreshToken.findOne({ email: email })
+    await Session.findOne({ email: email })
         .exec()
         .then((doc) => {
-            refreshTokenObj = doc;
+            session = doc;
             // console.log(`found doc: ${JSON.stringify(doc)}`);
         })
         .catch((err) => {
-            console.error(err);
+            console.error(`getSession err: ${err}`);
             done('Could not use the given email to search for a refresh token!');
         }
     );
 
-    if (refreshTokenObj) {
-        done(null, refreshTokenObj);
+    if (session) {
+        done(null, session);
         return;
     }
 
-    // Generate an access token
+    // User does not have a current session
+    // Generate an access token/refresh token
     const body = { _id: _id, email: email };
     const accessToken = jwt.sign(body, process.env.JWT_SECRET_KEY, { expiresIn: '20m'});
     const refreshToken = jwt.sign(body, process.env.JWT_REFRESH_KEY);
 
-    // Save the refreshToken and its associated info
-    new RefreshToken({
+    // Save the session and its associated info
+    new Session({
         email: email,
         accessToken: accessToken,
-        refreshToken: refreshToken 
+        refreshToken: refreshToken,
+        mfaRequired: mfaRequired
     }).save()
         .then((doc) => {
             // Return the token
@@ -79,15 +87,14 @@ router.get('/google/callback',
                 else {
 
                     // Get a refresh token and access token for the user
-                    getRefreshToken(user._id, user.email, (err, refreshTokenObj) => {
-                        // console.log(`getRefreshToken-cb err ${err}`);
-                        // console.log(`getRefreshToken-cb refreshTokenObj ${JSON.stringify(refreshTokenObj)}`);
-                        if (err) {
+                    getSession(user, (err, session) => {
+                        if (err)
                             res.redirect('http://localhost:3000/login');
-                        }
                         else {
-                            const refreshToken = refreshTokenObj.refreshToken;
-                            const accessToken = refreshTokenObj.accessToken;
+                            const refreshToken = session.refreshToken;
+                            const accessToken = session.accessToken;
+                            const mfaRequired = session.mfaRequired;
+                            const mfaVerified = session.accessToken;
                             // Return the tokens
                             let dashboardUrl = url.format({
                                 protocol: 'http',
@@ -95,10 +102,11 @@ router.get('/google/callback',
                                 pathname: '/dashboard',
                                 query: {
                                     authToken: accessToken,
-                                    refreshToken: refreshToken           
+                                    refreshToken: refreshToken,
+                                    mfaRequired: mfaRequired,
+                                    mfaVerified: mfaVerified
                                 }
-                            })
-                            // console.log(`dashboardUrl: ${dashboardUrl}`);
+                            });
                             res.redirect(dashboardUrl);
                         }
                     });
@@ -126,33 +134,23 @@ router.post('/login',
 
                     const _id = user._id; // store the user's _id for easy access
                     const email = user.email; // store the user's eamil for easy access
-                    const enrolled = user.enrolled;
-
-                    // If the user is enrolled in 2fa, set a flag to navigate to the 2fa screen
-                    if (enrolled) {
-                        const refreshToken = null;
-                        const accessToken = null;
-                        const tfa = user.enrolled;
-                        res.status(200).json({
-                            accessToken,
-                            refreshToken,
-                            tfa
-                        });
-                    }
 
                     // Get a refresh token and access token for the user
-                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                    getSession(user, (err, session) => {
                         if (err)
                             res.status(500).json(err);
                         else {
-                            const refreshToken = refreshTokenObj.refreshToken;
-                            const accessToken = refreshTokenObj.accessToken;
-                            const tfaSetupRequired = false;
-                            // Return the tokens
+                            const refreshToken = session.refreshToken;
+                            const accessToken = session.accessToken;
+                            const mfaRequired = session.mfaRequired;
+                            const mfaVerified = session.mfaVerified;
+
+                            // Return the tokens and mfa info
                             res.status(200).json({
                                 accessToken,
                                 refreshToken,
-                                tfaSetupRequired
+                                mfaRequired,
+                                mfaVerified
                             });
                         }
                     });
@@ -164,57 +162,47 @@ router.post('/login',
     }
 );
 
-
-// log in should 
-
-
-// TODO: impelement the following get an post methods from the example app
-
-/*
- * take user's auth token to verify logged in
- * check if enrolled in 2fa
- *  if enrolled send to 2fa screen (set flag in res)
- *  else return 
- */
-
-// app.post('/login-otp', 
-//   passport.authenticate('totp', { failureRedirect: '/login-otp', failureFlash: true }),
-//   function(req, res) {
-//     req.session.secondFactor = 'totp';
-//     res.redirect('/');
-//   });
-
-// @route POST /auth/login/2fa
+// @route POST /auth/login/mfa
 // @desc begin passport custom auth process
 // @access Public
-router.post('/login/2fa', 
+router.post('/login/mfa', 
     async (req, res, next) => {
 
-        // TODO: check for valid access token first
+        // Get the access token from the header
+        const authHeader = req.headers.authorization;
+        const accessToken = authHeader.split(' ')[1];
+        const token = req.body.code;
 
+        let session = await Session.findOne({ accessToken: accessToken });
+        // Check if a session with this user exists
+        if (!session) {
+            let err = 'Could not find the given accessToken!';
+            res.status(401).json(err);
+            return;
+        }
+        let user = await User.findOne({ email: session.email });
+        // Check if user exists
+        if (!user) {
+            let err = 'Could not find the given email!';
+            res.status(401).send(err);
+            return;
+        }
+        console.log(`/login/mfa token: ${token}`);
+        console.log(`/login/mfa user.mfa_secret: ${token}`);
 
-        // Authenticate the user using passport-totp
-        passport.authenticate('totp', 
-            async (err, user) => {
-                if (err) {
-                    res.status(400).json(err);
-                }
-                    console.log(`/login/2fa user: ${JSON.stringify(user)}`);
-                // try {
-                //     // If the user isn't found log the error and return it
-                //     if (err || !user) {
-                //         return next(err);
-                //     }
-
-                //     const _id = user._id; // store the user's _id for easy access
-                //     const email = user.email; // store the user's eamil for easy access
-
-
-                // } catch (err) {
-                //     res.status(500).json('Could not issue JWT!');
-                // }
-            }
-        )(req, res, next);
+        let isValid = authenticator.check(token, user.mfa_secret);
+        if (isValid) {
+            const mfaVerified = true;
+            await session.updateOne({
+                mfaVerified: mfaVerified
+            });
+            res.status(200).json({ mfaVerified });
+            return;
+        }
+        else {
+            let err = 'Token invalid!';
+            res.status(401).send(err);
+        }
     }
 );
 
@@ -233,10 +221,10 @@ router.post('/token',
         }
 
         // Find the refresh token in the db
-        await RefreshToken.findOne({ refreshToken: refreshToken }).exec()
-            .then((refreshTokenObj) => {
+        await Session.findOne({ refreshToken: refreshToken }).exec()
+            .then((session) => {
 
-                if (!refreshTokenObj) {
+                if (!session) {
                     res.sendStatus(403);
                     return;
                 }
@@ -256,21 +244,21 @@ router.post('/token',
                             { expiresIn: '20m' }
                         );
                         // Remove the old refresh token entry in the db
-                        await RefreshToken
-                            .findByIdAndRemove({ _id: refreshTokenObj._id })
+                        await Session
+                            .findByIdAndRemove({ _id: session._id })
                             .catch(err => { 
                                 console.error(err);
                                 res.status(500).json('Could not delete old token!');
                             });
         
                         // Make new refresh token entry
-                        const newRefreshTokenObj = new RefreshToken({
-                            email: refreshTokenObj.email,
+                        const newSession = new Session({
+                            email: session.email,
                             accessToken: accessToken,
                             refreshToken: refreshToken
                         })
                         // Put new entry in db and error if there is an issue
-                        await newRefreshTokenObj
+                        await newSession
                             .save()
                             .then((doc) => {
                                 res.status(200).json({
@@ -302,7 +290,7 @@ router.post('/logout',
         const accessToken = authHeader.split(' ')[1];
 
         // Remove the refresh token entry from the db
-        RefreshToken.findOneAndRemove({ accessToken: accessToken }, (err, doc) => {
+        Session.findOneAndRemove({ accessToken: accessToken }, (err, doc) => {
             if (!doc)
                 res.status(500).json(`User was not logged in!`);
             else if (err)
@@ -333,12 +321,12 @@ router.post('/register',
                     const email = user.email; // store the user's eamil for easy access
 
                     // Get a refresh token and access token for the user
-                    getRefreshToken(_id, email, (err, refreshTokenObj) => {
+                    getSession(user, (err, session) => {
                         if (err)
                             res.status(500).json(err);
                         else {
-                            const refreshToken = refreshTokenObj.refreshToken;
-                            const accessToken = refreshTokenObj.accessToken;
+                            const refreshToken = session.refreshToken;
+                            const accessToken = session.accessToken;
                             // Return the tokens
                             res.status(200).json({
                                 accessToken,
@@ -469,50 +457,43 @@ router.post('/resetPassword',
     }
 );
 
-router.get('/tfa/info',
+// @route GET /auth/mfa/qrCodeUrl
+// @desc Returns a qr code URL for Google Authenticator for the user
+// @access Public
+router.get('/mfa/qrCodeUrl',
     async (req, res, next) => {
         // Get the access token from the header
         const authHeader = req.headers.authorization;
         const accessToken = authHeader.split(' ')[1];
 
-        RefreshToken.findOne({ accessToken: accessToken }, async (err, refreshTokenDoc) => {
+        Session.findOne({ accessToken: accessToken }, async (err, session) => {
             if (err) {
                 console.error(err);
                 res.status(500).send('Could not query the database!');
             }
             
-            let email = refreshTokenDoc.email;
+            let email = session.email;
             console.log(`email: ${email}`);
             let user = await User.findOne({ email: email });
             // Check if user exists
             if (!user) {
-                // Call passport's callback for error
                 res.status(401).send('Could not find the given email!');
                 return;
             }
-            
-            if (user.enrolled_in_mfa) {
 
-                let mfa_key = user.mfa_key; // Retrieve stored mfa_key
-                let encodedKey = base32.encode(mfa_key); // Base 32 encode it
-                // Create otpUrl and a qr code for a Google Authenticator account
-                let otpUrl = `otpauth://totp/${process.env.APP_NAME}:${email}?issuer=${process.env.APP_NAME}&secret=${encodedKey}`;
-                let qrImage = `https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=${encodeURIComponent(otpUrl)}`;
-                
+            // Create otpUrl and a qr code for a Google Authenticator account
+            let mfa_secret = user.enrolled_in_mfa ? user.mfa_secret : authenticator.generateSecret();
+            let otpUrl = `otpauth://totp/${process.env.APP_NAME}:${email}?secret=${mfa_secret}&issuer=${process.env.APP_NAME}`;
+            let qrImage = `https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=${encodeURIComponent(otpUrl)}`;
+            
+            if (user.enrolled_in_mfa) 
                 // Return qr code url
                 res.status(200).json({ qrImage });
-            }
             else {
-                let mfa_key = crypto.randomBytes(10).toString(); // Generate random 10-byte key
-                let encodedKey = base32.encode(mfa_key); // Base 32 encode it
-                // Create otpUrl and a qr code for a Google Authenticator account
-                let otpUrl = `otpauth://totp/${process.env.APP_NAME}:${email}?issuer=${process.env.APP_NAME}&secret=${encodedKey}`;
-                let qrImage = `https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=${encodeURIComponent(otpUrl)}`;
-                
                 // Update the user to enrolled and store their mfa key
                 user.updateOne({
                     enrolled_in_mfa: true,
-                    mfa_key: mfa_key
+                    mfa_secret: mfa_secret
                 }, (err, doc) => {
                     if (err) {
                         console.error(err);
@@ -523,6 +504,46 @@ router.get('/tfa/info',
                         res.status(200).json({ qrImage });
                 });
             }
+        });
+        
+    }
+);
+
+// @route GET /auth/sessionInfo
+// @desc Returns the following JSON object containing information pertaining 
+// to the user's session
+// {
+//     authTokenValid: boolean,
+//     mfaRequired: boolean,
+//     mfaVerified: boolean
+// }
+// @access Public
+router.get('/sessionInfo',
+    async (req, res, next) => {
+        // Get the access token from the header
+        const authHeader = req.headers.authorization;
+        const accessToken = authHeader.split(' ')[1];
+
+        Session.findOne({ accessToken: accessToken }, async (err, session) => {
+            if (err || !session) {
+                console.error(`/sessionInfo err: ${err}`);
+                res.status(500).send('Could not query the database!');
+                return;
+            }
+            
+            const authTokenValid = true; // The auth token is valid because it was found in the db 
+            const mfaRequired = session.mfaRequired;
+            const mfaVerified = session.mfaVerified;
+            console.log(JSON.stringify({ 
+                authTokenValid, 
+                mfaRequired, 
+                mfaVerified 
+            }));
+            res.status(200).json({ 
+                authTokenValid, 
+                mfaRequired, 
+                mfaVerified 
+            });
         });
         
     }

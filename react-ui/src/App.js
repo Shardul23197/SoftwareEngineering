@@ -13,6 +13,7 @@ import WorkoutDetails from './components/WorkoutDetails';
 import Profile from './components/Profile/Profile';
 import PrivateRoute from './route_types/PrivateRoute';
 import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
+import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
@@ -40,9 +41,9 @@ function App() {
                 </UnauthenticatedRoute>    
             }/>
             <Route path='/twoFactor' element={
-                <PrivateRoute>
+                <UnverifiedRoute>
                     <TwoFactor />
-                </PrivateRoute>    
+                </UnverifiedRoute>    
             }/>
             <Route path='/register' element={
                 <UnauthenticatedRoute>

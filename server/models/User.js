@@ -48,7 +48,7 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false
     },
-    mfa_key: {
+    mfa_secret: {
         type: String
     }
 });
@@ -58,7 +58,6 @@ const UserSchema = new Schema({
 UserSchema.pre(
     'save',
     async function (next) {
-        console.log(this.password);
         // const user = this;
         const hash = await bcrypt.hash(this.password, 10);
         
