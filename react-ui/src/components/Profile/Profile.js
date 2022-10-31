@@ -285,7 +285,7 @@ export default function Profile() {
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                   <div className="d-flex justify-content-end text-center py-1">
                     <div>
-                      {status === 'approved' && role === 'trainer' ? <Button variant="contained" color="default"
+                      {(true || status === 'approved') && role === 'trainer' ? <Button variant="contained" color="default"
                         className='material-button'
                         startIcon={<CloudUploadIcon />}
                         onClick={() => {
@@ -351,7 +351,7 @@ export default function Profile() {
                   </div>
                   {renderByStatus()}
                   <MDBRow md='4'>
-                    {status === 'approved' && role === 'trainer' && videos ? <VideoCard videos={videos} /> : ''}
+                    {(true || (status === 'approved' && role === 'trainer')) && videos ? <VideoCard videos={videos} /> : ''}
                   </MDBRow>
                 </MDBCardBody>
               </MDBCard>
