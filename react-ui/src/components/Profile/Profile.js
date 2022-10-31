@@ -17,16 +17,25 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
+import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
+
 export default function Profile() {
+  let mfaRequired = localStorage.getItem('mfaRequired');
   const selector = useSelector(state => state.email)
   const [userEmail, setUserEmail] = useState('')
   const [userFullName, setUserFullName] = useState('')
   const [userPhone, setUserPhone] = useState('')
   const [userCity, setUserCity] = useState('')
   const [userImage, setUserImage] = useState('')
+  const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
+  const [mfaSecret, setMfaSecret] = useState('')
   const [dataFromState, setDataFromState] = useState(selector)
   const [trainerDetails, setTrainerDetails] = useState('')
   const [status, setStatus] = useState('todo')
+
+  // Auth token and refresh token state
+  const existingAuthtoken = localStorage.getItem('authToken') || '';
+  const [authToken] = useState(existingAuthtoken);
 
   //todo
   //get user data
@@ -57,7 +66,28 @@ export default function Profile() {
         setStatus('notfound')
         console.log(error)
       })
-  }, [dataFromState, selector ])
+
+    // If the user has mfa enabled, get the google authenticator qr code url from the server
+    if (mfaRequired === 'true') {
+      const headers = {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+      });
+      
+      instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
+        setMfaQrCodeUrl(res.data.qrImage);
+        setMfaSecret(res.data.mfa_secret);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+  }, [authToken, dataFromState, mfaRequired, selector, setMfaQrCodeUrl])
 
   const updateProfile = (event) => {
     event.preventDefault()
@@ -132,6 +162,30 @@ export default function Profile() {
     }).catch((err) => {
       toast('Something went wrong!')
     })
+  }
+
+  const enroll = (event) => {
+    event.preventDefault()
+
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
+    
+    // Get authenticator for the user from the backend
+    instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
+      setMfaQrCodeUrl(res.data.qrImage);
+      mfaRequired = 'true'; 
+      localStorage.setItem('mfaRequired', 'true');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   return (
@@ -238,6 +292,66 @@ export default function Profile() {
                   <MDBFile size='sm' id='video' onChange={uploadVideo} />
                   </div>
               </MDBRow>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBContainer>
+      <MDBContainer className="py-5">
+        <MDBCol lg="12">
+          <MDBCard className="mb-4">
+            <MDBCardBody>
+
+              <h1>MFA</h1>
+
+              {/* Display mfa qrcode and code if the user is enrolled in mfa */}
+              {mfaRequired === 'false' ? 
+                <MDBRow>
+                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable MFA</MDBBtn>
+                </MDBRow>
+              :
+                <MDBRow>
+                <MDBRow sm="8">
+                  <MDBCardText>
+                    Please download the Google Authenticator app and use the qr code below to set up
+                    mfa! You will be required to enter a 6-digit code each time you log in to increase
+                    the security of your account.
+                  </MDBCardText>
+                </MDBRow>
+                <MDBRow>
+                  <MDBCol sm="3">
+                    <MDBRow>
+                    <a href='https://apps.apple.com/us/app/google-authenticator/id388497605'>
+                    <MDBCardImage src={downloadFromAppStoreSVG}
+                                  alt='Download Google Authenticator from the App Store!' 
+                                  style={{ width: '200px' }} 
+                                  fluid
+                                  />
+                    </a>
+                    </MDBRow>
+                    <MDBRow>
+                    <a href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                    <MDBCardImage src={'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'}
+                                  alt='Get it on Google Play' 
+                                  style={{ width: '200px' }} 
+                                  fluid
+                                  />
+                    </a>
+                    </MDBRow>
+                  </MDBCol>
+                  <MDBCol sm="9">
+                    <MDBCardImage src={mfaQrCodeUrl} 
+                                  alt="MFA QR Code Url" 
+                                  style={{ 
+                                    width: '200px',
+                                    marginLeft:'auto',
+                                    marginRight:'auto' 
+                                  }} 
+                                  fluid />
+                    <h2>{mfaSecret}</h2>
+                  </MDBCol>
+                </MDBRow>
+                </MDBRow>
+              }
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

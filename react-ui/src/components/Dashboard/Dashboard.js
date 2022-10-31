@@ -27,10 +27,7 @@ export default function Dashboard() {
   const selector = useSelector(state => state.email)
   const [data, setData] = useState(selector)
   const [role, setRole] = useState('')
-
-  // Auth token and refresh token state
-  const existingAuthtoken = localStorage.getItem('authToken') || '';
-  const [authToken, setAuthtoken] = useState(existingAuthtoken);
+  const authToken = localStorage.getItem('authToken');
 
 
   const searchWorkout=()=>{
@@ -71,30 +68,26 @@ export default function Dashboard() {
   };
 
   /* When the user clicks log out, send post to {backend base url}/auth/logout
-   * and remove authToken and refreshToken from local storage.
+   * and remove all items from local storage then navigate home.
    */
-  const onLogout = (event) => {
-      const headers = {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-      };
-      const instance = axios.create({
-          baseURL: 'http://localhost:5000',
-          withCredentials: true,
-          headers: headers
-      });
+  const onLogout = async (event) => {
+    const headers = {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
       
-      instance.post('/auth/logout', {}).then((res) => {
-          // set token in local storage to the returned jwt
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          
-          // Redirect to the dashboard because the user is logged in
-          navigate('/');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    // Terminate the user's session information
+    await instance.post('/auth/logout', {}).then((res) => {})
+      .catch((error) => console.error(error));
+
+    // Navigate to home
+    localStorage.clear();
+    navigate('/');
   };
 
 
@@ -208,10 +201,10 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <Link to="/profile">
+          <a href="#" onClick={navigateToProfile}>
             <i class='bx bx-coin-stack' ></i>
             <span class="links_name">Profile</span>
-          </Link>
+          </a>
         </li>
         <li>
           <a href="#">
@@ -220,9 +213,9 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="#" onClick={onLogout}>
             <i class='bx bx-log-out'></i>
-            <button class="links_name" onClick={onLogout}>Log out</button>
+            <span class="links_name">Log out</span>
           </a>
         </li>
       </ul>
