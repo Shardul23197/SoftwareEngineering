@@ -230,6 +230,7 @@ export default function Profile() {
       setMfaQrCodeUrl(res.data.qrImage);
       mfaRequired = 'true'; 
       localStorage.setItem('mfaRequired', 'true');
+      localStorage.setItem('mfaVerified', 'true');
     })
     .catch((error) => {
       console.error(error);
@@ -427,50 +428,49 @@ export default function Profile() {
               <h1>MFA</h1>
 
               {/* Display mfa qrcode and code if the user is enrolled in mfa */}
-              {mfaRequired === 'false' ? 
+              { mfaRequired === 'false' ? 
                 <MDBRow>
-                  <MDBBtn style={{ 'margin-top': '10px' }} onClick={enroll}>Enable MFA</MDBBtn>
+                  <MDBBtn style={{ 'margin-top': '10px', width: '200px' }} onClick={enroll}>Enable MFA</MDBBtn>
                 </MDBRow>
               :
                 <MDBRow>
                 <MDBRow sm="8">
                   <MDBCardText>
-                    Please download the Google Authenticator app and use the qr code below to set up
+                    Please download the Google Authenticator app and use the qr code (or secret) below to set up
                     mfa! You will be required to enter a 6-digit code each time you log in to increase
                     the security of your account.
                   </MDBCardText>
                 </MDBRow>
-                <MDBRow>
-                  <MDBCol sm="3">
-                    <MDBRow>
-                    <a href='https://apps.apple.com/us/app/google-authenticator/id388497605'>
+                <MDBRow style={{ flex: 'left' }}>
+                  <MDBCol sm="5" style={{ flex: 'left', width: '400px', marginTop: '90px' }}>
+                    <MDBRow style={{flex: 'left'}}>
                     <MDBCardImage src={downloadFromAppStoreSVG}
                                   alt='Download Google Authenticator from the App Store!' 
-                                  style={{ width: '200px' }} 
+                                  href='https://apps.apple.com/us/app/google-authenticator/id388497605'
+                                  style={{ flex: 'left', width: '150px', marginLeft: '35px' }} 
                                   fluid
                                   />
-                    </a>
-                    </MDBRow>
-                    <MDBRow>
-                    <a href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
                     <MDBCardImage src={'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'}
-                                  alt='Get it on Google Play' 
-                                  style={{ width: '200px' }} 
+                                  alt='Get it on Google Play'
+                                  href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'
+                                  style={{ flex: 'right', width: '180px', marginLeft: '10px' }} 
                                   fluid
                                   />
-                    </a>
                     </MDBRow>
                   </MDBCol>
-                  <MDBCol sm="9">
-                    <MDBCardImage src={mfaQrCodeUrl} 
+                  <MDBCol sm="6">
+                  <div className='center d-flex align-items-center'>
+                    <MDBCardImage className='center'
+                                  src={mfaQrCodeUrl} 
                                   alt="MFA QR Code Url" 
                                   style={{ 
                                     width: '200px',
-                                    marginLeft:'auto',
-                                    marginRight:'auto' 
                                   }} 
                                   fluid />
-                    <h2>{mfaSecret}</h2>
+                  </div>
+                  <div className='d-flex align-items-center'>
+                    <h3 className='center' style={{ marginTop: '40px'}}>{mfaSecret}</h3>
+                  </div>
                   </MDBCol>
                 </MDBRow>
                 </MDBRow>

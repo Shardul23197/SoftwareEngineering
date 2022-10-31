@@ -34,9 +34,10 @@ const Register = () => {
 
       const formData = {
           name: username,
+          username: username,
           email: email,
           password: password,
-          confirmpassword: confirmPassword
+          isTrainer: isTrainer
       }    
       
       instance.post('/auth/register', qs.stringify(formData))
