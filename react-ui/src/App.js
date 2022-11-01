@@ -4,6 +4,8 @@ import './App.css';
 import React, { useState, useEffect, useCallback } from 'react';
 import Dashboard from './components/Dashboard/Dashboard';
 import Register from './components/Register/Register';
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import ResetPassword from './components/ResetPassword/ResetPassword';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 //import UserDetails from './components/UserDetails';
@@ -11,6 +13,12 @@ import Profile from './components/Profile/Profile';
 import PrivateRoute from './route_types/PrivateRoute';
 import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
 import UserDetails from './components/UserDetails/UserDetails';
+import TwoFactor from './components/TwoFactor/TwoFactor';
+import WorkoutDetails from './components/WorkoutDetails';
+import Profile from './components/Profile/Profile';
+import PrivateRoute from './route_types/PrivateRoute';
+import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
+import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
@@ -27,27 +35,6 @@ function App() {
         <AuthContext.Provider value = {{ authToken, setAuthToken: setAuthtoken, refreshToken, setRefreshToken: setRefreshtoken }}>
         <BrowserRouter>
         <Routes>
-
-            
-
-            <Route path='/dashboard' element={
-                <PrivateRoute>
-                    <Dashboard />
-                </PrivateRoute>    
-            }/>
-
-            <Route path='/dashboard/search' element={
-                <PrivateRoute>
-                    <Dashboard />
-                </PrivateRoute>    
-            }/>
-
-            <Route path='/dashboard/:id' element={
-                <PrivateRoute>
-                    <UserDetails />
-                </PrivateRoute>    
-            }/>
-            
             <Route path='/' element={
                 <UnauthenticatedRoute>
                     <Home />
@@ -59,9 +46,24 @@ function App() {
                     <Login />
                 </UnauthenticatedRoute>    
             }/>
+            <Route path='/twoFactor' element={
+                <UnverifiedRoute>
+                    <TwoFactor />
+                </UnverifiedRoute>    
+            }/>
             <Route path='/register' element={
                 <UnauthenticatedRoute>
                     <Register />
+                </UnauthenticatedRoute>    
+            }/>
+            <Route path='/forgotPassword' element={
+                <UnauthenticatedRoute>
+                    <ForgotPassword />
+                </UnauthenticatedRoute>    
+            }/>
+            <Route path='/resetPassword' element={
+                <UnauthenticatedRoute>
+                    <ResetPassword />
                 </UnauthenticatedRoute>    
             }/>
             <Route path='/dashboard' element={

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link, useLocation } from "react-router-dom";
+import {Link, useNavigate, useSearchParams } from "react-router-dom";
 import '../../App.css'; 
 import Alert from 'react-bootstrap/Alert';
 import Pagination from '../Pagination';
@@ -8,7 +9,7 @@ import ChipInput from 'material-ui-chip-input';
 import useStyles from './styles'
 import axios from 'axios'
 import { useAuth } from '../auth/auth'
-import { useSelector } from 'react-redux';
+import {useSelector } from 'react-redux';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import {getUsersBySearch} from '../../state/actions/users'
@@ -19,6 +20,8 @@ import Users from '../Users/Users';
 function useQuery(){
   return new URLSearchParams(useLocation().search);
 }
+import store from '../../state/store'
+import './Dashboard.css'
 
 
 export default function Dashboard() {
@@ -30,13 +33,14 @@ export default function Dashboard() {
   const [search,setSearch]=useState('');
   const [tags,setTags]=useState([]);
   const navigate = useNavigate();
-  const selector = useSelector(state => state.email)
-  const [data, setData] = useState(selector)
+  const selector = useSelector(state => state)
+  const [data, setData] = useState(selector.email)
+  const [roleFromState, setRoleFromState] = useState(selector.role)
   const [role, setRole] = useState('')
 
   // Auth token and refresh token state
-  const existingAuthtoken = localStorage.getItem('authToken') || '';
-  const [authToken, setAuthtoken] = useState(existingAuthtoken);
+  //const existingAuthtoken = localStorage.getItem('authToken') || '';
+  //const [authToken, setAuthtoken] = useState(existingAuthtoken);
   const [currentId, setCurrentId] = useState(0);
 
   
@@ -47,6 +51,7 @@ export default function Dashboard() {
     setInputText(lowerCase);
   };
   
+  const authToken = localStorage.getItem('authToken');
 
 
   const searchUser=()=>{
@@ -78,47 +83,44 @@ export default function Dashboard() {
 
   const handleDelete=(tagtoDelete)=>setTags(tags.filter((tag)=>tag!=tagtoDelete));
 
-  useEffect(() => {
-    setData(selector)
+  const getRole = () => {
+    setData(selector.email)
     axios.get('http://localhost:5000/api/users/getrole', { params: { email: data } })
-      .then((res) => {
-        setRole(res.data.role)
-      })
-      .catch((error) => {
-        if (error.response)
-          console.log(error.response.data);
-      })
-  }, [selector, role, navigate, data]);
+    .then((res) => {
+      store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
+      setRole(res.data.role)      
+    })
+    .catch((error) => {
+      if (error.response)
+        console.log(error.response.data);
+    })
+  }
+  useEffect(() => {
+    getRole()
+  }, []);
 
-  const navigateToProfile = () => {
-    navigate('/profile')
-  };
 
   /* When the user clicks log out, send post to {backend base url}/auth/logout
-   * and remove authToken and refreshToken from local storage.
+   * and remove all items from local storage then navigate home.
    */
-  const onLogout = (event) => {
-      const headers = {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-      };
-      const instance = axios.create({
-          baseURL: 'http://localhost:5000',
-          withCredentials: true,
-          headers: headers
-      });
+  const onLogout = async (event) => {
+    const headers = {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
       
-      instance.post('/auth/logout', {}).then((res) => {
-          // set token in local storage to the returned jwt
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          
-          // Redirect to the dashboard because the user is logged in
-          navigate('/');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    // Terminate the user's session information
+    await instance.post('/auth/logout', {}).then((res) => {})
+      .catch((error) => console.error(error));
+
+    // Navigate to home
+    localStorage.clear();
+    navigate('/');
   };
 
 
@@ -136,12 +138,14 @@ export default function Dashboard() {
             <span class="links_name">Explore</span>
           </a>
         </li>
+        {role === 'trainer' ? 
         <li>
           <a href="#">
             <i class='bx bx-box' ></i>
             <span class="links_name">Workout</span>
           </a>
-        </li>
+        </li> : ""
+        }
         <li>
           <a href="#">
             <i class='bx bx-list-ul' ></i>
@@ -161,7 +165,7 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <Link to="/profile">
+          <Link to = '/profile'>
             <i class='bx bx-coin-stack' ></i>
             <span class="links_name">Profile</span>
           </Link>
@@ -173,10 +177,10 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class='bx bx-log-out'></i>
-            <button class="links_name" onClick={onLogout}>Log out</button>
-          </a>
+        <button className='logoutbutton'  onClick={onLogout}>
+            <i class='bx bx-coin-stack' ></i>
+            <span class="links_name">Logout</span>
+          </button>
         </li>
       </ul>
   </div>

@@ -47,7 +47,7 @@ module.exports = (passport) => {
                     done(err);
                 })
         }
-    ))
+    ));
 
     // Passport custom register strategy
     passport.use(
@@ -65,7 +65,8 @@ module.exports = (passport) => {
                     username: req.body.username,
                     name: req.body.name,
                     email: email,
-                    password: req.body.password
+                    password: req.body.password,
+                    isEnrolledInDuo: true
                 }).save()
                     .then((doc) => {
                         done(null, doc);
@@ -75,7 +76,8 @@ module.exports = (passport) => {
                         done(err);
                     });
             }
-        ))
+        )
+    );
 
     // Passport Google auth strategy
     passport.use('google',
@@ -124,6 +126,7 @@ module.exports = (passport) => {
         })
     );
 
+    // Returns the email associated with a user's authToken
     passport.use('jwt',
         new JwtStrategy(
         {
@@ -131,27 +134,13 @@ module.exports = (passport) => {
             secretOrKey: process.env.JWT_SECRET_KEY,
         },
         async (token, done) => {
+            console.log('here');
             try {
-                // console.log(`jwt-strategy-token: ${JSON.stringify(token)}`);
-                return done(null, token.token);
+                console.log(`jwt-strategy-token: ${token.email}`);
+                return done(null, token.email);
             } catch (error) {
                 done(error);
             }
         }
     ));
-
-    passport.serializeUser((user, done) => {
-        console.log(`serializeUser user: ${JSON.stringify(user)}`);
-        done(null, user.id);
-    });
-
-    passport.deserializeUser((id, done) => {
-        console.log(`deserializeUser id: ${JSON.stringify(id)}`);
-        
-        User.findById(id, (err, user) => {
-            console.log(`deserializeUser user: ${JSON.stringify(user)}`);
-
-            done(err, user);
-        })
-    });
 }

@@ -1,5 +1,6 @@
 const INITIAL_STATE = {
     email: '',
+    role: ''
 };
 
 const reducer = (state = INITIAL_STATE, action) => {
@@ -8,6 +9,10 @@ const reducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state, email: action.payload,
             };
+        case 'SET_ROLE':
+            return {
+                ...state, role: action.payload
+            }
         default: return state;
     }
 };

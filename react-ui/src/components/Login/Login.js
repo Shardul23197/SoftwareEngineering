@@ -3,30 +3,33 @@ import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox, M
 import { Link } from 'react-router-dom'
 import './login.css'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../auth/auth'
 import axios from 'axios'
 import qs from 'qs' // needed for axios post to work properly
 import util from 'util'
 import store from '../../state/store'
 
 export default function Login() {
-    const [username, setUserName] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const { setAuthToken, setRefreshToken } = useAuth();
+    const [email, setEmail] = useState(''); // String
+    const [password, setPassword] = useState(''); // String
+    const [error, setError] = useState(''); // String
     const navigate = useNavigate();
 
-    const onUsernameChange = (event) => {
-      setUserName(event.target.value)
+    const onEmailChange = (event) => {
+      setEmail(event.target.value);
     }
 
     const onPasswordChange = (event) => {
-      setPassword(event.target.value)
+      setPassword(event.target.value);
+    }
+
+    const emailValidation = (event) => {
+      setError(!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i).test(email) ? 'Invalid email!' : '');
     }
 
     const onSubmit = (event) => {
         event.preventDefault();
         
+        localStorage.clear();
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         };
@@ -37,27 +40,35 @@ export default function Login() {
         });
 
         const formData = {
-            email: username,
+            email: email,
             password: password
         };
         
         instance.post('/auth/login', qs.stringify(formData)).then((res) => {
-            console.log(`res: ${util.inspect(res)}`);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
+            const mfaRequired = res.data.mfaRequired;
+            const mfaVerified = res.data.mfaVerified;
 
-            // set tokens in local storage to the returned jwts
-            setAuthToken(accessToken); // auth context provider
-            setRefreshToken(refreshToken); // auth context provider
+
             localStorage.setItem('authToken', accessToken); // for browser
             localStorage.setItem('refreshToken', refreshToken); // for browser
+            localStorage.setItem('mfaRequired', mfaRequired); // for browser
+            localStorage.setItem('mfaVerified', mfaVerified); // for browser
+            store.dispatch({type: 'SET_EMAIL', payload: email});
 
-            // Redirect to the dashboard because the user is logged in
-            store.dispatch({type: 'SET_EMAIL', payload: username}) // fix-routes carried in from merge with redux
-            navigate('/dashboard');
+            console.log(mfaRequired);
+            if (mfaRequired) {
+                navigate('/twoFactor');
+                return;
+            }
+            else {
+                navigate('/dashboard');
+                return;
+            }
         })
         .catch((error) => {
-            if (error) setError({ message: error.response.data });
+            if (error) setError(error.response.data);
         });
     };
 
@@ -87,16 +98,16 @@ export default function Login() {
                             <p className="text-center fw-bold mx-3 mb-0">Or</p>
                         </div>
 
-                        <MDBInput wrapperClass='mb-4' label='Email address' id='formControlLg' value={username} onChange={onUsernameChange} type='email' size="lg" />
+                        <MDBInput wrapperClass='mb-4' label='Email address' id='formControlLg' value={email} onBlur={emailValidation}   onChange={onEmailChange} type='email' size="lg" />
                         <MDBInput wrapperClass='mb-4' label='Password' value={password} onChange={onPasswordChange} id='formControlLg' type='password' size="lg" />
 
                         <div className="d-flex justify-content-between mb-4">
                             <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
-                            <a href="!#">Forgot password?</a>
+                            <Link to="/forgotPassword">Forgot password?</Link>
                         </div>
-                        {error !== '' ?
+                        {error ?
                             <MDBTypography id="danger-text" note noteColor='danger'>
-                                <strong>{error.message}</strong>
+                                <strong>{error}</strong>
                             </MDBTypography> : ""}
                         <div className='text-center text-md-start mt-4 pt-2'>
                             <MDBBtn className="mb-0 px-5" size='lg'>Login</MDBBtn>

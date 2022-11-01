@@ -15,6 +15,7 @@ const Register = () => {
   const [username, setUserName] = useState('')
   const [error, setError] = useState('')
   const [usernameError, setUserNameError] = useState('')
+  const [emailError, setEmailError] = useState('')
   const [isTrainer, setIsTrainer] = useState(false)
   const { setAuthToken, setRefreshToken } = useAuth();
   const navigate = useNavigate();
@@ -82,12 +83,11 @@ const Register = () => {
   }
 
   const userNameValidation = () => {
-    if ((/^[a-z0-9_.]+$/).test(username)) {
-      setUserNameError(false)
-    }
-    else {
-      setUserNameError(true)
-    }
+    setUserNameError(!(/^[a-z0-9_.]+$/).test(username));
+  }
+
+  const emailValidation = (event) => {
+    setEmailError(!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i).test(email));
   }
   
   return (
@@ -107,7 +107,7 @@ const Register = () => {
 
                 <div className="d-flex flex-row align-items-center mb-4">
                   <MDBIcon fas icon="envelope me-3" size='lg' />
-                  <MDBInput label='Email' id='form2' value={email} onChange={onEmailChange} type='email' />
+                  <MDBInput label='Email' id='form2' value={email} onBlur={emailValidation} onChange={onEmailChange} type='email' />
                 </div>
 
                 <div className="d-flex flex-row align-items-center mb-4">

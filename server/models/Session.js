@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// Create Schema
-const RefreshTokenSchema = new Schema({
+const SessionSchema = new Schema({
     email: {
         type: String,
         unique: true,
@@ -17,7 +16,15 @@ const RefreshTokenSchema = new Schema({
         type: String,
         unique: true,
         required: true
+    },
+    mfaRequired: {
+        type: Boolean,
+        required: true
+    },
+    mfaVerified: {
+        type: Boolean,
+        default: 'false'
     }
 });
 
-module.exports = RefreshToken = mongoose.model("refreshtokens", RefreshTokenSchema);
+module.exports = Session = mongoose.model("sessions", SessionSchema);
