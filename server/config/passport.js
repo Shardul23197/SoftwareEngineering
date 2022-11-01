@@ -5,6 +5,7 @@ const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('../models/User');
 const util = require('util');
+const UserProfile = require('../models/UserProfile');
 
 module.exports = (passport) => {
     // Passport custom login strategy
@@ -61,20 +62,35 @@ module.exports = (passport) => {
                     return;
                 }
 
-                new User({
+                let role = 'user';
+                if (req.body.isTrainer)
+                    role = 'trainer'
+                let newUser = new User({
                     username: req.body.username,
                     name: req.body.name,
                     email: email,
                     password: req.body.password,
-                    isEnrolledInDuo: true
-                }).save()
-                    .then((doc) => {
-                        done(null, doc);
+                    role: role
+                });
+
+                let newUserProfile = new UserProfile({
+                    email: email,
+                    user: newUser._id
+                });
+
+                newUserProfile.save().catch(err => {
+                    console.error(err);
+                    done(err);
+                })
+                newUser.profile = newUserProfile._id;
+                newUser.save()
+                    .then(user => {
+                        done(null, user);
                     })
-                    .catch((err) => {
-                        console.error(err);
-                        done(err);
-                    });
+                    .catch(err => {
+                    console.error(err);
+                    done(err);
+                })
             }
         )
     );

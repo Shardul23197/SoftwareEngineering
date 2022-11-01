@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {Link, useNavigate, useSearchParams } from "react-router-dom";
 import '../../App.css'; 
 import Alert from 'react-bootstrap/Alert';
 import Pagination from '../Pagination';
@@ -8,11 +8,13 @@ import ChipInput from 'material-ui-chip-input';
 import useStyles from './styles'
 import axios from 'axios'
 import { useAuth } from '../auth/auth'
-import { useSelector } from 'react-redux';
+import {useSelector } from 'react-redux';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import {getWorkoutsBySearch} from '../../actions/workouts'
 import { useDispatch } from 'react-redux';
+import store from '../../state/store'
+import './Dashboard.css'
 
 
 export default function Dashboard() {
@@ -24,8 +26,9 @@ export default function Dashboard() {
   const [search,setSearch]=useState('');
   const [tags,setTags]=useState([]);
   const navigate = useNavigate();
-  const selector = useSelector(state => state.email)
-  const [data, setData] = useState(selector)
+  const selector = useSelector(state => state)
+  const [data, setData] = useState(selector.email)
+  const [roleFromState, setRoleFromState] = useState(selector.role)
   const [role, setRole] = useState('')
   const authToken = localStorage.getItem('authToken');
 
@@ -51,21 +54,22 @@ export default function Dashboard() {
 
   const handleDelete=(tagtoDelete)=>setTags(tags.filter((tag)=>tag!=tagtoDelete));
 
-  useEffect(() => {
-    setData(selector)
+  const getRole = () => {
+    setData(selector.email)
     axios.get('http://localhost:5000/api/users/getrole', { params: { email: data } })
-      .then((res) => {
-        setRole(res.data.role)
-      })
-      .catch((error) => {
-        if (error.response)
-          console.log(error.response.data);
-      })
-  }, [selector, role, navigate, data]);
+    .then((res) => {
+      store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
+      setRole(res.data.role)      
+    })
+    .catch((error) => {
+      if (error.response)
+        console.log(error.response.data);
+    })
+  }
+  useEffect(() => {
+    getRole()
+  }, []);
 
-  const navigateToProfile = () => {
-    navigate('/profile')
-  };
 
   /* When the user clicks log out, send post to {backend base url}/auth/logout
    * and remove all items from local storage then navigate home.
@@ -176,12 +180,14 @@ export default function Dashboard() {
             <span class="links_name">Explore</span>
           </a>
         </li>
+        {role === 'trainer' ? 
         <li>
           <a href="#">
             <i class='bx bx-box' ></i>
             <span class="links_name">Workout</span>
           </a>
-        </li>
+        </li> : ""
+        }
         <li>
           <a href="#">
             <i class='bx bx-list-ul' ></i>
@@ -201,10 +207,10 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <a href="#" onClick={navigateToProfile}>
+          <Link to = '/profile'>
             <i class='bx bx-coin-stack' ></i>
             <span class="links_name">Profile</span>
-          </a>
+          </Link>
         </li>
         <li>
           <a href="#">
@@ -213,10 +219,10 @@ export default function Dashboard() {
           </a>
         </li>
         <li>
-          <a href="#" onClick={onLogout}>
-            <i class='bx bx-log-out'></i>
-            <span class="links_name">Log out</span>
-          </a>
+        <button className='logoutbutton'  onClick={onLogout}>
+            <i class='bx bx-coin-stack' ></i>
+            <span class="links_name">Logout</span>
+          </button>
         </li>
       </ul>
   </div>

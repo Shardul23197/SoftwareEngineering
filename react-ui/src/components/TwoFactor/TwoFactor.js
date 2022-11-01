@@ -65,12 +65,15 @@ export default function TwoFactor() {
         <form onSubmit={onSubmit}>
             <MDBContainer fluid className="p-3 my-5 h-custom">
                 <MDBRow>
-                    <MDBCol col='4' md='6' style={{ width: '400px', marginLeft:'auto', marginRight:'auto' }} >
+                    <MDBCol col='4' md='6' style={{ width: '500px', marginLeft:'auto', marginRight:'auto' }} >
                         <MDBRow>
-                        <div>
-                        <h1 className='text-center text-md-start mt-4 pt-2' >MFA</h1>
-
-                        <p>Please enter the code displayed in your Google Authenticator app!</p>
+                        <div className='d-flex align-items-center'>
+                        <h1 className='center text-center text-md-start mt-4 pt-2'>MFA</h1>
+                        </div>
+                        <div className='d-flex align-items-center'>
+                        <p className='center'>
+                        Please enter the code displayed in your Google Authenticator app!
+                        </p>
                         </div>
                         <MDBInput wrapperClass='mb-4' label='Code' value={code} onChange={onCode} id='formControlLg' type='text' size="lg" />
 
@@ -78,13 +81,11 @@ export default function TwoFactor() {
                             <MDBTypography id="danger-text" note noteColor='danger'>
                                 <strong>{error}</strong>
                             </MDBTypography> : ""}
-                        <div className='text-center text-md-start mt-4 pt-2'>
-                            <MDBBtn className="mb-0 px-5" size='lg'>Submit</MDBBtn>
-                        </div>
-                        </MDBRow>
-                        <MDBRow>
-                        <div className='text-center text-md-start mt-4 pt-2'>
-                            <MDBBtn className="mb-0 px-5" size='lg' onClick={onLogout}>Logout</MDBBtn>
+                        <div className='d-flex align-items-center text-center text-md-start mt-1 pt-2'>
+                            <MDBBtn className="center mb-0 px-5" size='lg'>Submit</MDBBtn>
+                            <MDBBtn className="center mb-0 px-5" size='lg' onClick={onLogout} style={{ marginLeft: '30px' }}>
+                            Logout
+                            </MDBBtn>
                         </div>
                         </MDBRow>
                     </MDBCol>
