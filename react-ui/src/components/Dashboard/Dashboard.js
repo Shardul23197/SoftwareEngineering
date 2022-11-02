@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link, useLocation } from "react-router-dom";
-import {Link, useNavigate, useSearchParams } from "react-router-dom";
+//import {Link, useNavigate, useSearchParams } from "react-router-dom";
 import '../../App.css'; 
 import Alert from 'react-bootstrap/Alert';
 import Pagination from '../Pagination';
@@ -15,13 +15,14 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 import {getUsersBySearch} from '../../state/actions/users'
 import { useDispatch } from 'react-redux';
 import Users from '../Users/Users';
+import store from '../../state/store'
+import './Dashboard.css'
 
 
 function useQuery(){
   return new URLSearchParams(useLocation().search);
 }
-import store from '../../state/store'
-import './Dashboard.css'
+
 
 
 export default function Dashboard() {
