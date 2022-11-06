@@ -33,6 +33,43 @@ router.post('/updatedetails', (req, res) => {
   })
 });
 
+// @route POST /api/users/profile/updatewellnessinfo
+// @desc update a user's wellness information in the database
+// @access Public
+router.post('/updatewellnessinfo', async (req, res) => {
+  // Get the access token from the header
+  const { authorization } = req.headers;
+  const accessToken = authorization.split(' ')[1];
+  const token = req.body.code;
+
+  let session = await Session.findOne({ accessToken: accessToken });
+  // Check if a session with this user exists
+  if (!session) {
+      let err = 'Could not find the given accessToken!';
+      res.status(401).json(err);
+      return;
+  }
+
+  const { heightFeet, heightInches, weight, sleepHours, sleepMinutes } = req.body;
+  console.log(req.body)
+  UserProfile.findOneAndUpdate(
+    { email: session.email }, 
+    { $set: { 
+      heightFeet: heightFeet, 
+      heightInches: heightInches, 
+      weight: weight,
+      sleepHours: sleepHours,
+      sleepMinutes: sleepMinutes
+    }}, 
+    { new: true }, 
+    (err, doc) => {
+    if (err) {
+      console.log("Something wrong when updating data!");
+    }
+    return res.status(200).json({ data: doc });
+  })
+});
+
 router.post('/upload', multer.single('image'), gcsMiddlewares.sendUploadToGCS, (req, res, next) => {
   const { email } = req.body;
   if (req.file && req.file.gcsUrl) {

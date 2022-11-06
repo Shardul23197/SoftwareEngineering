@@ -23,6 +23,7 @@ import {
   MDBTextArea,
 } from 'mdb-react-ui-kit';
 import axios from 'axios';
+import qs from 'qs';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import VideoCard from './VideoCard';
@@ -30,8 +31,6 @@ import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
-
-import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
 
 export default function Profile() {
   let mfaRequired = localStorage.getItem('mfaRequired');
@@ -43,8 +42,6 @@ export default function Profile() {
   const [userPhone, setUserPhone] = useState('')
   const [userCity, setUserCity] = useState('')
   const [userImage, setUserImage] = useState('')
-  const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
-  const [mfaSecret, setMfaSecret] = useState('')
   const [dataFromState, setDataFromState] = useState(selector)
   const [dataFromStateRole, setDataFromStateRole] = useState(role)
   const [trainerDetails, setTrainerDetails] = useState('')
@@ -54,6 +51,14 @@ export default function Profile() {
   const [videoTitle, setVideoTitle] = useState('')
   const [varyingUpload, setVaryingUpload] = useState(false)
   const [hidden, setHidden] = useState(true)
+
+  // User body measurements
+  const [userHeightFeet, setUserHeightFeet] = useState('')
+  const [userHeightInches, setUserHeightInches] = useState('')
+  const [userWeight, setUserWeight] = useState('')
+  const [userSleepHours, setUserSleepHours] = useState('')
+  const [userSleepMinutes, setUserSleepMinutes] = useState('')
+  const [error, setError] = useState(''); // String
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
@@ -66,10 +71,15 @@ export default function Profile() {
     setDataFromStateRole(role)
     axios.get('/api/users/profile/getdetails', { params: { email: dataFromState } })
       .then((res) => {
-        setUserEmail(res.data.data.email)
-        setUserCity(res.data.data.city)
-        setUserFullName(res.data.data.fullName)
-        setUserPhone(res.data.data.phone)
+          setUserEmail(res.data.data.email)
+          setUserCity(res.data.data.city)
+          setUserFullName(res.data.data.fullName)
+          setUserPhone(res.data.data.phone)
+          setUserHeightFeet(res.data.data.heightFeet);
+          setUserHeightInches(res.data.data.heightInches);
+          setUserWeight(res.data.data.weight);
+          setUserSleepHours(res.data.data.sleepHours);
+          setUserSleepMinutes(res.data.data.sleepMinutes);
         if (!res.data.data.profileImage) {
           setUserImage("https://ui-avatars.com/api/?name=ME&size=256")
         }
@@ -100,30 +110,44 @@ export default function Profile() {
         console.log(error)
       })
     }
+  }, [authToken, dataFromState, mfaRequired, selector, dataFromStateRole, role])
 
-    // If the user has mfa enabled, get the google authenticator qr code url from the server
-    if (mfaRequired === 'true') {
-      const headers = {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      };
-      const instance = axios.create({
+
+  // Updates the wellness information of the user's profile
+  const updateFitnessInfo = (event) => {
+    event.preventDefault();
+
+    // Make sure the user entered values
+    userHeightValidation();
+    userWeightValidation();
+    userSleepValidation();
+    if (error) {
+      setError('Invalid wellness information!')
+      return;
+    }
+    
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
         baseURL: 'http://localhost:5000',
         withCredentials: true,
         headers: headers
-      });
-      
-      instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
-        setMfaQrCodeUrl(res.data.qrImage);
-        setMfaSecret(res.data.mfa_secret);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    });
+    const formData = {
+      heightFeet: userHeightFeet,
+      heightInches: userHeightInches,
+      weight: userWeight,
+      sleepHours: userSleepHours,
+      sleepMinutes: userSleepMinutes
     }
-  }, [authToken, dataFromState, mfaRequired, selector, setMfaQrCodeUrl, dataFromStateRole, role])
-
-
+    instance.post('/api/users/profile/updatewellnessinfo', qs.stringify(formData)).then((res) => {
+      toast('Wellness Information Updated!')
+    }).catch((err) => {
+      toast('Something went wrong!')
+    })
+  }
 
   const updateProfile = (event) => {
     event.preventDefault()
@@ -158,6 +182,56 @@ export default function Profile() {
 
   const onCityChange = (event) => {
     setUserCity(event.target.value)
+  }
+
+  const onUserHeightFeetChange = (event) => {
+    setUserHeightFeet(parseInt(event.target.value))
+  }
+
+  const onUserHeightInchesChange = (event) => {
+    setUserHeightInches(parseInt(event.target.value))
+  }
+  
+  const onUserWeightChange = (event) => {
+    setUserWeight(parseInt(event.target.value))
+  }
+  
+  const onUserSleepHoursChange = (event) => {
+    setUserSleepHours(parseInt(event.target.value))
+  }
+  
+  const onUserSleepMinutesChange = (event) => {
+    setUserSleepMinutes(parseInt(event.target.value))
+  }
+
+  const userHeightValidation = (event) => {
+    const validHeightFeet = Number.isInteger(userHeightFeet) && 
+                              userHeightFeet >= 3 && 
+                              userHeightFeet < 8;
+    const validHeightInches = Number.isInteger(userHeightInches) && 
+                              userHeightInches >= 0 && 
+                              userHeightInches <= 11;
+    if (!validHeightFeet || !validHeightInches) setError('Height must be between 3\'0" and 8\'0"!');
+    else setError('');
+  }
+  
+  const userWeightValidation = (event) => {
+    const validWeight = Number.isInteger(userWeight) && 
+                        userWeight >= 50 && 
+                        userWeight <= 1000;
+    if (!validWeight) setError('Weight must be between 50 and 1000 lbs!');
+    else setError('');
+  }
+
+  const userSleepValidation = (event) => {
+    const validSleepHours = Number.isInteger(userSleepHours) && 
+                            userSleepHours >= 0 && 
+                            userSleepHours < 24;
+    const validSleepMinutes = Number.isInteger(userSleepMinutes) && 
+                              userSleepMinutes >= 0 && 
+                              userSleepMinutes < 60;
+    if (!validSleepHours || !validSleepMinutes) setError('Sleep must be between 0 and 24 hours!');
+    else setError('');
   }
 
   const updateImage = (event) => {
@@ -213,7 +287,6 @@ export default function Profile() {
       toast('Something went wrong!')
     })
   }
-
 
   const renderByStatus = () => {
     if (role === 'trainer') {
@@ -326,7 +399,8 @@ export default function Profile() {
           </li>
         </ul>
       </div>
-      <form onSubmit={updateProfile}>
+
+      {/* Profile section */}
         <MDBContainer className="py-5 h-100">
           <MDBRow className="justify-content-center align-items-center h-100">
             <MDBCol lg="9" xl="7">
@@ -371,8 +445,11 @@ export default function Profile() {
 
                 {/* User information card */}
                 <MDBCardBody className="text-black p-4">
+
+                  {/* About */}
+                  <form onSubmit={updateProfile}>
                   <div className="mb-5">
-                    <p className="lead fw-normal mb-1">About</p>
+                    <h1 className="fw-bold mb-1">About</h1>
                     <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
                       <MDBRow>
                         <MDBCol sm="3">
@@ -424,20 +501,117 @@ export default function Profile() {
                     </div>
                     <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
                   </div>
+                  </form>
                   
                   {/* Trainer approval status */}
                   {renderByStatus()}
 
                   {/* Trainer videos */}
                   <MDBRow md='4'>
+                    <h1 className="fw-bold mb-1">Videos</h1>
                     {(true || (status === 'approved' && role === 'trainer')) && videos ? <VideoCard videos={videos} /> : ''}
                   </MDBRow>
+
+                  {/* User wellness information */}
+                  <form onSubmit={updateFitnessInfo}>
+                  <div className="mb-5">
+                    <h1 className="fw-bold mb-2">Wellness Information</h1>
+
+                    {/* User body measurements */}
+                    <h2 className="mb-">Body Measurements</h2>
+                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                      <MDBRow>
+                        <MDBCol sm="3">
+                          <MDBCardText>Height</MDBCardText>
+                        </MDBCol>
+                        <MDBCol sm="9">
+                          <MDBCardText className="text-muted">
+                          <MDBRow className="align-items-center" style={{flex: 'left'}}>
+                            <div style={{ width: '200px' }}>
+                            <MDBInput label='Feet' 
+                                      onChange={onUserHeightFeetChange} 
+                                      value={userHeightFeet} 
+                                      onBlur={userHeightValidation}
+                                      type='number'/>
+                            </div>
+                            <div style={{ width: '200px' }}>
+                            <MDBInput label='Inches' 
+                                      onChange={onUserHeightInchesChange} 
+                                      value={userHeightInches} 
+                                      onBlur={userHeightValidation}
+                                      type='number' />
+                            </div>
+                          </MDBRow>
+                          </MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                      <hr />
+                      <MDBRow>
+                        <MDBCol sm="3">
+                          <MDBCardText>Weight</MDBCardText>
+                        </MDBCol>
+                        <MDBCol sm="9">
+                          <MDBCardText className="text-muted">
+                            <div style={{ width: '176px' }}>
+                            <MDBInput label='lbs' 
+                                      onChange={onUserWeightChange} 
+                                      value={userWeight} 
+                                      onBlur={userWeightValidation}
+                                      type='number'/>
+                            </div>
+                          </MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                    </div>
+
+                    {/* User sleep tracking */}
+                    <h2 className="mt-2 mb-1">Sleep</h2>
+                    <p>How much sleep do you get per night?</p>
+                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                      <MDBRow>
+                        <MDBCol sm="3">
+                          <MDBCardText>Average</MDBCardText>
+                        </MDBCol>
+                        <MDBCol sm="9">
+                          <MDBCardText className="text-muted">
+                          <MDBRow className="align-items-center" style={{flex: 'left'}}>
+                            <div style={{ width: '200px' }}>
+                            <MDBInput label='Hours' 
+                                      onChange={onUserSleepHoursChange} 
+                                      value={userSleepHours} 
+                                      onBlur={userSleepValidation}
+                                      type='number'/>
+                            </div>
+                            <div style={{ width: '200px' }}>
+                            <MDBInput label='Minutes' 
+                                      onChange={onUserSleepMinutesChange} 
+                                      value={userSleepMinutes} 
+                                      onBlur={userSleepValidation}
+                                      type='number' />
+                            </div>
+                          </MDBRow>
+                          </MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                    </div>
+
+                    {/* Error message for wellness info submission */}
+                    {error ?
+                            <MDBTypography id="danger-text" note noteColor='danger' style={{ 'marginTop': '10px' }}>
+                                <strong>{error}</strong>
+                            </MDBTypography> : ""}
+
+                    {/* User wellness info update button */}
+                    <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
+                  </div>
+                  </form>
+                  
                 </MDBCardBody>
               </MDBCard>
             </MDBCol>
           </MDBRow>
         </MDBContainer>
-      </form>
+
       {/* Video upload Modal for when trainer clicks upload video */}
       <MDBModal show={varyingModal} setShow={setVaryingModal} tabIndex='-1'>
         <MDBModalDialog>
@@ -474,6 +648,8 @@ export default function Profile() {
           </MDBModalContent>
         </MDBModalDialog>
       </MDBModal>
+
+      {/* Profile photo upload Modal */}
       <MDBModal show={varyingUpload} setShow={setVaryingUpload} tabIndex='-1'>
         <MDBModalDialog>
           <MDBModalContent>
@@ -499,6 +675,7 @@ export default function Profile() {
           </MDBModalContent>
         </MDBModalDialog>
       </MDBModal>
+      
     </div>
   );
 }

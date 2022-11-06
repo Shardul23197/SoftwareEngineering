@@ -23,6 +23,21 @@ const UserProfileSchema = new Schema({
     user: {
       type: Schema.Types.ObjectId,
       ref: "users"
+    },
+    heightFeet: {
+      type: Number
+    },
+    heightInches: {
+      type: Number
+    },
+    weight: {
+      type: Number
+    },
+    sleepHours: {
+      type: Number
+    },
+    sleepMinutes: {
+      type: Number
     }
 })
   
