@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Link, useNavigate } from "react-router-dom";
 import {
   MDBCol,
   MDBContainer,
@@ -34,6 +35,7 @@ import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/
 
 export default function Profile() {
   let mfaRequired = localStorage.getItem('mfaRequired');
+  const navigate = useNavigate();
   const selector = useSelector(state => state.email)
   const role = useSelector(state => state.role)
   const [userEmail, setUserEmail] = useState('')
@@ -212,30 +214,6 @@ export default function Profile() {
     })
   }
 
-  const enroll = (event) => {
-    event.preventDefault()
-
-    const headers = {
-      'Authorization': `Bearer ${authToken}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true,
-        headers: headers
-    });
-    
-    // Get authenticator for the user from the backend
-    instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
-      setMfaQrCodeUrl(res.data.qrImage);
-      mfaRequired = 'true'; 
-      localStorage.setItem('mfaRequired', 'true');
-      localStorage.setItem('mfaVerified', 'true');
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
 
   const renderByStatus = () => {
     if (role === 'trainer') {
@@ -255,14 +233,105 @@ export default function Profile() {
     }
   }
 
+  /* When the user clicks log out, send post to {backend base url}/auth/logout
+   * and remove all items from local storage then navigate home.
+   */
+  const onLogout = async (event) => {
+    const headers = {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
+      
+    // Terminate the user's session information
+    await instance.post('/auth/logout', {}).then((res) => {})
+      .catch((error) => console.error(error));
+
+    // Navigate to home
+    localStorage.clear();
+    navigate('/');
+  };
+
   return (
     <div className="gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
         <LinearProgress id='spinner' hidden={hidden} color="secondary" />
       <ToastContainer />
+
+      {/* Sidebar Navigation */}
+      <div class="sidebar">
+        <div class="logo-details">
+          <i class='bx bxl-c-plus-plus'></i>
+          <span class="logo_name">Fitocity</span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <Link to='/dashboard'>
+              <i class='bx bx-grid-alt' ></i>
+              <span class="links_name">Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <a href="#" >
+              <i class='bx bx-grid-alt' ></i>
+              <span class="links_name">Explore</span>
+            </a>
+          </li>
+          {role === 'trainer' ? 
+          <li>
+            <a href="#">
+              <i class='bx bx-box' ></i>
+              <span class="links_name">Workout</span>
+            </a>
+          </li> : ""
+          }
+          <li>
+            <a href="#">
+              <i class='bx bx-list-ul' ></i>
+              <span class="links_name">Diet</span>
+            </a>
+          </li>      
+          <li>
+            <a href="#">
+              <i class='bx bx-message' ></i>
+              <span class="links_name">Messages</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class='bx bx-heart' ></i>
+              <span class="links_name">Favrorites</span>
+            </a>
+          </li>
+          <li>
+            <Link to = '/profile' class="active">
+              <i class='bx bx-coin-stack' ></i>
+              <span class="links_name">Profile</span>
+            </Link>
+          </li>
+          <li>
+            <Link to = '/settings'>
+              <i class='bx bx-cog' ></i>
+              <span class="links_name">Settings</span>
+            </Link>
+          </li>
+          <li>
+          <button className='logoutbutton' onClick={onLogout} >
+              <i class='bx bx-coin-stack' ></i>
+              <span class="links_name">Logout</span>
+            </button>
+          </li>
+        </ul>
+      </div>
       <form onSubmit={updateProfile}>
         <MDBContainer className="py-5 h-100">
           <MDBRow className="justify-content-center align-items-center h-100">
             <MDBCol lg="9" xl="7">
+
+              {/* User Profile Card */}
               <MDBCard>
                 <div className="rounded-top text-white d-flex flex-row" style={{ backgroundColor: '#000', height: '200px' }}>
                   <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
@@ -283,6 +352,9 @@ export default function Profile() {
                     <MDBCardText>{userCity}</MDBCardText>
                   </div>
                 </div>
+
+                
+                {/* Trainer video upload button */}
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                   <div className="d-flex justify-content-end text-center py-1">
                     <div>
@@ -296,6 +368,8 @@ export default function Profile() {
                     </div>
                   </div>
                 </div>
+
+                {/* User information card */}
                 <MDBCardBody className="text-black p-4">
                   <div className="mb-5">
                     <p className="lead fw-normal mb-1">About</p>
@@ -350,7 +424,11 @@ export default function Profile() {
                     </div>
                     <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
                   </div>
+                  
+                  {/* Trainer approval status */}
                   {renderByStatus()}
+
+                  {/* Trainer videos */}
                   <MDBRow md='4'>
                     {(true || (status === 'approved' && role === 'trainer')) && videos ? <VideoCard videos={videos} /> : ''}
                   </MDBRow>
@@ -360,6 +438,7 @@ export default function Profile() {
           </MDBRow>
         </MDBContainer>
       </form>
+      {/* Video upload Modal for when trainer clicks upload video */}
       <MDBModal show={varyingModal} setShow={setVaryingModal} tabIndex='-1'>
         <MDBModalDialog>
           <MDBModalContent>
@@ -420,65 +499,6 @@ export default function Profile() {
           </MDBModalContent>
         </MDBModalDialog>
       </MDBModal>
-      <MDBContainer className="py-5">
-        <MDBCol lg="12">
-          <MDBCard className="mb-4">
-            <MDBCardBody>
-
-              <h1>MFA</h1>
-
-              {/* Display mfa qrcode and code if the user is enrolled in mfa */}
-              { mfaRequired === 'false' ? 
-                <MDBRow>
-                  <MDBBtn style={{ 'margin-top': '10px', width: '200px' }} onClick={enroll}>Enable MFA</MDBBtn>
-                </MDBRow>
-              :
-                <MDBRow>
-                <MDBRow sm="8">
-                  <MDBCardText>
-                    Please download the Google Authenticator app and use the qr code (or secret) below to set up
-                    mfa! You will be required to enter a 6-digit code each time you log in to increase
-                    the security of your account.
-                  </MDBCardText>
-                </MDBRow>
-                <MDBRow style={{ flex: 'left' }}>
-                  <MDBCol sm="5" style={{ flex: 'left', width: '400px', marginTop: '90px' }}>
-                    <MDBRow style={{flex: 'left'}}>
-                    <MDBCardImage src={downloadFromAppStoreSVG}
-                                  alt='Download Google Authenticator from the App Store!' 
-                                  href='https://apps.apple.com/us/app/google-authenticator/id388497605'
-                                  style={{ flex: 'left', width: '150px', marginLeft: '35px' }} 
-                                  fluid
-                                  />
-                    <MDBCardImage src={'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'}
-                                  alt='Get it on Google Play'
-                                  href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'
-                                  style={{ flex: 'right', width: '180px', marginLeft: '10px' }} 
-                                  fluid
-                                  />
-                    </MDBRow>
-                  </MDBCol>
-                  <MDBCol sm="6">
-                  <div className='center d-flex align-items-center'>
-                    <MDBCardImage className='center'
-                                  src={mfaQrCodeUrl} 
-                                  alt="MFA QR Code Url" 
-                                  style={{ 
-                                    width: '200px',
-                                  }} 
-                                  fluid />
-                  </div>
-                  <div className='d-flex align-items-center'>
-                    <h3 className='center' style={{ marginTop: '40px'}}>{mfaSecret}</h3>
-                  </div>
-                  </MDBCol>
-                </MDBRow>
-                </MDBRow>
-              }
-            </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
-      </MDBContainer>
     </div>
   );
 }
