@@ -1,7 +1,7 @@
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'
-import { BrowserRouter, Route, Routes, Navigate, useSearchParams } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import './App.css';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import Dashboard from './components/Dashboard/Dashboard';
 import Register from './components/Register/Register';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
@@ -11,6 +11,7 @@ import Login from './components/Login/Login';
 import TwoFactor from './components/TwoFactor/TwoFactor';
 import WorkoutDetails from './components/WorkoutDetails';
 import Profile from './components/Profile/Profile';
+import Settings from './components/Settings/Settings';
 import PrivateRoute from './route_types/PrivateRoute';
 import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
 import UnverifiedRoute from './route_types/UnverifiedRoute';
@@ -78,6 +79,11 @@ function App() {
             <Route path='/profile' element={
                 <PrivateRoute>
                     <Profile />
+                </PrivateRoute>    
+            }/>
+            <Route path='/settings' element={
+                <PrivateRoute>
+                    <Settings />
                 </PrivateRoute>    
             }/>
         </Routes>
