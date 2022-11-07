@@ -1,18 +1,18 @@
 const express = require('express');
 const path = require("path");
 const router = express.Router();
-const TrainerApproval = require('../models/TrainerApproval');
+const TrainerApproval = require('../../models/TrainerApproval');
 const Multer = require("multer");
-const gcsMiddlewares = require('../middleware/google-cloud-helper');
+const gcsMiddlewares = require('../../middleware/google-cloud-helper');
 const multer = Multer({
   storage: Multer.MemoryStorage,
   limits: {
     fileSize: 10 * 1024 * 1024, // Maximum file size is 10MB
   },
 });
-const WorkoutVideo = require('../models/WorkoutVideo');
+const WorkoutVideo = require('../../models/WorkoutVideo');
 const e = require('connect-flash');
-const UserProfile = require('../models/UserProfile')
+const UserProfile = require('../../models/UserProfile')
 
 
 router.post('/approval', (req, res) => {

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Multer = require("multer");
-const gcsMiddlewares = require('../middleware/google-cloud-helper');
+const gcsMiddlewares = require('../../middleware/google-cloud-helper');
 const multer = Multer({
   storage: Multer.MemoryStorage,
   limits: {
@@ -9,7 +9,7 @@ const multer = Multer({
   },
 });
 
-const UserProfile = require('../models/UserProfile');
+const UserProfile = require('../../models/UserProfile');
 
 router.get('/getdetails', (req, res) => {
   const { email } = req.query
