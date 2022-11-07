@@ -1,14 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const url = require('url');
-const User = require('../../models/User');
+const Workout = require('../../models/Workout');
 const Session = require('../../models/Session');
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-const authenticator = require('otplib').authenticator;
 const util = require('util');
 
 // Makes a new Session for the user if there isn't
@@ -121,48 +115,36 @@ const getSession = async (user, done) => {
 // @route POST /api/users/workoutLog/workout
 // @desc begin passport custom auth process
 // @access Public
-router.post('/workout', 
-    async (req, res, next) => {
-        // Authenticate the user using passport-local
-        passport.authenticate('login', 
-            async (err, user) => {
-                if (err)
-                    res.status(400).json(err);
-                    
-                try {
-                    // If the user isn't found log the error and return it
-                    if (err || !user)
-                        return next(err);
-
-                    const _id = user._id; // store the user's _id for easy access
-                    const email = user.email; // store the user's eamil for easy access
-
-                    // Get the session information for the user
-                    getSession(user, (err, session) => {
-                        if (err)
-                            res.status(500).json(err);
-                        else {
-                            const refreshToken = session.refreshToken;
-                            const accessToken = session.accessToken;
-                            const mfaRequired = session.mfaRequired;
-                            const mfaVerified = session.mfaVerified;
-
-                            // Return the tokens and mfa info
-                            res.status(200).json({
-                                accessToken,
-                                refreshToken,
-                                mfaRequired,
-                                mfaVerified
-                            });
-                        }
-                    });
-                } catch (err) {
-                    res.status(500).json('Could not issue JWT!');
-                }
-            }
-        )(req, res, next);
+router.post('/workout', async (req, res) => {
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
+  
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this user exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
+        return;
     }
-);
+  
+    const { workoutTitle, workoutIntensity, workoutCategory } = req.body;
+    console.log(req.body)
+    Workout.create(
+        {
+            email: session.email,
+            workoutTitle: workoutTitle, 
+            workoutIntensity: workoutIntensity, 
+            workoutCategory: workoutCategory
+        },
+        (err, doc) => {
+            if (err) {
+                console.log("Something wrong when updating data!");
+            }
+            return res.status(200).json({ data: doc });
+        }
+    )
+  });
 
 // // @route POST /auth/login/mfa
 // // @desc begin passport custom auth process

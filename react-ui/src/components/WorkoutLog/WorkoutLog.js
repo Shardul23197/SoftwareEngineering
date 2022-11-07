@@ -99,13 +99,13 @@ export default function WorkoutLog() {
       workoutTitle: workoutTitle,
       workoutIntensity: workoutIntensity,
       workoutCategory: workoutCategory
-    }
-    console.log(formData);
-    // instance.post('/api/users/profile/updatewellnessinfo', qs.stringify(formData)).then((res) => {
-    //   toast('Wellness Information Updated!')
-    // }).catch((err) => {
-    //   toast('Something went wrong!')
-    // })
+    };
+    instance.post('/api/users/workoutLog/workout', qs.stringify(formData)).then((res) => {
+      toast('Workout Added!')
+      setWorkoutUploadModalVisible(false);
+    }).catch((err) => {
+      toast('Something went wrong!')
+    })
   }
 
   /* When the user clicks log out, send post to {backend base url}/auth/logout
@@ -240,7 +240,6 @@ export default function WorkoutLog() {
         </MDBRow>
       </MDBContainer>
       </div>
-
 
       {/* Workout upload Modal */}
       <MDBModal show={workoutUploadModalVisible} setShow={setWorkoutUploadModalVisible} tabIndex='-1'>
