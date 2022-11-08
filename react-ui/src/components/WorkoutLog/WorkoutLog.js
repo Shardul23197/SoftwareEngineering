@@ -38,15 +38,16 @@ import './WorkoutLog.css';
 export default function WorkoutLog() {
   let mfaRequired = localStorage.getItem('mfaRequired');
   const navigate = useNavigate();
-  const selector = useSelector(state => state.email)
-  const role = useSelector(state => state.role)
-  const [dataFromState, setDataFromState] = useState(selector)
-  const [dataFromStateRole, setDataFromStateRole] = useState(role)
-  const [workouts, setWorkouts] = useState([{title:'Workout1'}, {title:'Workout2'}])
+  const selector = useSelector(state => state.email);
+  const role = useSelector(state => state.role);
+  const [dataFromState, setDataFromState] = useState(selector);
+  const [dataFromStateRole, setDataFromStateRole] = useState(role);
+  const [workouts, setWorkouts] = useState([]);
   const [workoutUploadModalVisible, setWorkoutUploadModalVisible] = useState(false);
-  const [workoutTitle, setWorkoutTitle] = useState('')
-  const [workoutIntensity, setWorkoutIntensity] = useState('High')
-  const [workoutCategory, setWorkoutCategory] = useState('Yoga')
+  const [workoutTitle, setWorkoutTitle] = useState('');
+  const [workoutIntensity, setWorkoutIntensity] = useState('High');
+  const [workoutCategory, setWorkoutCategory] = useState('Yoga');
+  const [workoutComment, setWorkoutComment] = useState('');
 
   // User body measurements
   const [error, setError] = useState(''); // String
@@ -55,20 +56,27 @@ export default function WorkoutLog() {
   const existingAuthtoken = localStorage.getItem('authToken') || '';
   const [authToken] = useState(existingAuthtoken);
 
-  //todo
-  //get user data
+  // Get the user's workouts and store them
   useEffect(() => {
     setDataFromState(selector)
     setDataFromStateRole(role)
     
-    // axios.get('/api/trainer/videos', { params: { email: dataFromState } })
-    // .then((res) => {
-    //   setWorkouts(res.data.data)
-    // }).catch((error) => {
-    //   setVideos('')
-    //   console.log(error)
-    // })
-  }, [authToken, dataFromState, mfaRequired, selector, dataFromStateRole, role]);
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });    
+    instance.get('/api/users/workoutLog/workout').then((res) => {
+      const { data } = res;
+      setWorkouts(data.data);
+    }).catch((err) => {
+      console.error(err);
+    })
+  }, [authToken, role, selector]);
 
   const onWorkoutTitleChange = (event) => {
     setWorkoutTitle(event.target.value);
@@ -80,6 +88,10 @@ export default function WorkoutLog() {
 
   const onWorkoutCategoryChange = (event) => {
     setWorkoutCategory(event.target.value);
+  }
+
+  const onWorkoutCommentChange = (event) => {
+    setWorkoutComment(event.target.value);
   }
 
   // Updates the wellness information of the user's profile
@@ -98,15 +110,26 @@ export default function WorkoutLog() {
     const formData = {
       workoutTitle: workoutTitle,
       workoutIntensity: workoutIntensity,
-      workoutCategory: workoutCategory
+      workoutCategory: workoutCategory,
+      workoutComment: workoutComment
     };
+    // Add the workout the the database
     instance.post('/api/users/workoutLog/workout', qs.stringify(formData)).then((res) => {
       toast('Workout Added!')
       setWorkoutUploadModalVisible(false);
+      navigate('/workoutLog')
     }).catch((err) => {
       toast('Something went wrong!')
-    })
-  }
+    });
+
+    // Reload the user's workouts
+    instance.get('/api/users/workoutLog/workout').then((res) => {
+      const { data } = res;
+      setWorkouts(data.data);
+    }).catch((err) => {
+      console.error(err);
+    });
+  };
 
   /* When the user clicks log out, send post to {backend base url}/auth/logout
    * and remove all items from local storage then navigate home.
@@ -217,9 +240,8 @@ export default function WorkoutLog() {
               {/* User information card */}
               <MDBCardBody className="text-black p-4">
 
-                {/* Trainer videos */}
-                <MDBRow className="justify-content-left align-items-center" md='4'>
-                  <h1 className="fw-bold mb-1" style={{width: '300px'}}>Workout Log</h1>
+                <MDBRow className="justify-content-left align-items-center" md='4' style={{ marginBottom: '60px' }}>
+                  <h1 className="fw-bold mb-1" style={{ width: '300px'}}>Workout Log</h1>
                   <Button variant="contained" color="default"
                     className='material-button'
                     startIcon={<AddRounded />}
@@ -231,7 +253,7 @@ export default function WorkoutLog() {
                   Add Workout
                   </Button>
                 </MDBRow>
-                <MDBRow md='4'>
+                <MDBRow md='4' className="justify-content-center align-items-center h-100">
                   {workouts ? <WorkoutCard workouts={workouts} /> : ''}
                 </MDBRow>
               </MDBCardBody>
@@ -281,6 +303,17 @@ export default function WorkoutLog() {
                     <option value={workoutCategory} onChange={onWorkoutCategoryChange}>Other</option>
                   </select>
                 </div>
+                <hr/>
+                <div className='mb-3'>
+                  <h4>Coments</h4>
+                  <MDBInput wrapperClass='mb-4' 
+                            label='Comment' 
+                            value={workoutComment} 
+                            onChange={onWorkoutCommentChange} 
+                            id='formControlLg' 
+                            type='textarea' 
+                            size="lg" />
+                </div>
               </MDBModalBody>
               <MDBModalFooter>
                 <MDBBtn color='secondary' onClick={() => setWorkoutUploadModalVisible(!workoutUploadModalVisible)}>
@@ -291,8 +324,6 @@ export default function WorkoutLog() {
           </MDBModalContent>
         </MDBModalDialog>
       </MDBModal>
-
-      
     </div>
   );
 }

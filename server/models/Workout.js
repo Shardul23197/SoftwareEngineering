@@ -18,6 +18,14 @@ const WorkoutSchema = new Schema({
     workoutCategory: {
         type: String,
         required: true
+    },
+    workoutComment: {
+        type: String,
+        required: true
+    },
+    date: {
+        type: Number,
+        required: true
     }
 });
 
