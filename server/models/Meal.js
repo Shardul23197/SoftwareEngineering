@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const WorkoutSchema = new Schema({
+const MealSchema = new Schema({
     email: {
         type: String,
         required: true
@@ -10,17 +10,21 @@ const WorkoutSchema = new Schema({
         type: String,
         required: true
     },
-    intensity: {
-        type: String,
-        enum: ['High','Medium','Low'],
+    calories: {
+        type: Number,
         required: true
     },
-    category: {
-        type: String,
+    fat: {
+        type: Number,
         required: true
     },
-    comment: {
-        type: String
+    protein: {
+        type: Number,
+        required: true
+    },
+    carbs: {
+        type: Number,
+        required: true
     },
     date: {
         type: Number,
@@ -28,4 +32,4 @@ const WorkoutSchema = new Schema({
     }
 });
 
-module.exports = Workout = mongoose.model("workouts", WorkoutSchema);
+module.exports = Meal = mongoose.model("meals", MealSchema);

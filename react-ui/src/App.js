@@ -11,6 +11,7 @@ import Login from './components/Login/Login';
 import TwoFactor from './components/TwoFactor/TwoFactor';
 import WorkoutDetails from './components/WorkoutDetails';
 import WorkoutLog from './components/WorkoutLog/WorkoutLog';
+import MealLog from './components/MealLog/MealLog';
 import Profile from './components/Profile/Profile';
 import Settings from './components/Settings/Settings';
 import PrivateRoute from './route_types/PrivateRoute';
@@ -69,7 +70,12 @@ function App() {
             }/>
             <Route path='/workoutLog' element={
                 <PrivateRoute>
-                    <WorkoutLog />
+                    <WorkoutLog/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/mealLog' element={
+                <PrivateRoute>
+                    <MealLog/>
                 </PrivateRoute>    
             }/>
             <Route path='/homepage' element={

@@ -141,6 +141,12 @@ export default function Settings() {
           </Link>
         </li>
         <li>
+          <Link to='/mealLog'>
+            <i class='bx bx-grid-alt' ></i>
+            <span class="links_name">Meal Log</span>
+          </Link>
+        </li>
+        <li>
           <a href="#">
             <i class='bx bx-message' ></i>
             <span class="links_name">Messages</span>

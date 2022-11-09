@@ -44,7 +44,7 @@ if (!isDev && cluster.isMaster) {
     // Routes
     app.use('/auth', require(path.resolve(__dirname, './Routes/auth')));
     app.use('/api/users', require(path.resolve(__dirname, './Routes/api/users')));
-    app.use('/api/users/workoutLog', require(path.resolve(__dirname, './Routes/api/workoutLog')));
+    app.use('/api/users/log', require(path.resolve(__dirname, './Routes/api/log')));
     app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/api/profile')));
     app.use('/api/trainer', require(path.resolve(__dirname, './Routes/api/trainer')));
 
