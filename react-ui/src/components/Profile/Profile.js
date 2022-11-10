@@ -32,6 +32,7 @@ import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
 
 import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
+import Navigation from '../Navigation/Navigation';
 
 export default function Profile() {
   let mfaRequired = localStorage.getItem('mfaRequired');
@@ -262,70 +263,7 @@ export default function Profile() {
       <ToastContainer />
 
       {/* Sidebar Navigation */}
-      <div class="sidebar">
-        <div class="logo-details">
-          <i class='bx bxl-c-plus-plus'></i>
-          <span class="logo_name">Fitocity</span>
-        </div>
-        <ul class="nav-links">
-          <li>
-            <Link to='/dashboard'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Dashboard</span>
-            </Link>
-          </li>
-          <li>
-            <a href="#" >
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Explore</span>
-            </a>
-          </li>
-          {role === 'trainer' ? 
-          <li>
-            <a href="#">
-              <i class='bx bx-box' ></i>
-              <span class="links_name">Workout</span>
-            </a>
-          </li> : ""
-          }
-          <li>
-            <a href="#">
-              <i class='bx bx-list-ul' ></i>
-              <span class="links_name">Diet</span>
-            </a>
-          </li>      
-          <li>
-            <a href="#">
-              <i class='bx bx-message' ></i>
-              <span class="links_name">Messages</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class='bx bx-heart' ></i>
-              <span class="links_name">Favrorites</span>
-            </a>
-          </li>
-          <li>
-            <Link to = '/profile' class="active">
-              <i class='bx bx-coin-stack' ></i>
-              <span class="links_name">Profile</span>
-            </Link>
-          </li>
-          <li>
-            <Link to = '/settings'>
-              <i class='bx bx-cog' ></i>
-              <span class="links_name">Settings</span>
-            </Link>
-          </li>
-          <li>
-          <button className='logoutbutton' onClick={onLogout} >
-              <i class='bx bx-coin-stack' ></i>
-              <span class="links_name">Logout</span>
-            </button>
-          </li>
-        </ul>
-      </div>
+      <Navigation/>
       <form onSubmit={updateProfile}>
         <MDBContainer className="py-5 h-100">
           <MDBRow className="justify-content-center align-items-center h-100">
