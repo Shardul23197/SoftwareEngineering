@@ -10,8 +10,9 @@ import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 import TwoFactor from './components/TwoFactor/TwoFactor';
 import WorkoutDetails from './components/WorkoutDetails';
-import WorkoutLog from './components/WorkoutLog/WorkoutLog';
 import MealLog from './components/MealLog/MealLog';
+import SleepLog from './components/SleepLog/SleepLog';
+import WorkoutLog from './components/WorkoutLog/WorkoutLog';
 import Profile from './components/Profile/Profile';
 import Settings from './components/Settings/Settings';
 import PrivateRoute from './route_types/PrivateRoute';
@@ -68,14 +69,19 @@ function App() {
                     <Dashboard />
                 </PrivateRoute>    
             }/>
-            <Route path='/workoutLog' element={
-                <PrivateRoute>
-                    <WorkoutLog/>
-                </PrivateRoute>    
-            }/>
             <Route path='/mealLog' element={
                 <PrivateRoute>
                     <MealLog/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/sleepLog' element={
+                <PrivateRoute>
+                    <SleepLog/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/workoutLog' element={
+                <PrivateRoute>
+                    <WorkoutLog/>
                 </PrivateRoute>    
             }/>
             <Route path='/homepage' element={

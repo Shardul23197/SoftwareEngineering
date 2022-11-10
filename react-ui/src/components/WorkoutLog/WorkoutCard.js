@@ -16,7 +16,7 @@ const WorkoutCard = ({ workouts }) => {
                         <Card.Text style={{ 'marginBottom': '5px'}}>Category: {workout.category}</Card.Text>
                         <hr style={{ 'marginTop': '5px', 'marginBottom': '5px' }}/>
                         <Card.Text>Comments</Card.Text>
-                        <Card.Text>{workout.comment}</Card.Text>
+                        <Card.Text>{workout.comments}</Card.Text>
                     </Card.Body>
                 </Card>)
         })

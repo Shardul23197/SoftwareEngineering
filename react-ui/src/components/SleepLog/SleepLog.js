@@ -30,25 +30,23 @@ import axios from 'axios';
 import qs from 'qs';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import MealCard from './MealCard';
+import SleepCard from './SleepCard';
 import Button from '@material-ui/core/Button';
 import AddRounded from '@material-ui/icons/AddRounded';
-import './MealLog.css';
+import DateTimePicker from 'react-datetime-picker'
+import './SleepLog.css';
 
-export default function MealLog() {
+export default function SleepLog() {
   let mfaRequired = localStorage.getItem('mfaRequired');
   const navigate = useNavigate();
   const selector = useSelector(state => state.email);
   const role = useSelector(state => state.role);
   const [dataFromState, setDataFromState] = useState(selector);
   const [dataFromStateRole, setDataFromStateRole] = useState(role);
-  const [meals, setMeals] = useState([]);
-  const [mealUploadModalVisible, setMealUploadModalVisible] = useState(false);
-  const [title, setTitle] = useState('');
-  const [calories, setCalories] = useState('');
-  const [fat, setFat] = useState('');
-  const [protein, setProtein] = useState('');
-  const [carbs, setCarbs] = useState('');
+  const [sleeps, setSleeps] = useState([]);
+  const [sleepUploadModalVisible, setSleepUploadModalVisible] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [comments, setComments] = useState('');
 
   // User body measurements
@@ -58,7 +56,7 @@ export default function MealLog() {
   const existingAuthtoken = localStorage.getItem('authToken') || '';
   const [authToken] = useState(existingAuthtoken);
 
-  // Get the user's meals and store them
+  // Get the user's sleeps and store them
   useEffect(() => {
     setDataFromState(selector)
     setDataFromStateRole(role)
@@ -72,41 +70,20 @@ export default function MealLog() {
         withCredentials: true,
         headers: headers
     });    
-    instance.get('/api/users/log/meal').then((res) => {
+    instance.get('/api/users/log/sleep').then((res) => {
       const { data } = res;
-      setMeals(data.data);
+      setSleeps(data.data);
     }).catch((err) => {
       console.error(err);
     })
   }, [authToken, role, selector]);
 
-  const onTitleChange = (event) => {
-    setTitle(event.target.value);
-  }
-
-  const onCaloriesChange = (event) => {
-    setCalories(event.target.value);
-  }
-
-  const onFatChange = (event) => {
-    setFat(event.target.value);
-  }
-
-  const onProteinChange = (event) => {
-    setProtein(event.target.value);
-  }
-
-  const onCarbsChange = (event) => {
-    setCarbs(event.target.value);
-  }
-
   const onCommentsChange = (event) => {
-    console.log('comment' + event.target.value);
     setComments(event.target.value);
   }
 
   // Updates the wellness information of the user's profile
-  const addMeal = (event) => {
+  const addSleep = (event) => {
     event.preventDefault();
 
     const headers = {
@@ -119,17 +96,14 @@ export default function MealLog() {
         headers: headers
     });
     const formData = {
-      title: title,
-      calories: calories,
-      fat: fat,
-      protein: protein,
-      carbs: carbs,
+      startDate: startDate,
+      endDate: endDate,
       comments: comments
     };
-    // Add the meal the the database
-    instance.post('/api/users/log/meal', qs.stringify(formData)).then((res) => {
-      toast('Meal Added!')
-      setMealUploadModalVisible(false);
+    // Add the sleep the the database
+    instance.post('/api/users/log/sleep', qs.stringify(formData)).then((res) => {
+      toast('Sleep Added!')
+      setSleepUploadModalVisible(false);
     }).catch((err) => {
       toast('Something went wrong!')
     });
@@ -191,13 +165,13 @@ export default function MealLog() {
           </li> : ""
           }
           <li>
-            <Link to='/mealLog ' class="active">
+            <Link to='/mealLog'>
               <i class='bx bx-grid-alt' ></i>
               <span class="links_name">Meal Log</span>
             </Link>
           </li>
           <li>
-            <Link to='/sleepLog'>
+            <Link to='/sleepLog' class="active">
               <i class='bx bx-grid-alt' ></i>
               <span class="links_name">Sleep Log</span>
             </Link>
@@ -241,7 +215,7 @@ export default function MealLog() {
         </ul>
       </div>
 
-      {/* Meals section */}
+      {/* Sleeps section */}
       <div>
       <MDBContainer className="py-5 h-100">
         <MDBRow className="justify-content-center align-items-center h-100">
@@ -253,20 +227,20 @@ export default function MealLog() {
               <MDBCardBody className="text-black p-4">
 
                 <MDBRow className="justify-content-left align-items-center" md='4' style={{ marginBottom: '60px' }}>
-                  <h1 className="fw-bold mb-1" style={{ width: '300px'}}>Meal Log</h1>
+                  <h1 className="fw-bold mb-1" style={{ width: '300px'}}>Sleep Log</h1>                 
                   <Button variant="contained" color="default"
                     className='material-button'
                     startIcon={<AddRounded />}
                     style={{width: '220px'}}
                     onClick={() => {
-                      setMealUploadModalVisible(!mealUploadModalVisible);
+                      setSleepUploadModalVisible(!sleepUploadModalVisible);
                     }}
                   >
-                  Add Meal
+                  Add Sleep
                   </Button>
                 </MDBRow>
                 <MDBRow md='4' className="justify-content-center align-items-center h-100">
-                  {meals ? <MealCard meals={meals} /> : ''}
+                  {sleeps ? <SleepCard sleeps={sleeps} /> : ''}
                 </MDBRow>
               </MDBCardBody>
             </MDBCard>
@@ -275,88 +249,58 @@ export default function MealLog() {
       </MDBContainer>
       </div>
 
-      {/* Meal upload Modal */}
-      <MDBModal show={mealUploadModalVisible} setShow={setMealUploadModalVisible} tabIndex='-1'>
+      {/* Sleep upload Modal */}
+      <MDBModal show={sleepUploadModalVisible} setShow={setSleepUploadModalVisible} tabIndex='-1'>
         <MDBModalDialog>
           <MDBModalContent>
               <MDBModalHeader>
-                <h2>Add Meal</h2>
-                <MDBBtn className='btn-close' color='none' onClick={() => setMealUploadModalVisible(!mealUploadModalVisible)}></MDBBtn>
+                <h2>Add Sleep</h2>
+                <MDBBtn className='btn-close' color='none' onClick={() => setSleepUploadModalVisible(!sleepUploadModalVisible)}></MDBBtn>
               </MDBModalHeader>
               <MDBModalBody>
                 <div className='mb-3'>
-                  <h4>Title</h4>
-                  <MDBInput
-                    type='text'
-                    value={title}
-                    onChange={onTitleChange}
-                    labelClass='col-form-label'
-                    label='Title'
-                  />
-                </div>
-                <hr/>
-                <div className='mb-3'>
-                  <h4>Calories</h4>
-                  <MDBRow className='flex-left'>
-                  <div className='gram-input'>
-                  <MDBInput
-                    type='number'
-                    value={calories}
-                    onChange={onCaloriesChange}
-                    labelClass='col-form-label'
-                    label='Calories'
+                  <h4>Start Date</h4>
+                  <MDBRow className="" style={{flex: 'left'}}>
+                  <div style={{ flex: 'left', width: '150px'}}>
+                  <DateTimePicker
+                    amPmAriaLabel="Select AM/PM"
+                    calendarAriaLabel="Toggle calendar"
+                    clearAriaLabel="Clear value"
+                    dayAriaLabel="Day"
+                    hourAriaLabel="Hour"
+                    maxDetail="second"
+                    minuteAriaLabel="Minute"
+                    monthAriaLabel="Month"
+                    nativeInputAriaLabel="Date and time"
+                    onChange={setStartDate}
+                    secondAriaLabel="Second"
+                    value={startDate}
+                    yearAriaLabel="Year"
                   />
                   </div>
-                  <p className='gram'>g</p>
                   </MDBRow>
                 </div>
                 <hr/>
                 <div className='mb-3'>
-                  <h4>Fat</h4>
-                  <MDBRow className='flex-left'>
-                  <div className='gram-input'>
-                  <MDBInput
-                    type='number'
-                    value={fat}
-                    onChange={onFatChange}
-                    labelClass='col-form-label'
-                    label='Fat'
+                  <h4>End Date</h4>
+                  <MDBRow className="" style={{flex: 'left'}}>
+                  <div style={{ flex: 'left', width: '150px'}}>
+                  <DateTimePicker
+                    amPmAriaLabel="Select AM/PM"
+                    calendarAriaLabel="Toggle calendar"
+                    clearAriaLabel="Clear value"
+                    dayAriaLabel="Day"
+                    hourAriaLabel="Hour"
+                    maxDetail="second"
+                    minuteAriaLabel="Minute"
+                    monthAriaLabel="Month"
+                    nativeInputAriaLabel="Date and time"
+                    onChange={setEndDate}
+                    secondAriaLabel="Second"
+                    value={endDate}
+                    yearAriaLabel="Year"
                   />
                   </div>
-                  <p className='gram'>g</p>
-                  </MDBRow>
-                </div>
-                <hr/>
-                <div className='mb-3'>
-                  <h4>Protein</h4>
-                  <MDBRow className='flex-left'>
-                  <div className='gram-input'>
-                  <MDBInput
-                    type='number'
-                    value={protein}
-                    onChange={onProteinChange}
-                    labelClass='col-form-label'
-                    label='Protein'
-                  />
-                  </div>
-                  <p className='gram'>g</p>
-                  </MDBRow>
-                </div>
-                <hr/>
-                <div className='mb-3'>
-                  <h4>Carbs</h4>
-                  <MDBRow className='flex-left'>
-                  <div className='gram-input'>
-                    <MDBInput
-                      type='number'
-                      value={carbs}
-                      onChange={onCarbsChange}
-                      labelClass='col-form-label'
-                      label='Carbs'
-                    />
-                  </div>
-                  
-                  <p className='gram'>g</p>
                   </MDBRow>
                 </div>
                 <hr/>
@@ -372,10 +316,10 @@ export default function MealLog() {
                 </div>
               </MDBModalBody>
               <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setMealUploadModalVisible(!mealUploadModalVisible)}>
+                <MDBBtn color='secondary' onClick={() => setSleepUploadModalVisible(!sleepUploadModalVisible)}>
                   Close
                 </MDBBtn>
-                <MDBBtn onClick={addMeal}>Add</MDBBtn>
+                <MDBBtn onClick={addSleep}>Add</MDBBtn>
               </MDBModalFooter>
           </MDBModalContent>
         </MDBModalDialog>

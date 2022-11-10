@@ -44,10 +44,10 @@ export default function WorkoutLog() {
   const [dataFromStateRole, setDataFromStateRole] = useState(role);
   const [workouts, setWorkouts] = useState([]);
   const [workoutUploadModalVisible, setWorkoutUploadModalVisible] = useState(false);
-  const [title, setWorkoutTitle] = useState('');
-  const [intensity, setWorkoutIntensity] = useState('High');
-  const [category, setWorkoutCategory] = useState('Yoga');
-  const [comment, setWorkoutComment] = useState('');
+  const [title, setTitle] = useState('');
+  const [intensity, setIntensity] = useState('High');
+  const [category, setCategory] = useState('Yoga');
+  const [comments, setComments] = useState('');
 
   // User body measurements
   const [error, setError] = useState(''); // String
@@ -78,20 +78,20 @@ export default function WorkoutLog() {
     })
   }, [authToken, role, selector]);
 
-  const onWorkoutTitleChange = (event) => {
-    setWorkoutTitle(event.target.value);
+  const onTitleChange = (event) => {
+    setTitle(event.target.value);
   }
 
-  const onWorkoutIntensityChange = (event) => {
-    setWorkoutIntensity(event.target.value);
+  const onIntensityChange = (event) => {
+    setIntensity(event.target.value);
   }
 
-  const onWorkoutCategoryChange = (event) => {
-    setWorkoutCategory(event.target.value);
+  const onCategoryChange = (event) => {
+    setCategory(event.target.value);
   }
 
-  const onWorkoutCommentChange = (event) => {
-    setWorkoutComment(event.target.value);
+  const onCommentsChange = (event) => {
+    setComments(event.target.value);
   }
 
   // Updates the wellness information of the user's profile
@@ -111,7 +111,7 @@ export default function WorkoutLog() {
       title: title,
       intensity: intensity,
       category: category,
-      comment: comment
+      comments: comments
     };
     // Add the workout the the database
     instance.post('/api/users/log/workout', qs.stringify(formData)).then((res) => {
@@ -179,21 +179,21 @@ export default function WorkoutLog() {
           </li> : ""
           }
           <li>
-            <a href="#">
-              <i class='bx bx-list-ul' ></i>
-              <span class="links_name">Diet</span>
-            </a>
+            <Link to='/mealLog'>
+              <i class='bx bx-grid-alt' ></i>
+              <span class="links_name">Meal Log</span>
+            </Link>
+          </li>
+          <li>
+            <Link to='/sleepLog'>
+              <i class='bx bx-grid-alt' ></i>
+              <span class="links_name">Sleep Log</span>
+            </Link>
           </li>
           <li>
             <Link to='/workoutLog' class="active">
               <i class='bx bx-grid-alt' ></i>
               <span class="links_name">Workout Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to='/mealLog'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Meal Log</span>
             </Link>
           </li>
           <li>
@@ -277,7 +277,7 @@ export default function WorkoutLog() {
                   <MDBInput
                     type='text'
                     value={title}
-                    onChange={onWorkoutTitleChange}
+                    onChange={onTitleChange}
                     labelClass='col-form-label'
                     label='Title'
                   />
@@ -285,7 +285,7 @@ export default function WorkoutLog() {
                 <hr/>
                 <div className='mb-3'>
                   <h4>Intensity</h4>
-                  <select onChange={onWorkoutIntensityChange} class="form-select" aria-label="Intensity Select">
+                  <select onChange={onIntensityChange} class="form-select" aria-label="Intensity Select">
                     <option value={'High'}>High</option>
                     <option value={'Medium'}>Medium</option>
                     <option value={'Low'}>Low</option>
@@ -294,7 +294,7 @@ export default function WorkoutLog() {
                 <hr/>
                 <div className='mb-3'>
                   <h4>Category</h4>
-                  <select onChange={onWorkoutCategoryChange} class="form-select" aria-label="Category Select">
+                  <select onChange={onCategoryChange} class="form-select" aria-label="Category Select">
                     <option value={'Yoga'}>Yoga</option>
                     <option value={'Upper Body'}>Upper Body</option>
                     <option value={'Lower Body'}>Lower Body</option>
@@ -306,9 +306,9 @@ export default function WorkoutLog() {
                 <div className='mb-3'>
                   <h4>Coments</h4>
                   <MDBInput wrapperClass='mb-4' 
-                            label='Comment' 
-                            value={comment} 
-                            onChange={onWorkoutCommentChange} 
+                            label='Comments' 
+                            value={comments} 
+                            onChange={onCommentsChange} 
                             id='formControlLg' 
                             type='textarea' 
                             size="lg" />

@@ -1,21 +1,16 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const WorkoutSchema = new Schema({
+const SleepSchema = new Schema({
     email: {
         type: String,
         required: true
     },
-    title: {
+    startDate: {
         type: String,
         required: true
     },
-    intensity: {
-        type: String,
-        enum: ['High','Medium','Low'],
-        required: true
-    },
-    category: {
+    endDate: {
         type: String,
         required: true
     },
@@ -28,4 +23,4 @@ const WorkoutSchema = new Schema({
     }
 });
 
-module.exports = Workout = mongoose.model("workouts", WorkoutSchema);
+module.exports = Sleep = mongoose.model("sleeps", SleepSchema);

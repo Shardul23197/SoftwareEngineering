@@ -26,6 +26,9 @@ const MealSchema = new Schema({
         type: Number,
         required: true
     },
+    comments: {
+        type: String
+    },
     date: {
         type: Number,
         required: true

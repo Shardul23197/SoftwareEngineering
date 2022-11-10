@@ -1,13 +1,8 @@
-.flex-left {
-  flex: left;
-}
-
-.gram-input {
-  flex: left;
-  width: 150px;
-}
-
 .gram {
+  flex: right;
+  width: 10px;
+  padding-left: 0px;
+}.gram {
   flex: right;
   width: 10px;
   padding-left: 0px;

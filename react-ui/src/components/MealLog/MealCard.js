@@ -2,7 +2,6 @@ import React from 'react'
 import Card from 'react-bootstrap/Card';
 
 const MealCard = ({ meals }) => {
-
     return (
         meals.map((meal) => {
             return (
@@ -18,6 +17,9 @@ const MealCard = ({ meals }) => {
                         <Card.Text style={{ 'marginBottom': '5px'}}>Protein: {meal.protein} g</Card.Text>
                         <hr style={{ 'marginTop': '5px', 'marginBottom': '5px' }}/>
                         <Card.Text style={{ 'marginBottom': '5px'}}>Carbs: {meal.carbs} g</Card.Text>
+                        <hr style={{ 'marginTop': '5px', 'marginBottom': '5px' }}/>
+                        <Card.Text>Comments</Card.Text>
+                        <Card.Text>{meal.comments}</Card.Text>
                     </Card.Body>
                 </Card>
             )
