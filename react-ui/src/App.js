@@ -19,6 +19,7 @@ import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
 import Search from './components/Search/Search';
+import TrainerProfile from './components/Profile/TrainerProfile';
 
 function App() {
     // Auth token and refresh token state
@@ -80,6 +81,11 @@ function App() {
             <Route path='/profile' element={
                 <PrivateRoute>
                     <Profile />
+                </PrivateRoute>    
+            }/>
+            <Route path='/profile/:id' element={
+                <PrivateRoute>
+                    <TrainerProfile/>
                 </PrivateRoute>    
             }/>
             <Route path='/settings' element={

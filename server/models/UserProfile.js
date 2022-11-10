@@ -23,7 +23,7 @@ const UserProfileSchema = new Schema({
     user: {
       type: Schema.Types.ObjectId,
       ref: "users"
-    }
+    },
 })
   
 module.exports = UserProfile = mongoose.model("userProfile", UserProfileSchema)

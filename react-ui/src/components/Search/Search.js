@@ -9,6 +9,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form'
 import Navigation from '../Navigation/Navigation';
+import { Link } from 'react-router-dom';
 
 const Search = () => {
     const [search, setSearch] = useState('')
@@ -115,7 +116,7 @@ const Search = () => {
                         <Col md="4">
                         <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%', 'marginLeft':'145px' }}>
                             <Card.Body>
-                                <Card.Title>{category === 'videos' ? video.title : video.fullName}</Card.Title>
+                                <Card.Title>{category === 'videos' ? video.title : <Link to={'/profile/' + video._id}>{video.fullName}</Link>}</Card.Title>
                                 {category === 'videos' ? <Player
                                     playsInline
                                     src={video.url}
