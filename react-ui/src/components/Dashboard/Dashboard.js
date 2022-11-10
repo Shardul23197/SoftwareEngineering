@@ -15,6 +15,7 @@ import {getWorkoutsBySearch} from '../../actions/workouts'
 import { useDispatch } from 'react-redux';
 import store from '../../state/store'
 import './Dashboard.css'
+import Navigation from '../Navigation/Navigation';
 
 
 export default function Dashboard() {
@@ -168,70 +169,7 @@ export default function Dashboard() {
 
 
 
-<div class="sidebar">
-  <div class="logo-details">
-    <i class='bx bxl-c-plus-plus'></i>
-    <span class="logo_name">Fitocity</span>
-  </div>
-  <ul class="nav-links">
-    <li>
-      <Link to='/dashboard' class="active">
-        <i class='bx bx-grid-alt' ></i>
-        <span class="links_name">Dashboard</span>
-      </Link>
-    </li>
-    <li>
-      <a href="#">
-        <i class='bx bx-grid-alt' ></i>
-        <span class="links_name">Explore</span>
-      </a>
-    </li>
-    {role === 'trainer' ? 
-    <li>
-      <a href="#">
-        <i class='bx bx-box' ></i>
-        <span class="links_name">Workout</span>
-      </a>
-    </li> : ""
-    }
-    <li>
-      <a href="#">
-        <i class='bx bx-list-ul' ></i>
-        <span class="links_name">Diet</span>
-      </a>
-    </li>      
-    <li>
-      <a href="#">
-        <i class='bx bx-message' ></i>
-        <span class="links_name">Messages</span>
-      </a>
-    </li>
-    <li>
-      <a href="#">
-        <i class='bx bx-heart' ></i>
-        <span class="links_name">Favrorites</span>
-      </a>
-    </li>
-    <li>
-      <Link to = '/profile'>
-        <i class='bx bx-coin-stack' ></i>
-        <span class="links_name">Profile</span>
-      </Link>
-    </li>
-    <li>
-      <Link to = '/settings'>
-        <i class='bx bx-cog' ></i>
-        <span class="links_name">Settings</span>
-      </Link>
-    </li>
-    <li>
-    <button className='logoutbutton'  onClick={onLogout}>
-        <i class='bx bx-coin-stack' ></i>
-        <span class="links_name">Logout</span>
-      </button>
-    </li>
-  </ul>
-</div>
+<Navigation/>
 
 
 <section class="home-section">
