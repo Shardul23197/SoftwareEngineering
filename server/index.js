@@ -6,11 +6,19 @@ const morgan = require("morgan");
 const connectDB = require("./DB/connectDB");
 const passport = require('passport');
 require('./config/passport')(passport); // Passport config
-
+// var mongoose = require('mongoose');
 // Multi-process to utilize all CPU cores.
 const cluster = require('cluster');
 const numCPUs = 1;//require('os').cpus().length;
 const isDev = process.env.NODE_ENV !== 'prod';
+const UserSchema = require("./models/User")
+const TrainerApprovalSchema = require("./models/TrainerApproval")
+const app = express();
+app.use(cors())
+// mongoose.connect("mongodb+srv://fitocity:EfNA5Sp7grqAGhj@cluster0.f9ojxk6.mongodb.net/?retryWrites=true&w=majority")
+app.use(express.json())
+
+
 if (!isDev && cluster.isMaster) {
     console.error(`Node cluster master ${process.pid} is running`);
   
@@ -57,4 +65,49 @@ if (!isDev && cluster.isMaster) {
         console.log(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: ` + 
                     `listening at ${isDev ? `http://localhost:${PORT}` : `${PORT}`}`);
     });
+
+    // show users table
+    app.get("/showusers", (req,res)=>{
+        UserSchema.find({}, ()=>{
+            if(err){
+                return res.json(err)
+            }else{
+                return res.json(result)
+            }
+        })
+    })
+
+      // show approved trainers table
+    app.get("/showtrainers", (req,res)=>{
+        TrainerApprovalSchema.find({}, ()=>{
+            if(err){
+                return res.json(err)
+            }else{
+                return res.json(result)
+            }
+        })
+    })
+
+      // show pending trainers table
+    app.get("/approvetrainers", (req,res)=>{
+        TrainerApprovalSchema.find({}, ()=>{
+            if(err){
+                res.json(err)
+            }else{
+                res.json(result)
+            }
+        })
+    })
+
+    // add pending trainers to trainers table table
+
+    app.post("/approvetrainers", async (req,res)=>{
+
+        const trainer = req.body;
+        const new_trainer = new TrainerApprovalSchema(trainer);
+        await new_trainer.save();
+
+        res.json(trainer)
+     
+    })
 }

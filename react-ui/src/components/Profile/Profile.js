@@ -25,14 +25,6 @@ import {
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import VideoCard from './VideoCard';
-import Button from '@material-ui/core/Button';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import './Profile.css'
-import { LinearProgress } from '@material-ui/core';
-
-import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
-import Navigation from '../Navigation/Navigation';
 
 export default function Profile() {
   let mfaRequired = localStorage.getItem('mfaRequired');
@@ -201,6 +193,8 @@ export default function Profile() {
     setTrainerDetails(event.target.value)
   }
 
+  
+
   const submitForApproval = (event) => {
     event.preventDefault()
     const formData = {
@@ -258,8 +252,8 @@ export default function Profile() {
   };
 
   return (
-    <div className="gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
-        <LinearProgress id='spinner' hidden={hidden} color="secondary" />
+    <section style={{ backgroundColor: '#eee' }}>
+
       <ToastContainer />
 
       {/* Sidebar Navigation */}
@@ -376,67 +370,27 @@ export default function Profile() {
           </MDBRow>
         </MDBContainer>
       </form>
-      {/* Video upload Modal for when trainer clicks upload video */}
-      <MDBModal show={varyingModal} setShow={setVaryingModal} tabIndex='-1'>
-        <MDBModalDialog>
-          <MDBModalContent>
-            <form onSubmit={uploadVideo}>
-              <MDBModalHeader>
-                <MDBModalTitle>Upload Video</MDBModalTitle>
-                <MDBBtn className='btn-close' color='none' onClick={() => setVaryingModal(!varyingModal)}></MDBBtn>
-              </MDBModalHeader>
-              <MDBModalBody>
-                <div className='mb-3'>
-                  {varyingModal && (
-                    <MDBInput
-                      value={videoTitle}
-                      onChange={onVideoTitleChange}
-                      labelClass='col-form-label'
-                      label='Title of your video:'
-                    />
-                  )}
-                </div>
-                <div className='mb-3'>
-                  {varyingModal && (
-                    <MDBFile size='sm' id='video' />
-                  )}
-                </div>
-              </MDBModalBody>
-              <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setVaryingModal(!varyingModal)}>
-                  Close
-                </MDBBtn>
-                <MDBBtn>Upload</MDBBtn>
-              </MDBModalFooter>
-            </form>
-          </MDBModalContent>
-        </MDBModalDialog>
-      </MDBModal>
-      <MDBModal show={varyingUpload} setShow={setVaryingUpload} tabIndex='-1'>
-        <MDBModalDialog>
-          <MDBModalContent>
-            <form onSubmit={updateImage}>
-              <MDBModalHeader>
-                <MDBModalTitle>Upload Profile Picture</MDBModalTitle>
-                <MDBBtn className='btn-close' color='none' onClick={() => setVaryingUpload(!varyingUpload)}></MDBBtn>
-              </MDBModalHeader>
-              <MDBModalBody>
-                <div className='mb-3'>
-                  {varyingUpload && (
-                    <MDBFile size='sm' id='customFile' />
-                  )}
-                </div>
-              </MDBModalBody>
-              <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setVaryingUpload(!varyingUpload)}>
-                  Close
-                </MDBBtn>
-                <MDBBtn>Upload</MDBBtn>
-              </MDBModalFooter>
-            </form>
-          </MDBModalContent>
-        </MDBModalDialog>
-      </MDBModal>
-    </div>
+
+      <MDBContainer className="py-5">
+        <MDBCol lg="8">
+          <MDBCard className="mb-4">
+            <MDBCardBody>
+              <MDBRow>
+                {status !== 'inprocess'?
+                  <MDBCol style={{ 'width': '100%' }} md="6">
+                    <br />
+                    <h1 style={{ 'margin': '20px' }} >Tell us more about yourself</h1>
+                    <form onSubmit={submitForApproval}>
+                      <MDBTextArea value={trainerDetails} onChange={tellUsMore} id='textAreaExample' rows={10} />
+                      <MDBBtn style={{ 'margin-top': '10px' }} >Submit</MDBBtn>
+                    </form>
+                  </MDBCol>
+                  : <h1>Your profile is under Review</h1>}
+              </MDBRow>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBContainer>
+    </section>
   );
 }

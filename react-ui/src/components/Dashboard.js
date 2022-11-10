@@ -18,13 +18,17 @@ export default function Dashboard() {
           headers: headers
       });
       
-      // Terminate the user's session information
-      await instance.post('/auth/logout', {}).then((res) => {})
-        .catch((error) => console.error(error));
-
-      localStorage.clear();
-      // Redirect to home
-      navigate('/');
+      instance.post('/auth/logout', {}).then((res) => {
+          // set token in local storage to the returned jwt
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          
+          // Redirect to the dashboard because the user is logged in
+          navigate('/');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

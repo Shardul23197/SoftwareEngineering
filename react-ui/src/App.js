@@ -18,7 +18,6 @@ import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
-import Search from './components/Search/Search';
 
 function App() {
     // Auth token and refresh token state
@@ -41,11 +40,6 @@ function App() {
                 <UnauthenticatedRoute>
                     <Login />
                 </UnauthenticatedRoute>    
-            }/>
-            <Route path='/twoFactor' element={
-                <UnverifiedRoute>
-                    <TwoFactor />
-                </UnverifiedRoute>    
             }/>
             <Route path='/register' element={
                 <UnauthenticatedRoute>
@@ -80,16 +74,6 @@ function App() {
             <Route path='/profile' element={
                 <PrivateRoute>
                     <Profile />
-                </PrivateRoute>    
-            }/>
-            <Route path='/settings' element={
-                <PrivateRoute>
-                    <Settings />
-                </PrivateRoute>
-            }/>
-            <Route path='/search' element={
-                <PrivateRoute>
-                    <Search /> 
                 </PrivateRoute>    
             }/>
         </Routes>

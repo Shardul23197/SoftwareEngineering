@@ -13,9 +13,6 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import {getWorkoutsBySearch} from '../../actions/workouts'
 import { useDispatch } from 'react-redux';
-import store from '../../state/store'
-import './Dashboard.css'
-import Navigation from '../Navigation/Navigation';
 
 
 export default function Dashboard() {
@@ -86,13 +83,17 @@ export default function Dashboard() {
         headers: headers
     });
       
-    // Terminate the user's session information
-    await instance.post('/auth/logout', {}).then((res) => {})
-      .catch((error) => console.error(error));
-
-    // Navigate to home
-    localStorage.clear();
-    navigate('/');
+      instance.post('/auth/logout', {}).then((res) => {
+          // set token in local storage to the returned jwt
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          
+          // Redirect to the dashboard because the user is logged in
+          navigate('/');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
 
@@ -169,25 +170,78 @@ export default function Dashboard() {
 
 
 
-<Navigation/>
-
-
-<section class="home-section">
-  <nav>
-    <div class="sidebar-button">
-      <i class='bx bx-menu sidebarBtn'></i>
-      <span class="dashboard">Dashboard</span>
+<div class="sidebar">
+    <div class="logo-details">
+      <i class='bx bxl-c-plus-plus'></i>
+      <span class="logo_name">Fitocity</span>
     </div>
-    <div class="search-box">
-      <input type="text" placeholder="Search..."/>
-      <i class='bx bx-search' ></i>
-    </div>
-    <div class="profile-details">
-      <img src="https://xsgames.co/randomusers/assets/avatars/male/63.jpg" alt=""/>
-      <span class="admin_name">Welcome User</span>
-      <i class='bx bx-chevron-down' ></i>
-    </div>
-  </nav>
+      <ul class="nav-links">
+        <li>
+          <a href="#" class="active">
+            <i class='bx bx-grid-alt' ></i>
+            <span class="links_name">Explore</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class='bx bx-box' ></i>
+            <span class="links_name">Workout</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class='bx bx-list-ul' ></i>
+            <span class="links_name">Diet</span>
+          </a>
+        </li>      
+        <li>
+          <a href="#">
+            <i class='bx bx-message' ></i>
+            <span class="links_name">Messages</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class='bx bx-heart' ></i>
+            <span class="links_name">Favrorites</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class='bx bx-coin-stack' ></i>
+            <span class="links_name" onClick={navigateToProfile}>Profile</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class='bx bx-cog' ></i>
+            <span class="links_name">Settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class='bx bx-log-out'></i>
+            <span class="links_name" onClick={onLogout}>Log out</span>
+          </a>
+        </li>
+      </ul>
+  </div>
+  <section class="home-section">
+    <nav>
+      <div class="sidebar-button">
+        <i class='bx bx-menu sidebarBtn'></i>
+        <span class="dashboard">Dashboard</span>
+      </div>
+      <div class="search-box">
+        <input type="text" placeholder="Search..."/>
+        <i class='bx bx-search' ></i>
+      </div>
+      <div class="profile-details">
+        <img src="https://xsgames.co/randomusers/assets/avatars/male/63.jpg" alt=""/>
+        <span class="admin_name">Welcome User</span>
+        <i class='bx bx-chevron-down' ></i>
+      </div>
+    </nav>
 
   <div class="home-content">
     <div class="overview-boxes">
@@ -280,6 +334,9 @@ export default function Dashboard() {
   <Paper elevation={6}>
   <Pagination/>
 </Paper>
+
+
+
 
   {/* <script>
    let sidebar = document.querySelector(".sidebar");
