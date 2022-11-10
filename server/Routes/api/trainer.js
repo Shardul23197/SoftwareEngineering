@@ -43,14 +43,25 @@ router.get('/approvals', (req, res) => {
   });
 })
 
-router.post('/upload', multer.single('video'), gcsMiddlewares.sendUploadToGCS, (req, res, next) => {
-  const { email } = req.body;
+router.post('/upload', multer.single('file'), gcsMiddlewares.sendUploadToGCS, (req, res, next) => {
+  let { email, title, category, tags } = req.body;
+  tags = tags.split(','); // The tags are concatenated when sending a requst with FormData
+
   if (req.file && req.file.gcsUrl) {
     UserProfile.findOne({ email: email }).then( user => {
+      console.log({
+        url: req.file.gcsUrl,
+        title: title,
+        postedBy: user._id,
+        category: category,
+        tags: tags
+      });
       const video = new WorkoutVideo({
         url: req.file.gcsUrl,
-        title: req.body.title,
-        postedBy: user._id
+        title: title,
+        postedBy: user._id,
+        category: category,
+        tags: tags
       })
       video.save().then(vid => {res.status(200).json(vid)}).catch(err => console.log(err))
     })
@@ -71,11 +82,11 @@ router.get('/videos', (req,res) => {
       WorkoutVideo.find({postedBy: user._id}).then(video => {
         if(!video)
         {
-          return res.status(404).json({data: 'No videos found'})
+          return res.status(404).json({data: 'No videos found'});
         }
         else
         {
-          return res.status(200).json({data: video})
+          return res.status(200).json({data: video});
         }
       })
     }

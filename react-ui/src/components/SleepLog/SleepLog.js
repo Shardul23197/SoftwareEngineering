@@ -255,7 +255,6 @@ export default function SleepLog() {
           <MDBModalContent>
               <MDBModalHeader>
                 <h2>Add Sleep</h2>
-                <MDBBtn className='btn-close' color='none' onClick={() => setSleepUploadModalVisible(!sleepUploadModalVisible)}></MDBBtn>
               </MDBModalHeader>
               <MDBModalBody>
                 <div className='mb-3'>
@@ -316,7 +315,8 @@ export default function SleepLog() {
                 </div>
               </MDBModalBody>
               <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setSleepUploadModalVisible(!sleepUploadModalVisible)}>
+                {/* type='button' prevents form submission */}
+                <MDBBtn type='button' color='secondary' onClick={() => setSleepUploadModalVisible(!sleepUploadModalVisible)}>
                   Close
                 </MDBBtn>
                 <MDBBtn onClick={addSleep}>Add</MDBBtn>

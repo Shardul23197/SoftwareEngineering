@@ -269,7 +269,6 @@ export default function WorkoutLog() {
           <MDBModalContent>
               <MDBModalHeader>
                 <h2>Add Workout</h2>
-                <MDBBtn className='btn-close' color='none' onClick={() => setWorkoutUploadModalVisible(!workoutUploadModalVisible)}></MDBBtn>
               </MDBModalHeader>
               <MDBModalBody>
                 <div className='mb-3'>
@@ -315,7 +314,8 @@ export default function WorkoutLog() {
                 </div>
               </MDBModalBody>
               <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setWorkoutUploadModalVisible(!workoutUploadModalVisible)}>
+                {/* type='button' prevents form submission */}
+                <MDBBtn type='button' color='secondary' onClick={() => setWorkoutUploadModalVisible(!workoutUploadModalVisible)}>
                   Close
                 </MDBBtn>
                 <MDBBtn onClick={addWorkout}>Add</MDBBtn>

@@ -11,14 +11,22 @@ const multer = Multer({
 
 const UserProfile = require('../../models/UserProfile');
 
-router.get('/getdetails', (req, res) => {
-  const { email } = req.query
-  UserProfile.findOne({ email }).then(user => {
-    // Check if user exists
-    if (!user) {
+router.get('/getdetails', async (req, res) => {
+  const { email } = req.query;
+  const user = await User.findOne({ email: email });
+  // Check if user exists
+  if (!user) {
+      let err = 'Could not find the given email!';
+      res.status(401).send(err);
+      return;
+  }
+
+  UserProfile.findOne({ email }).then(userProfile => {
+    // Check if userProfile exists
+    if (!userProfile) {
       return res.status(404).json({ emailnotfound: "Email not found" });
     }
-    return res.status(200).json({ data: user });
+    return res.status(200).json({ userProfile, role: user.role});
   });
 });
 

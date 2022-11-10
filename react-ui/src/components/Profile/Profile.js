@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Link, useNavigate } from "react-router-dom";
 import {
   MDBCol,
@@ -31,26 +30,27 @@ import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
+import util from 'util';
 
 export default function Profile() {
-  let mfaRequired = localStorage.getItem('mfaRequired');
+  const mfaRequired = localStorage.getItem('mfaRequired');
   const navigate = useNavigate();
-  const selector = useSelector(state => state.email)
-  const role = useSelector(state => state.role)
+  const email = localStorage.getItem('email');
   const [userEmail, setUserEmail] = useState('')
   const [userFullName, setUserFullName] = useState('')
   const [userPhone, setUserPhone] = useState('')
   const [userCity, setUserCity] = useState('')
   const [userImage, setUserImage] = useState('')
-  const [dataFromState, setDataFromState] = useState(selector)
-  const [dataFromStateRole, setDataFromStateRole] = useState(role)
+  const [role, setRole] = useState('user')
   const [trainerDetails, setTrainerDetails] = useState('')
   const [status, setStatus] = useState('todo')
   const [videos, setVideos] = useState([])
   const [varyingModal, setVaryingModal] = useState(false);
-  const [videoTitle, setVideoTitle] = useState('')
-  const [varyingUpload, setVaryingUpload] = useState(false)
-  const [hidden, setHidden] = useState(true)
+  const [category, setCategory] = useState('Yoga');
+  const [tags, setTags] = useState([]);
+  const [title, setTitle] = useState('');
+  const [varyingUpload, setVaryingUpload] = useState(false);
+  const [hidden, setHidden] = useState(true);
 
   // User body measurements
   const [userHeightFeet, setUserHeightFeet] = useState('')
@@ -67,20 +67,29 @@ export default function Profile() {
   //todo
   //get user data
   useEffect(() => {
-    setDataFromState(selector)
-    setDataFromStateRole(role)
-    axios.get('/api/users/profile/getdetails', { params: { email: dataFromState } })
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
+
+    instance.get('/api/users/profile/getdetails', { params: { email: email } })
       .then((res) => {
-          setUserEmail(res.data.data.email)
-          setUserCity(res.data.data.city)
-          setUserFullName(res.data.data.fullName)
-          setUserPhone(res.data.data.phone)
-          setUserHeightFeet(res.data.data.heightFeet);
-          setUserHeightInches(res.data.data.heightInches);
-          setUserWeight(res.data.data.weight);
-          setUserSleepHours(res.data.data.sleepHours);
-          setUserSleepMinutes(res.data.data.sleepMinutes);
-        if (!res.data.data.profileImage) {
+          setUserEmail(res.data.userProfile.email);
+          setUserCity(res.data.userProfile.city);
+          setUserFullName(res.data.userProfile.fullName);
+          setUserPhone(res.data.userProfile.phone);
+          setUserHeightFeet(res.data.userProfile.heightFeet);
+          setUserHeightInches(res.data.userProfile.heightInches);
+          setUserWeight(res.data.userProfile.weight);
+          setUserSleepHours(res.data.userProfile.sleepHours);
+          setUserSleepMinutes(res.data.userProfile.sleepMinutes);
+          setRole(res.data.role)
+        if (!res.data.userProfile.profileImage) {
           setUserImage("https://ui-avatars.com/api/?name=ME&size=256")
         }
         else {
@@ -90,27 +99,26 @@ export default function Profile() {
       .catch((error) => {
         if (error.response)
           console.log(error.response.data);
-      })
+      });
 
-
-    axios.get('/api/trainer/approvals', { params: { email: dataFromState } })
+    instance.get('/api/trainer/approvals', { params: { email: email } })
       .then((res) => {
         setStatus(res.data.status)
       }).catch((error) => {
         setStatus('notfound')
         console.log(error)
-      })
-    
-      if(dataFromStateRole === 'trainer') {
-      axios.get('/api/trainer/videos', { params: { email: dataFromState } })
-      .then((res) => {
-        setVideos(res.data.data)
-      }).catch((error) => {
-        setVideos('')
-        console.log(error)
-      })
+      });
+    if(role === 'trainer') {
+      instance.get('/api/trainer/videos', { params: { email: email } })
+        .then((res) => {
+          setVideos(res.data.data);
+        })
+        .catch((error) => {
+          setVideos([]);
+          console.log(error);
+        });
     }
-  }, [authToken, dataFromState, mfaRequired, selector, dataFromStateRole, role])
+  }, [authToken, email, role])
 
 
   // Updates the wellness information of the user's profile
@@ -157,7 +165,7 @@ export default function Profile() {
       city: userCity,
       email: userEmail
     }
-    axios.post('/api/users/profile/updatedetails', formData).then((res) => {
+    axios.post('/api/users/profile/updatedetails', qs.stringify(formData)).then((res) => {
       toast('Profile Updated!')
     }).catch((err) => {
       toast('Something went wrong!')
@@ -165,7 +173,7 @@ export default function Profile() {
   }
 
   const onVideoTitleChange = (event) => {
-    setVideoTitle(event.target.value)
+    setTitle(event.target.value)
   }
 
   const onNameChange = (event) => {
@@ -180,8 +188,20 @@ export default function Profile() {
     setUserPhone(event.target.value)
   }
 
+  const onCategoryChange = (event) => {
+    setCategory(event.target.value);
+  }
+
   const onCityChange = (event) => {
     setUserCity(event.target.value)
+  }
+
+  const onTagsChange = (event) => {
+    const clickedTag = event.target.value;
+    if (tags.includes(clickedTag)) 
+      setTags(tags.filter((tag) => tag !== clickedTag)); // filter returns new array... ight
+    else
+      tags.push(clickedTag);
   }
 
   const onUserHeightFeetChange = (event) => {
@@ -240,7 +260,7 @@ export default function Profile() {
     var imagefile = document.getElementById('customFile');
     formData.append("image", imagefile.files[0]);
     formData.append('email', userEmail)
-    axios.post('/api/users/profile/upload', formData).then((res) => {
+    axios.post('/api/users/profile/upload', qs.stringify(formData)).then((res) => {
       toast('Profile Updated!')
       setUserImage(res.data.data)
       setVaryingUpload(false)
@@ -250,24 +270,46 @@ export default function Profile() {
   }
 
   const uploadVideo = (event) => {
-    event.preventDefault()
-    setHidden(false)
-    var formData = new FormData();
-    var video = document.getElementById('video');
-    formData.append("video", video.files[0]);
-    formData.append('email', userEmail)
-    formData.append('title', videoTitle)
-    axios.post('/api/trainer/upload', formData).then((res) => {
-      toast('Video Uploaded!')
-      setHidden(true)
-      setVideoTitle('')
-      videos.push(res.data)
-      setVaryingModal(false)
-    }).catch((err) => {
-      toast('Something went wrong!')
-      setHidden(true)
-      setVideoTitle('')
-    })
+    event.preventDefault();
+    const file = document.getElementById('video').files[0];
+    console.log(file);
+
+    if (!email || !title || !category || !(tags.length > 0) || !file) {
+      toast('You must fill out all sections to upload a video!')
+      return;
+    }
+
+    
+    setHidden(false); // Show loading spinner
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    }); 
+     
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('title', title);
+    formData.append('category', category);
+    formData.append('tags', tags);
+    formData.append('file', file);
+    instance.post('/api/trainer/upload', formData)
+      .then((res) => {
+        setHidden(true);
+        setTitle('');
+        videos.push(res.data);
+        setVaryingModal(false);
+        window.location.reload(false); // Reload the current page from cache
+      }).catch((err) => {
+        console.error(err);
+        toast('Something went wrong!');
+        setHidden(true);
+        setTitle('');
+      });
   }
 
   const tellUsMore = (event) => {
@@ -280,7 +322,7 @@ export default function Profile() {
       email: userEmail,
       description: trainerDetails
     }
-    axios.post('/api/trainer/approval', formData).then((res) => {
+    axios.post('/api/trainer/approval', qs.stringify(formData)).then((res) => {
       toast('Thank you for submitting the form!')
       setStatus(res.data.status)
     }).catch((err) => {
@@ -413,216 +455,227 @@ export default function Profile() {
       </div>
 
       {/* Profile section */}
-        <MDBContainer className="py-5 h-100">
-          <MDBRow className="justify-content-center align-items-center h-100">
-            <MDBCol lg="9" xl="7">
+      <MDBContainer className="py-5 h-100">
+        <MDBRow className="justify-content-center align-items-center h-100">
+          <MDBCol lg="9" xl="7">
 
-              {/* User Profile Card */}
-              <MDBCard>
-                <div className="rounded-top text-white d-flex flex-row" style={{ backgroundColor: '#000', height: '200px' }}>
-                  <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
-                    <div className="image-container">
-                    <MDBCardImage src={userImage}
-                      alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ width: '150px', zIndex: '1' }} />
-                      <div class="overlay">
-                        <Button class="icon" onClick={() => {
-                          setVaryingUpload(!varyingUpload);
-                        }}>
-                          <CloudUploadIcon className='fa user' />
-                        </Button>
-                      </div>
-                      </div>
-                  </div>
-                  <div className="ms-3" style={{ marginTop: '130px' }}>
-                    <MDBTypography tag="h5">{userFullName}</MDBTypography>
-                    <MDBCardText>{userCity}</MDBCardText>
-                  </div>
+            {/* User Profile Card */}
+            <MDBCard>
+              <div className="rounded-top text-white d-flex flex-row" style={{ backgroundColor: '#000', height: '200px' }}>
+                <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
+                  <div className="image-container">
+                  <MDBCardImage src={userImage}
+                    alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ width: '150px', zIndex: '1' }} />
+                    <div class="overlay">
+                      <Button class="icon" onClick={() => {
+                        setVaryingUpload(!varyingUpload);
+                      }}>
+                        <CloudUploadIcon className='fa user' />
+                      </Button>
+                    </div>
+                    </div>
                 </div>
+                <div className="ms-3" style={{ marginTop: '130px' }}>
+                  <MDBTypography tag="h5">{userFullName}</MDBTypography>
+                  <MDBCardText>{userCity}</MDBCardText>
+                </div>
+              </div>
 
-                
-                {/* Trainer video upload button */}
-                <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
-                  <div className="d-flex justify-content-end text-center py-1">
-                    <div>
-                      {(true || status === 'approved') && role === 'trainer' ? <Button variant="contained" color="default"
+              
+              {/* Trainer video upload button */}
+              <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
+                <div className="d-flex justify-content-end text-center py-1">
+                  <div>
+                    {(true || status === 'approved') && role === 'trainer'
+                      ? 
+                      <Button variant="contained" color="default"
                         className='material-button'
                         startIcon={<CloudUploadIcon />}
                         onClick={() => {
                           setVaryingModal(!varyingModal);
                         }}
-                      >Upload</Button> : ''}
-                    </div>
+                      >
+                      Upload
+                      </Button> 
+                      : 
+                      ''
+                      }
                   </div>
                 </div>
+              </div>
 
-                {/* User information card */}
-                <MDBCardBody className="text-black p-4">
+              {/* User information card */}
+              <MDBCardBody className="text-black p-4">
 
-                  {/* About */}
-                  <form onSubmit={updateProfile}>
-                  <div className="mb-5">
-                    <h1 className="fw-bold mb-1">About</h1>
-                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Full Name</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <MDBInput label='Name' onChange={onNameChange} value={userFullName}
-                              type='text' />
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                      <hr />
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Email</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <MDBInput label='Email' onChange={onEmailChange} value={userEmail}
-                              type='text' />
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                      <hr />
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Phone</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <MDBInput label='Phone' onChange={onPhoneChange} value={userPhone}
-                              type='text' />
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                      <hr />
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>City</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <MDBInput label='City' onChange={onCityChange} value={userCity}
-                              type='text' />
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                    </div>
-                    <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
+                {/* About */}
+                <form onSubmit={updateProfile}>
+                <div className="mb-5">
+                  <h1 className="fw-bold mb-1">About</h1>
+                  <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Full Name</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                          <MDBInput label='Name' onChange={onNameChange} value={userFullName}
+                            type='text' />
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Email</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                          <MDBInput label='Email' onChange={onEmailChange} value={userEmail}
+                            type='text' />
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Phone</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                          <MDBInput label='Phone' onChange={onPhoneChange} value={userPhone}
+                            type='text' />
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>City</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                          <MDBInput label='City' onChange={onCityChange} value={userCity}
+                            type='text' />
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
                   </div>
-                  </form>
-                  
-                  {/* Trainer approval status */}
-                  {renderByStatus()}
+                  <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
+                </div>
+                </form>
+                
+                {/* Trainer approval status */}
+                {renderByStatus()}
 
-                  {/* Trainer videos */}
-                  <MDBRow md='4'>
-                    <h1 className="fw-bold mb-1">Videos</h1>
-                    {(true || (status === 'approved' && role === 'trainer')) && videos ? <VideoCard videos={videos} /> : ''}
-                  </MDBRow>
+                {/* Trainer videos */}
+                <h1 className="fw-bold mb-1">Videos</h1>
+                <MDBRow md='4' className="justify-content-center align-items-center h-100">
+                  {(true || (status === 'approved' && role === 'trainer')) && videos.length > 0
+                      ? 
+                        <VideoCard videos={videos} />
+                      :
+                        ''}
+                </MDBRow>
 
-                  {/* User wellness information */}
-                  <form onSubmit={updateFitnessInfo}>
-                  <div className="mb-5">
-                    <h1 className="fw-bold mb-2">Wellness Information</h1>
+                {/* User wellness information */}
+                <form onSubmit={updateFitnessInfo}>
+                <div className="mb-5">
+                  <h1 className="fw-bold mb-2">Wellness Information</h1>
 
-                    {/* User body measurements */}
-                    <h2 className="mb-">Body Measurements</h2>
-                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Height</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                          <MDBRow className="align-items-center" style={{flex: 'left'}}>
-                            <div style={{ width: '200px' }}>
-                            <MDBInput label='Feet' 
-                                      onChange={onUserHeightFeetChange} 
-                                      value={userHeightFeet} 
-                                      onBlur={userHeightValidation}
-                                      type='number'/>
-                            </div>
-                            <div style={{ width: '200px' }}>
-                            <MDBInput label='Inches' 
-                                      onChange={onUserHeightInchesChange} 
-                                      value={userHeightInches} 
-                                      onBlur={userHeightValidation}
-                                      type='number' />
-                            </div>
-                          </MDBRow>
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                      <hr />
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Weight</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <div style={{ width: '176px' }}>
-                            <MDBInput label='lbs' 
-                                      onChange={onUserWeightChange} 
-                                      value={userWeight} 
-                                      onBlur={userWeightValidation}
-                                      type='number'/>
-                            </div>
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                    </div>
-
-                    {/* User sleep tracking */}
-                    <h2 className="mt-2 mb-1">Sleep</h2>
-                    <p>How much sleep do you get per night?</p>
-                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Average</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                          <MDBRow className="align-items-center" style={{flex: 'left'}}>
-                            <div style={{ width: '200px' }}>
-                            <MDBInput label='Hours' 
-                                      onChange={onUserSleepHoursChange} 
-                                      value={userSleepHours} 
-                                      onBlur={userSleepValidation}
-                                      type='number'/>
-                            </div>
-                            <div style={{ width: '200px' }}>
-                            <MDBInput label='Minutes' 
-                                      onChange={onUserSleepMinutesChange} 
-                                      value={userSleepMinutes} 
-                                      onBlur={userSleepValidation}
-                                      type='number' />
-                            </div>
-                          </MDBRow>
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                    </div>
-
-                    {/* Error message for wellness info submission */}
-                    {error ?
-                            <MDBTypography id="danger-text" note noteColor='danger' style={{ 'marginTop': '10px' }}>
-                                <strong>{error}</strong>
-                            </MDBTypography> : ""}
-
-                    {/* User wellness info update button */}
-                    <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
+                  {/* User body measurements */}
+                  <h2 className="mb-">Body Measurements</h2>
+                  <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Height</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                        <MDBRow className="align-items-center" style={{flex: 'left'}}>
+                          <div style={{ width: '200px' }}>
+                          <MDBInput label='Feet' 
+                                    onChange={onUserHeightFeetChange} 
+                                    value={userHeightFeet} 
+                                    onBlur={userHeightValidation}
+                                    type='number'/>
+                          </div>
+                          <div style={{ width: '200px' }}>
+                          <MDBInput label='Inches' 
+                                    onChange={onUserHeightInchesChange} 
+                                    value={userHeightInches} 
+                                    onBlur={userHeightValidation}
+                                    type='number' />
+                          </div>
+                        </MDBRow>
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Weight</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                          <div style={{ width: '176px' }}>
+                          <MDBInput label='lbs' 
+                                    onChange={onUserWeightChange} 
+                                    value={userWeight} 
+                                    onBlur={userWeightValidation}
+                                    type='number'/>
+                          </div>
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
                   </div>
-                  </form>
-                  
-                </MDBCardBody>
-              </MDBCard>
-            </MDBCol>
-          </MDBRow>
-        </MDBContainer>
+
+                  {/* User sleep tracking */}
+                  <h2 className="mt-2 mb-1">Sleep</h2>
+                  <p>How much sleep do you get per night?</p>
+                  <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Average</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                        <MDBRow className="align-items-center" style={{flex: 'left'}}>
+                          <div style={{ width: '200px' }}>
+                          <MDBInput label='Hours' 
+                                    onChange={onUserSleepHoursChange} 
+                                    value={userSleepHours} 
+                                    onBlur={userSleepValidation}
+                                    type='number'/>
+                          </div>
+                          <div style={{ width: '200px' }}>
+                          <MDBInput label='Minutes' 
+                                    onChange={onUserSleepMinutesChange} 
+                                    value={userSleepMinutes} 
+                                    onBlur={userSleepValidation}
+                                    type='number' />
+                          </div>
+                        </MDBRow>
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
+                  </div>
+
+                  {/* Error message for wellness info submission */}
+                  {error ?
+                          <MDBTypography id="danger-text" note noteColor='danger' style={{ 'marginTop': '10px' }}>
+                              <strong>{error}</strong>
+                          </MDBTypography> : ""}
+
+                  {/* User wellness info update button */}
+                  <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
+                </div>
+                </form>
+                
+              </MDBCardBody>
+            </MDBCard>
+          </MDBCol>
+        </MDBRow>
+      </MDBContainer>
 
       {/* Video upload Modal for when trainer clicks upload video */}
       <MDBModal show={varyingModal} setShow={setVaryingModal} tabIndex='-1'>
@@ -631,27 +684,71 @@ export default function Profile() {
             <form onSubmit={uploadVideo}>
               <MDBModalHeader>
                 <MDBModalTitle>Upload Video</MDBModalTitle>
-                <MDBBtn className='btn-close' color='none' onClick={() => setVaryingModal(!varyingModal)}></MDBBtn>
               </MDBModalHeader>
               <MDBModalBody>
                 <div className='mb-3'>
-                  {varyingModal && (
-                    <MDBInput
-                      value={videoTitle}
-                      onChange={onVideoTitleChange}
-                      labelClass='col-form-label'
-                      label='Title of your video:'
-                    />
-                  )}
+                  <h4>Title</h4>
+                  <MDBInput
+                    value={title}
+                    onChange={onVideoTitleChange}
+                    labelClass='col-form-label'
+                    label='Title'
+                  />
                 </div>
                 <div className='mb-3'>
-                  {varyingModal && (
-                    <MDBFile size='sm' id='video' />
-                  )}
+                  <h4>Category</h4>
+                  <select onChange={onCategoryChange} class="form-select" aria-label="Category Select">
+                    <option value={'Yoga'}>Yoga</option>
+                    <option value={'Upper Body'}>Upper Body</option>
+                    <option value={'Lower Body'}>Lower Body</option>
+                    <option value={'Cardio'}>Cardio</option>
+                    <option value={'Cardio'}>Biking</option>
+                    <option value={'Other'}>Other</option>
+                  </select>
+                </div>
+                <div className='mb-3'>
+                  <h4>Tags</h4>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox1" value="beginner" />
+                    <label class="form-check-label" for="flexCheckChecked">beginner</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox2" value="intermediate" />
+                    <label class="form-check-label" for="flexCheckChecked">intermediate</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox3" value="expert" />
+                    <label class="form-check-label" for="flexCheckChecked">expert</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox4" value="low intensity" />
+                    <label class="form-check-label" for="flexCheckChecked">low intensity</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox5" value="medium intensity" />
+                    <label class="form-check-label" for="flexCheckChecked">medium intensity</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox6" value="high intensity" />
+                    <label class="form-check-label" for="flexCheckChecked">high intensity</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox7" value="equipment required" />
+                    <label class="form-check-label" for="flexCheckChecked">equipment required</label>
+                  </div>
+                  <div class="form-check">
+                    <input onChange={onTagsChange} class="form-check-input" type="checkbox" id="inlineCheckbox8" value="equipment not-required" />
+                    <label class="form-check-label" for="flexCheckChecked">equipment not-required</label>
+                  </div>
+                </div>
+                <div className='mb-3'>
+                  <h4>Upload</h4>
+                  <MDBFile size='sm' id='video'/>
                 </div>
               </MDBModalBody>
               <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setVaryingModal(!varyingModal)}>
+                {/* type='button' prevents form submission */}
+                <MDBBtn type='button' color='secondary' onClick={() => setVaryingModal(!varyingModal)}>
                   Close
                 </MDBBtn>
                 <MDBBtn>Upload</MDBBtn>
@@ -668,7 +765,6 @@ export default function Profile() {
             <form onSubmit={updateImage}>
               <MDBModalHeader>
                 <MDBModalTitle>Upload Profile Picture</MDBModalTitle>
-                <MDBBtn className='btn-close' color='none' onClick={() => setVaryingUpload(!varyingUpload)}></MDBBtn>
               </MDBModalHeader>
               <MDBModalBody>
                 <div className='mb-3'>
@@ -678,7 +774,8 @@ export default function Profile() {
                 </div>
               </MDBModalBody>
               <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setVaryingUpload(!varyingUpload)}>
+                {/* type='button' prevents form submission */}
+                <MDBBtn type='button' color='secondary' onClick={() => setVaryingUpload(!varyingUpload)}>
                   Close
                 </MDBBtn>
                 <MDBBtn>Upload</MDBBtn>

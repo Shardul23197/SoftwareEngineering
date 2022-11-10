@@ -281,7 +281,6 @@ export default function MealLog() {
           <MDBModalContent>
               <MDBModalHeader>
                 <h2>Add Meal</h2>
-                <MDBBtn className='btn-close' color='none' onClick={() => setMealUploadModalVisible(!mealUploadModalVisible)}></MDBBtn>
               </MDBModalHeader>
               <MDBModalBody>
                 <div className='mb-3'>
@@ -372,9 +371,8 @@ export default function MealLog() {
                 </div>
               </MDBModalBody>
               <MDBModalFooter>
-                <MDBBtn color='secondary' onClick={() => setMealUploadModalVisible(!mealUploadModalVisible)}>
-                  Close
-                </MDBBtn>
+                {/* type='button' prevents form submission */}
+                <MDBBtn type='button' color='secondary' onClick={() => setMealUploadModalVisible(!mealUploadModalVisible)}>Close</MDBBtn>
                 <MDBBtn onClick={addMeal}>Add</MDBBtn>
               </MDBModalFooter>
           </MDBModalContent>
