@@ -58,7 +58,7 @@ router.post('/updatewellnessinfo', async (req, res) => {
       return;
   }
 
-  const { heightFeet, heightInches, weight, sleepHours, sleepMinutes } = req.body;
+  const { heightFeet, heightInches, weight, sleepHours, sleepMinutes, weightGoal, muscleMassGoal } = req.body;
   console.log(req.body)
   UserProfile.findOneAndUpdate(
     { email: session.email }, 
@@ -67,7 +67,9 @@ router.post('/updatewellnessinfo', async (req, res) => {
       heightInches: heightInches, 
       weight: weight,
       sleepHours: sleepHours,
-      sleepMinutes: sleepMinutes
+      sleepMinutes: sleepMinutes,
+      weightGoal: weightGoal,
+      muscleMassGoal, muscleMassGoal
     }}, 
     { new: true }, 
     (err, doc) => {

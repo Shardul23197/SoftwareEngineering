@@ -60,6 +60,10 @@ export default function Profile() {
   const [userSleepMinutes, setUserSleepMinutes] = useState('')
   const [error, setError] = useState(''); // String
 
+  // User Goals
+  const [weightGoal, setWeightGoal] = useState('Loose')
+  const [muscleMassGoal, setMuscleMassGoal] = useState('Gain')
+
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
   const [authToken] = useState(existingAuthtoken);
@@ -88,6 +92,8 @@ export default function Profile() {
           setUserWeight(res.data.userProfile.weight);
           setUserSleepHours(res.data.userProfile.sleepHours);
           setUserSleepMinutes(res.data.userProfile.sleepMinutes);
+          setWeightGoal(res.data.userProfile.weightGoal);
+          setMuscleMassGoal(res.data.userProfile.muscleMassGoal);
           setRole(res.data.role)
         if (!res.data.userProfile.profileImage) {
           setUserImage("https://ui-avatars.com/api/?name=ME&size=256")
@@ -148,7 +154,9 @@ export default function Profile() {
       heightInches: userHeightInches,
       weight: userWeight,
       sleepHours: userSleepHours,
-      sleepMinutes: userSleepMinutes
+      sleepMinutes: userSleepMinutes,
+      weightGoal: weightGoal,
+      muscleMassGoal, muscleMassGoal
     }
     instance.post('/api/users/profile/updatewellnessinfo', qs.stringify(formData)).then((res) => {
       toast('Wellness Information Updated!')
@@ -196,6 +204,10 @@ export default function Profile() {
     setUserCity(event.target.value)
   }
 
+  const onMuscleMassGoalChange = (event) => {
+    setMuscleMassGoal(event.target.value)
+  }
+  
   const onTagsChange = (event) => {
     const clickedTag = event.target.value;
     if (tags.includes(clickedTag)) 
@@ -213,16 +225,13 @@ export default function Profile() {
   }
   
   const onUserWeightChange = (event) => {
-    setUserWeight(parseInt(event.target.value))
+    setUserWeight(parseInt(event.target.value));
   }
-  
-  const onUserSleepHoursChange = (event) => {
-    setUserSleepHours(parseInt(event.target.value))
+
+  const onWeightGoalChange = (event) => {
+    setWeightGoal(event.target.value);
   }
-  
-  const onUserSleepMinutesChange = (event) => {
-    setUserSleepMinutes(parseInt(event.target.value))
-  }
+
 
   const userHeightValidation = (event) => {
     const validHeightFeet = Number.isInteger(userHeightFeet) && 
@@ -629,33 +638,33 @@ export default function Profile() {
                     </MDBRow>
                   </div>
 
-                  {/* User sleep tracking */}
-                  <h2 className="mt-2 mb-1">Sleep</h2>
-                  <p>How much sleep do you get per night?</p>
+                  {/* User fitness goals */}
+                  <h2 className="mt-2 mb-1">Fitness Goals</h2>
                   <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
                     <MDBRow>
                       <MDBCol sm="3">
-                        <MDBCardText>Average</MDBCardText>
+                        <MDBCardText>Weight</MDBCardText>
                       </MDBCol>
-                      <MDBCol sm="9">
-                        <MDBCardText className="text-muted">
-                        <MDBRow className="align-items-center" style={{flex: 'left'}}>
-                          <div style={{ width: '200px' }}>
-                          <MDBInput label='Hours' 
-                                    onChange={onUserSleepHoursChange} 
-                                    value={userSleepHours} 
-                                    onBlur={userSleepValidation}
-                                    type='number'/>
-                          </div>
-                          <div style={{ width: '200px' }}>
-                          <MDBInput label='Minutes' 
-                                    onChange={onUserSleepMinutesChange} 
-                                    value={userSleepMinutes} 
-                                    onBlur={userSleepValidation}
-                                    type='number' />
-                          </div>
-                        </MDBRow>
-                        </MDBCardText>
+                      <MDBCol sm="3">
+                        <select onChange={onWeightGoalChange} class="form-select" aria-label="Category Select">
+                          <option value={'Loose'}>Loose</option>
+                          <option value={'Maintain'}>Maintain</option>
+                          <option value={'Gain'}>Gain</option>
+                        </select>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
+
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Muscle Mass</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="3">
+                        <select onChange={onMuscleMassGoalChange} class="form-select" aria-label="Category Select">
+                          <option value={'Gain'}>Gain</option>
+                          <option value={'Maintain'}>Maintain</option>
+                          <option value={'Loose'}>Loose</option>
+                        </select>
                       </MDBCol>
                     </MDBRow>
                   </div>
