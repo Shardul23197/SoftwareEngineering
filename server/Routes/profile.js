@@ -10,6 +10,8 @@ const multer = Multer({
 });
 
 const UserProfile = require('../models/UserProfile');
+const UserSchema = require("../models/User")
+const TrainerApprovalSchema = require("../models/TrainerApproval")
 
 router.get('/getdetails', (req, res) => {
   const { email } = req.query
@@ -45,5 +47,50 @@ router.post('/upload', multer.single('image'), gcsMiddlewares.sendUploadToGCS, (
     })
   }
 });
+
+
+    // show users table
+    router.get("/showusers", (req,res)=>{
+      UserSchema.find({role: 'trainer'}).then(user => {
+        // Check if user exists
+        if (!user) {
+          return res.status(404).json({ emailnotfound: "Email not found" });
+        }
+        return res.status(200).json({ data: user });
+      });
+    });
+    // show approved trainers table
+  router.get("/showtrainers", (req,res)=>{
+      TrainerApprovalSchema.find({}).then(user => {
+        // Check if user exists
+        if (!user) {
+          return res.status(404).json({ emailnotfound: "No data" });
+        }
+        return res.status(200).json({ data: user });
+      });
+    });
+
+    // show pending trainers table
+  router.get("/approvetrainers", (req,res)=>{
+      TrainerApprovalSchema.find({}, ()=>{
+          if(err){
+              res.json(err)
+          }else{
+              res.json(result)
+          }
+      })
+  })
+
+  // add pending trainers to trainers table table
+
+  router.post("/approvetrainers", async (req,res)=>{
+
+      const trainer = req.body;
+      const new_trainer = new TrainerApprovalSchema(trainer);
+      await new_trainer.save();
+
+      res.json(trainer)
+   
+  })
 
 module.exports = router;
