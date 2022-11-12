@@ -23,6 +23,32 @@ const UserProfileSchema = new Schema({
     user: {
       type: Schema.Types.ObjectId,
       ref: "users"
+    },
+    age: {
+      type: Number
+    },
+    heightFeet: {
+      type: Number
+    },
+    heightInches: {
+      type: Number
+    },
+    weight: {
+      type: Number
+    },
+    sleepHours: {
+      type: Number
+    },
+    sleepMinutes: {
+      type: Number
+    },
+    weightGoal: {
+      type: String,
+      enum: [ 'Loose', 'Maintain', 'Gain']
+    },
+    muscleMassGoal: {
+      type: String,
+      enum: [ 'Loose', 'Maintain', 'Gain']
     }
 })
   

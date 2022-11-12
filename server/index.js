@@ -43,9 +43,10 @@ if (!isDev && cluster.isMaster) {
 
     // Routes
     app.use('/auth', require(path.resolve(__dirname, './Routes/auth')));
-    app.use('/api/users', require(path.resolve(__dirname, './Routes/routes')));
-    app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
-    app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
+    app.use('/api/users', require(path.resolve(__dirname, './Routes/api/users')));
+    app.use('/api/users/log', require(path.resolve(__dirname, './Routes/api/log')));
+    app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/api/profile')));
+    app.use('/api/trainer', require(path.resolve(__dirname, './Routes/api/trainer')));
 
     app.get('*', function(req, res) {
         console.log(path.resolve(__dirname, '../react-ui/build', 'index.html'));

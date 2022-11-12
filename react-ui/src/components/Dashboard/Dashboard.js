@@ -195,11 +195,23 @@ export default function Dashboard() {
     </li> : ""
     }
     <li>
-      <a href="#">
-        <i class='bx bx-list-ul' ></i>
-        <span class="links_name">Diet</span>
-      </a>
-    </li>      
+      <Link to='/mealLog'>
+        <i class='bx bx-grid-alt' ></i>
+        <span class="links_name">Meal Log</span>
+      </Link>
+    </li>
+    <li>
+      <Link to='/sleepLog'>
+        <i class='bx bx-grid-alt' ></i>
+        <span class="links_name">Sleep Log</span>
+      </Link>
+    </li>
+    <li>
+      <Link to='/workoutLog'>
+        <i class='bx bx-grid-alt' ></i>
+        <span class="links_name">Workout Log</span>
+      </Link>
+    </li>
     <li>
       <a href="#">
         <i class='bx bx-message' ></i>

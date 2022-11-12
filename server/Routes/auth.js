@@ -535,10 +535,12 @@ router.get('/sessionInfo',
             const authTokenValid = true; 
             const mfaRequired = session.mfaRequired;
             const mfaVerified = session.mfaVerified;
+            const email = session.email;
             res.status(200).json({ 
-                authTokenValid, 
-                mfaRequired, 
-                mfaVerified 
+                authTokenValid,
+                mfaRequired,
+                mfaVerified,
+                email
             });
         });
         
