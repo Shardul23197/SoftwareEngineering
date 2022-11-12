@@ -53,6 +53,7 @@ export default function Profile() {
   const [hidden, setHidden] = useState(true);
 
   // User body measurements
+  const [age, setAge] = useState(-1)
   const [userHeightFeet, setUserHeightFeet] = useState('')
   const [userHeightInches, setUserHeightInches] = useState('')
   const [userWeight, setUserWeight] = useState('')
@@ -176,6 +177,10 @@ export default function Profile() {
     setTitle(event.target.value)
   }
 
+  const onAgeChange = (event) => {
+    setAge(event.target.value)
+  }
+
   const onNameChange = (event) => {
     setUserFullName(event.target.value)
   }
@@ -224,14 +229,25 @@ export default function Profile() {
     setUserSleepMinutes(parseInt(event.target.value))
   }
 
-  const userHeightValidation = (event) => {
-    const validHeightFeet = Number.isInteger(userHeightFeet) && 
+  const userAgeValidation = (event) => {
+    const isValidHeightFeet = Number.isInteger(userHeightFeet) && 
                               userHeightFeet >= 3 && 
                               userHeightFeet < 8;
-    const validHeightInches = Number.isInteger(userHeightInches) && 
+    const isValidHeightInches = Number.isInteger(userHeightInches) && 
                               userHeightInches >= 0 && 
                               userHeightInches <= 11;
-    if (!validHeightFeet || !validHeightInches) setError('Height must be between 3\'0" and 8\'0"!');
+    if (!isValidHeightFeet || !isValidHeightInches) setError('Height must be between 3\'0" and 8\'0"!');
+    else setError('');
+  }
+
+  const userHeightValidation = (event) => {
+    const isValidHeightFeet = Number.isInteger(userHeightFeet) && 
+                              userHeightFeet >= 3 && 
+                              userHeightFeet < 8;
+    const isValidHeightInches = Number.isInteger(userHeightInches) && 
+                              userHeightInches >= 0 && 
+                              userHeightInches <= 11;
+    if (!isValidHeightFeet || !isValidHeightInches) setError('Height must be between 3\'0" and 8\'0"!');
     else setError('');
   }
   
@@ -585,6 +601,23 @@ export default function Profile() {
                   {/* User body measurements */}
                   <h2 className="mb-">Body Measurements</h2>
                   <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Age</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="9">
+                        <MDBCardText className="text-muted">
+                          <div style={{ width: '176px' }}>
+                          <MDBInput label='lbs' 
+                                    onChange={onAgeChange} 
+                                    value={age} 
+                                    // onBlur={ageValidation}
+                                    type='number'/>
+                          </div>
+                        </MDBCardText>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
                     <MDBRow>
                       <MDBCol sm="3">
                         <MDBCardText>Height</MDBCardText>
