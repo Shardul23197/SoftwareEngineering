@@ -8,6 +8,7 @@ import { BrowserRouter, Switch, Route,Routes } from "react-router-dom";
 import AdminChat from './AdminChat';
 import AdminDash from './AdminDash';
 import Adminprofile from './Adminprofile';
+import ShowVideos from './ShowVideos';
 
 export default function Admin() {
   
@@ -64,6 +65,10 @@ export default function Admin() {
 
 <Route path='/adminprofile' element={
             <Adminprofile></Adminprofile>
+            }/>
+
+<Route path='/showvideos' element={
+            <ShowVideos></ShowVideos>
             }/>
 
 

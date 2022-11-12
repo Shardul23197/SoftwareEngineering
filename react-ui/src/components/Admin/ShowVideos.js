@@ -1,25 +1,26 @@
 import { React, useState, useEffect } from 'react';
 import "../../App.css";
 
-export default function ShowTrainers() {
+export default function ShowVideos() {
 
-  const [trainer, setListOfTrainers] = useState([]);
+  const [video, setListOfVideos] = useState([]);
 
   useEffect(()=>{
 
-      const fetchTrainers = async () =>{
-        const response = await fetch('/api/showtrainers/')
+        const fetchVideos = async () =>{
+        const response = await fetch('/api/showvideos/')
         const json = await response.json()
 
         if(response.ok){
-          setListOfTrainers(json)
+          setListOfVideos(json)
         }
       }
 
-      fetchTrainers()
+      fetchVideos()
   },[])
 
 
+  
   return (
     <div className="home-section app-trainers">
     <link
@@ -50,41 +51,40 @@ export default function ShowTrainers() {
                 </div>
               </div>
             </div>
-            <div className="panel-body table-responsive">
-                {trainer.map((trainer)=>{
+            <div class="panel-body table-responsive">
+            {video.map((video)=>{
                   return (
-                    <table className="table">
-                  <thead>
-                    <tr>
-                      <th>PHOTO</th>
-                      <th>NAME</th>
-                      <th>EMAIL</th>
-                      <th>CONTACT</th>
-                      <th>CITY</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                    <td>{trainer.photo}</td>
-                      <td>{trainer.name}</td>
-                      <td>{trainer.email}</td>
-                      <td>{trainer.contact}</td>
-                      <td>{trainer.city}</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>413 406 4880</td>
-                      <td>Zumba</td>
-                    </tr>
-                    
-                  </tbody>
-                </table>
-                  );
-                })}
-                
-              </div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Genre</th>
+                    <th>Description</th>
+                    <th>Trainer</th>
+                    <th>Views</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{video.title}</td>
+                    <td>{video.genre}</td>
+                    <td>{video.description}</td>
+                    <td>{video.postedby}</td>
+                    <td>{video.views}</td>
+                    <td>
+                    <li>
+                            <a href="#" class="btn btn-danger">
+                              <i class="fa fa-times"></i>
+                            </a>
+                          </li>
+                    </td>
+                  </tr>
+                  
+                </tbody>
+              </table>);
+            })}
+            </div>
             <div class="panel-footer">
               <div class="row">
                 <div class="col-sm-6 col-xs-6">

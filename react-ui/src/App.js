@@ -18,6 +18,7 @@ import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
+import Admin from './components/Admin/Admin'
 
 function App() {
     // Auth token and refresh token state
@@ -27,59 +28,64 @@ function App() {
     const [refreshToken, setRefreshtoken] = useState(existingRefreshtoken);
 
     return (
-        <Provider store={store}>
-        <AuthContext.Provider value = {{ authToken, setAuthToken: setAuthtoken, refreshToken, setRefreshToken: setRefreshtoken }}>
-        <BrowserRouter>
-        <Routes>
-            <Route path='/' element={
-                <UnauthenticatedRoute>
-                    <Home />
-                </UnauthenticatedRoute>    
-            }/>
-            <Route path='/login' element={
-                <UnauthenticatedRoute>
-                    <Login />
-                </UnauthenticatedRoute>    
-            }/>
-            <Route path='/register' element={
-                <UnauthenticatedRoute>
-                    <Register />
-                </UnauthenticatedRoute>    
-            }/>
-            <Route path='/forgotPassword' element={
-                <UnauthenticatedRoute>
-                    <ForgotPassword />
-                </UnauthenticatedRoute>    
-            }/>
-            <Route path='/resetPassword' element={
-                <UnauthenticatedRoute>
-                    <ResetPassword />
-                </UnauthenticatedRoute>    
-            }/>
-            <Route path='/dashboard' element={
-                <PrivateRoute>
-                    <Dashboard />
-                </PrivateRoute>    
-            }/>
-            <Route path='/homepage' element={
-                <PrivateRoute>
-                    <Navigate to="/dashboard" />
-                </PrivateRoute>    
-            }/>
-            <Route path='/dashboard/:id' element={
-                <PrivateRoute>
-                    <WorkoutDetails />
-                </PrivateRoute>    
-            }/>
-            <Route path='/profile' element={
-                <PrivateRoute>
-                    <Profile />
-                </PrivateRoute>    
-            }/>
-        </Routes>
-        </BrowserRouter>
-        </AuthContext.Provider>
-        </Provider>
+        // <Provider store={store}>
+        // <AuthContext.Provider value = {{ authToken, setAuthToken: setAuthtoken, refreshToken, setRefreshToken: setRefreshtoken }}>
+        // <BrowserRouter>
+        // <Routes>
+        //     <Route path='/' element={
+        //         <UnauthenticatedRoute>
+        //             <Home />
+        //         </UnauthenticatedRoute>    
+        //     }/>
+        //     <Route path='/login' element={
+        //         <UnauthenticatedRoute>
+        //             <Login />
+        //         </UnauthenticatedRoute>    
+        //     }/>
+        //     <Route path='/register' element={
+        //         <UnauthenticatedRoute>
+        //             <Register />
+        //         </UnauthenticatedRoute>    
+        //     }/>
+        //     <Route path='/forgotPassword' element={
+        //         <UnauthenticatedRoute>
+        //             <ForgotPassword />
+        //         </UnauthenticatedRoute>    
+        //     }/>
+        //     <Route path='/resetPassword' element={
+        //         <UnauthenticatedRoute>
+        //             <ResetPassword />
+        //         </UnauthenticatedRoute>    
+        //     }/>
+        //     <Route path='/dashboard' element={
+        //         <PrivateRoute>
+        //             <Dashboard />
+        //         </PrivateRoute>    
+
+        //     }/>
+        //     <Route path='/homepage' element={
+        //         <PrivateRoute>
+        //             <Navigate to="/dashboard" />
+        //         </PrivateRoute>  
+     
+        //     }/>
+        //     <Route path='/dashboard/:id' element={
+        //         <PrivateRoute>
+        //             <WorkoutDetails />
+        //         </PrivateRoute>    
+        //     }/>
+        //     <Route path='/profile' element={
+        //         <PrivateRoute>
+        //             <Profile />
+        //         </PrivateRoute>    
+        //     }/>
+        // </Routes>
+        // </BrowserRouter>
+        // </AuthContext.Provider>
+        // </Provider>
+
+        <Admin></Admin>
+
     );
 };
 

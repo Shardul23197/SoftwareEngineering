@@ -1,17 +1,25 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react';
 import '../../App.css'; 
 import Axios from "axios";
 
 export default function ShowUsers() {
 
   
-  // const [listOfUsers, setListOfUsers] = useState([]);
+  const [user, setListOfUsers] = useState([]);
 
-  // useEffect(()=>{
-  //     Axios.get("").then((response)=>{
-  //         setListOfUsers(response.data)
-  //     })
-  // })
+  useEffect(()=>{
+
+      const fetchUsers = async () =>{
+        const response = await fetch('/api/showusers/')
+        const json = await response.json()
+
+        if(response.ok){
+          setListOfUsers(json)
+        }
+      }
+
+      fetchUsers()
+  },[])
 
   return (
     <div className="home-section app-trainers">
@@ -19,20 +27,20 @@ export default function ShowUsers() {
         rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       />
-      <div class="container">
-        <div class="row">
-          <div class="col-md-offset-1 col-md-10">
-            <div class="panel">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-sm-12 col-xs-12">
-                    <a href="#" class="btn btn-sm btn-primary pull-left">
-                      <i class="fa fa-plus-circle"></i> Add New
+      <div className="container">
+        <div className="row">
+          <div className="col-md-offset-1 col-md-10">
+            <div className="panel">
+              <div className="panel-heading">
+                <div className="row">
+                  <div className="col-sm-12 col-xs-12">
+                    <a href="#" className="btn btn-sm btn-primary pull-left">
+                      <i className="fa fa-plus-circle"></i> Add New
                     </a>
-                    <form class="form-horizontal pull-right">
-                      <div class="form-group">
+                    <form className="form-horizontal pull-right">
+                      <div className="form-group">
                         <label>Show : </label>
-                        <select class="form-control">
+                        <select className="form-control">
                           <option>5</option>
                           <option>10</option>
                           <option>15</option>
@@ -43,26 +51,26 @@ export default function ShowUsers() {
                   </div>
                 </div>
               </div>
-              <div class="panel-body table-responsive">
-                {/* {listOfUsers.map((user)=>{
+              <div className="panel-body table-responsive">
+                {user.map((user)=>{
                   return (
-                    <table class="table">
+                    <table className="table">
                   <thead>
                     <tr>
-                      <th>{user.id}</th>
-                      <th>{user.name}</th>
-                      <th>{user.email}</th>
-                      <th>{user.contact}</th>
-                      <th>Subscription</th>
+                      <th>PHOTO</th>
+                      <th>NAME</th>
+                      <th>EMAIL</th>
+                      <th>CONTACT</th>
+                      <th>CITY</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>413 406 4880</td>
-                      <td>Zumba</td>
+                      <td>{user.username}</td>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>{user.contact}</td>
+                      <td>{user.photo}</td>
                     </tr>
                     <tr>
                       <td>1</td>
@@ -71,44 +79,24 @@ export default function ShowUsers() {
                       <td>413 406 4880</td>
                       <td>Zumba</td>
                     </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>413 406 4880</td>
-                      <td>Zumba</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>413 406 4880</td>
-                      <td>Zumba</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>413 406 4880</td>
-                      <td>Zumba</td>
-                    </tr>
+                    
                   </tbody>
                 </table>
                   );
-                })} */}
+                })}
                 
               </div>
-              <div class="panel-footer">
-                <div class="row">
-                  <div class="col-sm-6 col-xs-6">
+              <div className="panel-footer">
+                <div className="row">
+                  <div className="col-sm-6 col-xs-6">
                     showing <b>5</b> out of <b>25</b> entries
                   </div>
-                  <div class="col-sm-6 col-xs-6">
-                    <ul class="pagination hidden-xs pull-right">
+                  <div className="col-sm-6 col-xs-6">
+                    <ul className="pagination hidden-xs pull-right">
                       <li>
                         <a href="#">«</a>
                       </li>
-                      <li class="active">
+                      <li className="active">
                         <a href="#">1</a>
                       </li>
                       <li>
@@ -127,7 +115,7 @@ export default function ShowUsers() {
                         <a href="#">»</a>
                       </li>
                     </ul>
-                    <ul class="pagination visible-xs pull-right">
+                    <ul className="pagination visible-xs pull-right">
                       <li>
                         <a href="#">«</a>
                       </li>

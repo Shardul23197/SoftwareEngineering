@@ -50,15 +50,27 @@ router.post('/upload', multer.single('image'), gcsMiddlewares.sendUploadToGCS, (
 
 
     // show users table
-    router.get("/showusers", (req,res)=>{
-      UserSchema.find({role: 'trainer'}).then(user => {
-        // Check if user exists
-        if (!user) {
-          return res.status(404).json({ emailnotfound: "Email not found" });
-        }
-        return res.status(200).json({ data: user });
-      });
-    });
+    // router.get("/showusers", (req,res)=>{
+    //   UserSchema.find({role: 'trainer'}).then(user => {
+    //     // Check if user exists
+    //     if (!user) {
+    //       return res.status(404).json({ emailnotfound: "Email not found" });
+    //     }
+    //     return res.status(200).json({ data: user });
+    //   });
+    // });
+
+    // router.get("/showusers", (req,res)=>{
+    //   UserSchema.find({}).then(user => {
+    //     // Check if user exists
+    //     if (!user) {
+    //       return res.status(404).json({ emailnotfound: "No user" });
+    //     }
+    //     return res.status(200).json({ data: user });
+    //   });
+    // });
+
+
     // show approved trainers table
   router.get("/showtrainers", (req,res)=>{
       TrainerApprovalSchema.find({}).then(user => {

@@ -13,64 +13,64 @@ export default function Sidebar() {
     </div>
       <ul class="nav-links">
       <li>
-          <a href="/admindash" class="active">
+          <Link to="/admindash">
             <i class='bx bx-grid-alt' ></i>
             <span class="links_name">Dashboard</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="showusers">
+          <Link to="/showusers">
             <i class='bx bx-grid-alt' ></i>
             <span class="links_name">Show Users</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="/showtrainers">
+          <Link to="/showtrainers">
             <i class='bx bx-box' ></i>
             <span class="links_name">Show Trainers</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="/approvetrainers">
+          <Link to="/approvetrainers">
             <i class='bx bx-list-ul' ></i>
             <span class="links_name">Approve Trainers</span>
-          </a>
+          </Link>
         </li> 
         <li>
-          <a href="/workout">
+          <Link to="/showvideos">
             <i class='bx bx-list-ul' ></i>
             <span class="links_name">Workout Videos</span>
-          </a>
+          </Link>
         </li> 
         <li>
-          <a href="/recipes">
+          <Link to="/recipes">
             <i class='bx bx-list-ul' ></i>
             <span class="links_name">Recipes</span>
-          </a>
+          </Link>
         </li>     
         <li>
-          <a href="/adminchat">
+          <Link to="/adminchat">
             <i class='bx bx-message' ></i>
             <span class="links_name">Messages</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="/adminprofile">
+          <Link to="/adminprofile">
             <i class='bx bx-coin-stack' ></i>
             <span class="links_name" >Profile</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">
+          <Link to="#">
             <i class='bx bx-cog' ></i>
             <span class="links_name">Settings</span>
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="/homepage">
+          <Link to="/homepage">
             <i class='bx bx-log-out'></i>
             <span class="links_name" >Log out</span>
-          </a>
+          </Link>
         </li>
       </ul>
   </div>

@@ -1,6 +1,25 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react';
 
 export default function ApproveTrainers() {
+
+  const [trainer, setListOfTrainers] = useState([]);
+
+  useEffect(()=>{
+
+      const fetchTrainers = async () =>{
+        const response = await fetch('/api/showtrainers/')
+        const json = await response.json()
+
+        if(response.ok){
+          setListOfTrainers(json)
+        }
+      }
+
+      fetchTrainers()
+  },[])
+
+
+
   return (
     <div className="home-section app-trainers">
       <link
@@ -32,22 +51,26 @@ export default function ApproveTrainers() {
                 </div>
               </div>
               <div class="panel-body table-responsive">
+              {trainer.map((trainer)=>{
+                  return (
                 <table class="table">
                   <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Specialization</th>
-                      <th>Action</th>
+                  <tr>
+                      <th>NAME</th>
+                      <th>EMAIL</th>
+                      <th>CONTACT</th>
+                      <th>SPECIALIZATION</th>
+                      <th>ACTION</th>
+
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>Yoga Instructor</td>
+                      <td>{trainer.username}</td>
+                      <td>{trainer.name}</td>
+                      <td>{trainer.email}</td>
+                      <td>{trainer.contact}</td>
+                      <td>{trainer.photo}</td>
                       <td>
                         <ul class="action-list">
                           <li>
@@ -63,88 +86,10 @@ export default function ApproveTrainers() {
                         </ul>
                       </td>
                     </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>Yoga Instructor</td>
-                      <td>
-                        <ul class="action-list">
-                          <li>
-                          <a href="#" class="btn btn-success">
-                              <i class="fa fa-check"></i>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#" class="btn btn-danger">
-                              <i class="fa fa-times"></i>
-                            </a>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>Yoga Instructor</td>
-                      <td>
-                        <ul class="action-list">
-                          <li>
-                          <a href="#" class="btn btn-success">
-                              <i class="fa fa-check"></i>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#" class="btn btn-danger">
-                              <i class="fa fa-times"></i>
-                            </a>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>Yoga Instructor</td>
-                      <td>
-                        <ul class="action-list">
-                          <li>
-                          <a href="#" class="btn btn-success">
-                              <i class="fa fa-check"></i>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#" class="btn btn-danger">
-                              <i class="fa fa-times"></i>
-                            </a>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>Yoga Instructor</td>
-                      <td>
-                        <ul class="action-list">
-                          <li>
-                            <a href="#" class="btn btn-success">
-                              <i class="fa fa-check"></i>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#" class="btn btn-danger">
-                              <i class="fa fa-times"></i>
-                            </a>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
+                    
                   </tbody>
-                </table>
+                </table>);
+              })}
               </div>
               <div class="panel-footer">
                 <div class="row">

@@ -57,6 +57,7 @@ export default function Profile() {
   useEffect(() => {
     setDataFromState(selector)
     setDataFromStateRole(role)
+    
     axios.get('/api/users/profile/getdetails', { params: { email: dataFromState } })
       .then((res) => {
         setUserEmail(res.data.data.email)
