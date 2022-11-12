@@ -48,7 +48,6 @@ router.post('/updatewellnessinfo', async (req, res) => {
   // Get the access token from the header
   const { authorization } = req.headers;
   const accessToken = authorization.split(' ')[1];
-  const token = req.body.code;
 
   let session = await Session.findOne({ accessToken: accessToken });
   // Check if a session with this user exists
@@ -58,7 +57,7 @@ router.post('/updatewellnessinfo', async (req, res) => {
       return;
   }
 
-  const { age, heightFeet, heightInches, weight, sleepHours, sleepMinutes } = req.body;
+  const { age, heightFeet, heightInches, weight, sleepHours, sleepMinutes, weightGoal, muscleMassGoal } = req.body;
   console.log(req.body)
   UserProfile.findOneAndUpdate(
     { email: session.email }, 
@@ -68,7 +67,9 @@ router.post('/updatewellnessinfo', async (req, res) => {
       heightInches: heightInches, 
       weight: weight,
       sleepHours: sleepHours,
-      sleepMinutes: sleepMinutes
+      sleepMinutes: sleepMinutes,
+      weightGoal: weightGoal,
+      muscleMassGoal: muscleMassGoal
     }}, 
     { new: true }, 
     (err, doc) => {

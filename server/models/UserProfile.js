@@ -41,6 +41,14 @@ const UserProfileSchema = new Schema({
     },
     sleepMinutes: {
       type: Number
+    },
+    weightGoal: {
+      type: String,
+      enum: [ 'Loose', 'Maintain', 'Gain']
+    },
+    muscleMassGoal: {
+      type: String,
+      enum: [ 'Loose', 'Maintain', 'Gain']
     }
 })
   

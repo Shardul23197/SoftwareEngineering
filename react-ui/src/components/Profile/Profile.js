@@ -53,13 +53,17 @@ export default function Profile() {
   const [hidden, setHidden] = useState(true);
 
   // User body measurements
-  const [age, setAge] = useState(-1)
+  const [age, setAge] = useState('')
   const [userHeightFeet, setUserHeightFeet] = useState('')
   const [userHeightInches, setUserHeightInches] = useState('')
   const [userWeight, setUserWeight] = useState('')
   const [userSleepHours, setUserSleepHours] = useState('')
   const [userSleepMinutes, setUserSleepMinutes] = useState('')
   const [error, setError] = useState(''); // String
+
+  // User Goals
+  const [weightGoal, setWeightGoal] = useState('Loose')
+  const [muscleMassGoal, setMuscleMassGoal] = useState('Gain')
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
@@ -89,6 +93,8 @@ export default function Profile() {
           setUserWeight(res.data.userProfile.weight);
           setUserSleepHours(res.data.userProfile.sleepHours);
           setUserSleepMinutes(res.data.userProfile.sleepMinutes);
+          setWeightGoal(res.data.userProfile.weightGoal);
+          setMuscleMassGoal(res.data.userProfile.muscleMassGoal);
           setRole(res.data.role)
         if (!res.data.userProfile.profileImage) {
           setUserImage("https://ui-avatars.com/api/?name=ME&size=256")
@@ -121,58 +127,6 @@ export default function Profile() {
     }
   }, [authToken, email, role])
 
-
-  // Updates the wellness information of the user's profile
-  const updateFitnessInfo = (event) => {
-    event.preventDefault();
-
-    // Make sure the user entered values
-    userHeightValidation();
-    userWeightValidation();
-    userSleepValidation();
-    if (error) {
-      setError('Invalid wellness information!')
-      return;
-    }
-    
-    const headers = {
-      'Authorization': `Bearer ${authToken}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true,
-        headers: headers
-    });
-    const formData = {
-      heightFeet: userHeightFeet,
-      heightInches: userHeightInches,
-      weight: userWeight,
-      sleepHours: userSleepHours,
-      sleepMinutes: userSleepMinutes
-    }
-    instance.post('/api/users/profile/updatewellnessinfo', qs.stringify(formData)).then((res) => {
-      toast('Wellness Information Updated!')
-    }).catch((err) => {
-      toast('Something went wrong!')
-    })
-  }
-
-  const updateProfile = (event) => {
-    event.preventDefault()
-    const formData = {
-      fullName: userFullName,
-      phone: userPhone,
-      city: userCity,
-      email: userEmail
-    }
-    axios.post('/api/users/profile/updatedetails', qs.stringify(formData)).then((res) => {
-      toast('Profile Updated!')
-    }).catch((err) => {
-      toast('Something went wrong!')
-    })
-  }
-
   const onVideoTitleChange = (event) => {
     setTitle(event.target.value)
   }
@@ -201,6 +155,10 @@ export default function Profile() {
     setUserCity(event.target.value)
   }
 
+  const onMuscleMassGoalChange = (event) => {
+    setMuscleMassGoal(event.target.value)
+  }
+  
   const onTagsChange = (event) => {
     const clickedTag = event.target.value;
     if (tags.includes(clickedTag)) 
@@ -218,26 +176,26 @@ export default function Profile() {
   }
   
   const onUserWeightChange = (event) => {
-    setUserWeight(parseInt(event.target.value))
-  }
-  
-  const onUserSleepHoursChange = (event) => {
-    setUserSleepHours(parseInt(event.target.value))
-  }
-  
-  const onUserSleepMinutesChange = (event) => {
-    setUserSleepMinutes(parseInt(event.target.value))
+    setUserWeight(parseInt(event.target.value));
   }
 
-  const userAgeValidation = (event) => {
-    const isValidHeightFeet = Number.isInteger(userHeightFeet) && 
-                              userHeightFeet >= 3 && 
-                              userHeightFeet < 8;
-    const isValidHeightInches = Number.isInteger(userHeightInches) && 
-                              userHeightInches >= 0 && 
-                              userHeightInches <= 11;
-    if (!isValidHeightFeet || !isValidHeightInches) setError('Height must be between 3\'0" and 8\'0"!');
-    else setError('');
+  const onWeightGoalChange = (event) => {
+    setWeightGoal(event.target.value);
+  }
+
+  const ageValidation = (event) => {
+    if (age < 18) {
+      setError('You must be an adult to use Fitocity!');
+      return false;
+    }
+    else if (age >= 125) {
+      setError(`Congradulations on living past 125 years old! Please email 
+                fitocity4g@gmail.com to increase the age limit of our application!`);
+      return false;
+    }
+      
+    setError('');
+    return true;
   }
 
   const userHeightValidation = (event) => {
@@ -247,27 +205,77 @@ export default function Profile() {
     const isValidHeightInches = Number.isInteger(userHeightInches) && 
                               userHeightInches >= 0 && 
                               userHeightInches <= 11;
-    if (!isValidHeightFeet || !isValidHeightInches) setError('Height must be between 3\'0" and 8\'0"!');
-    else setError('');
+    if (!isValidHeightFeet || !isValidHeightInches) {
+      setError('Height must be between 3\'0" and 8\'0"!');
+      return false;
+    }
+    
+    setError('');
+    return true;
   }
   
   const userWeightValidation = (event) => {
     const validWeight = Number.isInteger(userWeight) && 
                         userWeight >= 50 && 
                         userWeight <= 1000;
-    if (!validWeight) setError('Weight must be between 50 and 1000 lbs!');
-    else setError('');
+    if (!validWeight) {
+      setError('Weight must be between 50 and 1000 lbs!');
+      return false;
+    }
+    
+    setError('');
+    return true;
   }
 
-  const userSleepValidation = (event) => {
-    const validSleepHours = Number.isInteger(userSleepHours) && 
-                            userSleepHours >= 0 && 
-                            userSleepHours < 24;
-    const validSleepMinutes = Number.isInteger(userSleepMinutes) && 
-                              userSleepMinutes >= 0 && 
-                              userSleepMinutes < 60;
-    if (!validSleepHours || !validSleepMinutes) setError('Sleep must be between 0 and 24 hours!');
-    else setError('');
+  // Updates the wellness information of the user's profile
+  const updateWellnessInfo = (event) => {
+    event.preventDefault();
+
+    console.log(ageValidation() && userHeightValidation() && userWeightValidation());
+    // Make sure the user entered valid wellness information
+    if (!ageValidation() || !userHeightValidation() || !userWeightValidation())
+      return;
+  
+    
+    const headers = {
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    const instance = axios.create({
+        baseURL: 'http://localhost:5000',
+        withCredentials: true,
+        headers: headers
+    });
+    const formData = {
+      age: age,
+      heightFeet: userHeightFeet,
+      heightInches: userHeightInches,
+      weight: userWeight,
+      sleepHours: userSleepHours,
+      sleepMinutes: userSleepMinutes,
+      weightGoal: weightGoal,
+      muscleMassGoal: muscleMassGoal
+    }
+    instance.post('/api/users/profile/updatewellnessinfo', qs.stringify(formData)).then((res) => {
+      toast('Wellness Information Updated!')
+    }).catch((err) => {
+      toast('Something went wrong!')
+    })
+  }
+
+  const updateProfile = (event) => {
+    event.preventDefault()
+    const formData = {
+      fullName: userFullName,
+      phone: userPhone,
+      city: userCity,
+      email: userEmail
+    }
+    axios.post('/api/users/profile/updatedetails', qs.stringify(formData)).then((res) => {
+      toast('Profile Updated!')
+    }).catch((err) => {
+      toast('Something went wrong!')
+    })
   }
 
   const updateImage = (event) => {
@@ -594,7 +602,7 @@ export default function Profile() {
                 </MDBRow>
 
                 {/* User wellness information */}
-                <form onSubmit={updateFitnessInfo}>
+                <form onSubmit={updateWellnessInfo}>
                 <div className="mb-5">
                   <h1 className="fw-bold mb-2">Wellness Information</h1>
 
@@ -608,10 +616,10 @@ export default function Profile() {
                       <MDBCol sm="9">
                         <MDBCardText className="text-muted">
                           <div style={{ width: '176px' }}>
-                          <MDBInput label='lbs' 
+                          <MDBInput label='yrs' 
                                     onChange={onAgeChange} 
                                     value={age} 
-                                    // onBlur={ageValidation}
+                                    onBlur={ageValidation}
                                     type='number'/>
                           </div>
                         </MDBCardText>
@@ -662,33 +670,33 @@ export default function Profile() {
                     </MDBRow>
                   </div>
 
-                  {/* User sleep tracking */}
-                  <h2 className="mt-2 mb-1">Sleep</h2>
-                  <p>How much sleep do you get per night?</p>
+                  {/* User fitness goals */}
+                  <h2 className="mt-2 mb-1">Fitness Goals</h2>
                   <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
                     <MDBRow>
                       <MDBCol sm="3">
-                        <MDBCardText>Average</MDBCardText>
+                        <MDBCardText>Weight</MDBCardText>
                       </MDBCol>
-                      <MDBCol sm="9">
-                        <MDBCardText className="text-muted">
-                        <MDBRow className="align-items-center" style={{flex: 'left'}}>
-                          <div style={{ width: '200px' }}>
-                          <MDBInput label='Hours' 
-                                    onChange={onUserSleepHoursChange} 
-                                    value={userSleepHours} 
-                                    onBlur={userSleepValidation}
-                                    type='number'/>
-                          </div>
-                          <div style={{ width: '200px' }}>
-                          <MDBInput label='Minutes' 
-                                    onChange={onUserSleepMinutesChange} 
-                                    value={userSleepMinutes} 
-                                    onBlur={userSleepValidation}
-                                    type='number' />
-                          </div>
-                        </MDBRow>
-                        </MDBCardText>
+                      <MDBCol sm="3">
+                        <select onChange={onWeightGoalChange} class="form-select" aria-label="Category Select">
+                          <option value={'Loose'}>Loose</option>
+                          <option value={'Maintain'}>Maintain</option>
+                          <option value={'Gain'}>Gain</option>
+                        </select>
+                      </MDBCol>
+                    </MDBRow>
+                    <hr />
+
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Muscle Mass</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="3">
+                        <select onChange={onMuscleMassGoalChange} class="form-select" aria-label="Category Select">
+                          <option value={'Gain'}>Gain</option>
+                          <option value={'Maintain'}>Maintain</option>
+                          <option value={'Loose'}>Loose</option>
+                        </select>
                       </MDBCol>
                     </MDBRow>
                   </div>
