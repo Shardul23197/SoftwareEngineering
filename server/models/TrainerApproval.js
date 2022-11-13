@@ -10,7 +10,7 @@ const TrainerApprovalSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['inprocess','pending','approved','declined'],
+        enum: [ 'inprocess', 'pending', 'approved', 'declined' ],
         default: 'inprocess'
     }
 })

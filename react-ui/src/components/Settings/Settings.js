@@ -12,8 +12,7 @@ import {
   MDBBtn
 } from 'mdb-react-ui-kit';
 import axios from 'axios';
-import './Settings.css'
-
+import Navigation from '../Navigation/Navigation';
 import downloadFromAppStoreSVG from '../../images/app-store-images/Black_lockup/SVG/Download_on_the_App_Store_Badge.svg'
 
 export default function Settings() {
@@ -22,6 +21,7 @@ export default function Settings() {
   const role = useSelector(state => state.role)
   const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
   const [mfaSecret, setMfaSecret] = useState('')
+  
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
   const [authToken] = useState(existingAuthtoken);
@@ -75,157 +75,73 @@ export default function Settings() {
       console.error(error);
     });
   }
-
-  /* When the user clicks log out, send post to {backend base url}/auth/logout
-   * and remove all items from local storage then navigate home.
-   */
-  const onLogout = async (event) => {
-    const headers = {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true,
-        headers: headers
-    });
-      
-    // Terminate the user's session information
-    await instance.post('/auth/logout', {}).then((res) => {})
-      .catch((error) => console.error(error));
-
-    // Navigate to home
-    localStorage.clear();
-    navigate('/');
-  };
-
+  
   return (
     <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>      
       
-    {/* Sidebar Navigation */}
-    <div class="sidebar">
-      <div class="logo-details">
-        <i class='bx bxl-c-plus-plus'></i>
-        <span class="logo_name">Fitocity</span>
-      </div>
-      <ul class="nav-links">
-        <li>
-          <Link to='/dashboard'>
-            <i class='bx bx-grid-alt' ></i>
-            <span class="links_name">Dashboard</span>
-          </Link>
-        </li>
-        <li>
-          <a href="#">
-            <i class='bx bx-grid-alt' ></i>
-            <span class="links_name">Explore</span>
-          </a>
-        </li>
-        {role === 'trainer' ? 
-        <li>
-          <a href="#">
-            <i class='bx bx-box' ></i>
-            <span class="links_name">Workout</span>
-          </a>
-        </li> : ""
-        }
-        <li>
-          <a href="#">
-            <i class='bx bx-list-ul' ></i>
-            <span class="links_name">Diet</span>
-          </a>
-        </li>      
-        <li>
-          <a href="#">
-            <i class='bx bx-message' ></i>
-            <span class="links_name">Messages</span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class='bx bx-heart' ></i>
-            <span class="links_name">Favrorites</span>
-          </a>
-        </li>
-        <li>
-          <Link to = '/profile'>
-            <i class='bx bx-coin-stack' ></i>
-            <span class="links_name">Profile</span>
-          </Link>
-        </li>
-        <li>
-          <Link to = '/settings' class="active">
-            <i class='bx bx-cog' ></i>
-            <span class="links_name">Settings</span>
-          </Link>
-        </li>
-        <li>
-        <button className='logoutbutton' onClick={onLogout} >
-            <i class='bx bx-coin-stack' ></i>
-            <span class="links_name">Logout</span>
-          </button>
-        </li>
-      </ul>
+    <Navigation/>
+
+    <div>
+    <MDBContainer className="py-5 h-100 section">
+      <MDBRow className="justify-content-center align-items-center h-100">
+      <MDBCol lg="9" xl="7">
+        <MDBCard className="mb-4">
+          <MDBCardBody>
+
+            <h1>MFA</h1>
+
+            {/* Display mfa qrcode and code if the user is enrolled in mfa */}
+            { mfaRequired === 'false' ? 
+              <MDBRow className="justify-content-center align-items-center h-100">
+                <MDBBtn style={{ 'margin-top': '10px', width: '200px' }} onClick={enroll}>Enable MFA</MDBBtn>
+              </MDBRow>
+            :
+              <MDBRow>
+              <MDBRow sm="8">
+                <MDBCardText>
+                  Please download the Google Authenticator app and use the qr code (or secret) below to set up
+                  mfa! You will be required to enter a 6-digit code each time you log in to increase
+                  the security of your account.
+                </MDBCardText>
+              </MDBRow>
+              <MDBRow style={{ flex: 'left' }}>
+                <MDBRow className="justify-content-center align-items-center" style={{flex: 'left'}}>
+                <MDBCardImage src={downloadFromAppStoreSVG}
+                              alt='Download Google Authenticator from the App Store!' 
+                              href='https://apps.apple.com/us/app/google-authenticator/id388497605'
+                              style={{ flex: 'left', width: '150px', marginLeft: '35px' }} 
+                              fluid
+                              />
+                <MDBCardImage src={'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'}
+                              alt='Get it on Google Play'
+                              href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'
+                              style={{ flex: 'right', width: '180px', marginLeft: '10px' }} 
+                              fluid
+                              />
+                </MDBRow>
+                <MDBRow className="justify-content-center align-items-center" style={{ flex: 'left', marginTop: '30px'}}>
+                <div className='center d-flex align-items-center'>
+                  <MDBCardImage className='center'
+                                src={mfaQrCodeUrl} 
+                                alt="MFA QR Code Url" 
+                                style={{ 
+                                  width: '200px',
+                                }} 
+                                fluid />
+                </div>
+                <div className='d-flex align-items-center'>
+                  <h3 className='center' style={{ marginTop: '40px'}}>{mfaSecret}</h3>
+                </div>
+                </MDBRow>
+              </MDBRow>
+              </MDBRow>
+            }
+          </MDBCardBody>
+        </MDBCard>
+      </MDBCol>
+      </MDBRow>
+    </MDBContainer>
     </div>
-      <MDBContainer className="py-5">
-        <MDBRow className="justify-content-center align-items-center h-100">
-        <MDBCol lg="9" xl="7">
-          <MDBCard className="mb-4">
-            <MDBCardBody>
-
-              <h1>MFA</h1>
-
-              {/* Display mfa qrcode and code if the user is enrolled in mfa */}
-              { mfaRequired === 'false' ? 
-                <MDBRow className="justify-content-center align-items-center h-100">
-                  <MDBBtn style={{ 'margin-top': '10px', width: '200px' }} onClick={enroll}>Enable MFA</MDBBtn>
-                </MDBRow>
-              :
-                <MDBRow>
-                <MDBRow sm="8">
-                  <MDBCardText>
-                    Please download the Google Authenticator app and use the qr code (or secret) below to set up
-                    mfa! You will be required to enter a 6-digit code each time you log in to increase
-                    the security of your account.
-                  </MDBCardText>
-                </MDBRow>
-                <MDBRow style={{ flex: 'left' }}>
-                  <MDBRow className="justify-content-center align-items-center" style={{flex: 'left'}}>
-                  <MDBCardImage src={downloadFromAppStoreSVG}
-                                alt='Download Google Authenticator from the App Store!' 
-                                href='https://apps.apple.com/us/app/google-authenticator/id388497605'
-                                style={{ flex: 'left', width: '150px', marginLeft: '35px' }} 
-                                fluid
-                                />
-                  <MDBCardImage src={'https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'}
-                                alt='Get it on Google Play'
-                                href='https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'
-                                style={{ flex: 'right', width: '180px', marginLeft: '10px' }} 
-                                fluid
-                                />
-                  </MDBRow>
-                  <MDBRow className="justify-content-center align-items-center" style={{ flex: 'left', marginTop: '30px'}}>
-                  <div className='center d-flex align-items-center'>
-                    <MDBCardImage className='center'
-                                  src={mfaQrCodeUrl} 
-                                  alt="MFA QR Code Url" 
-                                  style={{ 
-                                    width: '200px',
-                                  }} 
-                                  fluid />
-                  </div>
-                  <div className='d-flex align-items-center'>
-                    <h3 className='center' style={{ marginTop: '40px'}}>{mfaSecret}</h3>
-                  </div>
-                  </MDBRow>
-                </MDBRow>
-                </MDBRow>
-              }
-            </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
-        </MDBRow>
-      </MDBContainer>
     </div>
   );
 }

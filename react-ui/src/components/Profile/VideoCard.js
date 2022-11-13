@@ -1,6 +1,5 @@
 import React from 'react'
 import Card from 'react-bootstrap/Card';
-import "../../../node_modules/video-react/dist/video-react.css";
 import { Player } from 'video-react';
 
 const VideoCard = ({ videos }) => {

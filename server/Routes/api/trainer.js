@@ -1,16 +1,16 @@
 const express = require('express');
 const path = require("path");
 const router = express.Router();
-const TrainerApproval = require('../models/TrainerApproval');
+const TrainerApproval = require('../../models/TrainerApproval');
 const Multer = require("multer");
-const gcsMiddlewares = require('../middleware/google-cloud-helper');
+const gcsMiddlewares = require('../../middleware/google-cloud-helper');
 const multer = Multer({
   storage: Multer.MemoryStorage,
   limits: {
     fileSize: 10 * 1024 * 1024, // Maximum file size is 10MB
   },
 });
-const WorkoutVideo = require('../models/WorkoutVideo');
+const WorkoutVideo = require('../../models/WorkoutVideo');
 const e = require('connect-flash');
 const UserProfile = require('../models/UserProfile')
 var mongoose = require('mongoose')
@@ -44,14 +44,25 @@ router.get('/approvals', (req, res) => {
   });
 })
 
-router.post('/upload', multer.single('video'), gcsMiddlewares.sendUploadToGCS, (req, res, next) => {
-  const { email } = req.body;
+router.post('/upload', multer.single('file'), gcsMiddlewares.sendUploadToGCS, (req, res, next) => {
+  let { email, title, category, tags } = req.body;
+  tags = tags.split(','); // The tags are concatenated when sending a requst with FormData
+
   if (req.file && req.file.gcsUrl) {
     UserProfile.findOne({ email: email }).then( user => {
+      console.log({
+        url: req.file.gcsUrl,
+        title: title,
+        postedBy: user._id,
+        category: category,
+        tags: tags
+      });
       const video = new WorkoutVideo({
         url: req.file.gcsUrl,
-        title: req.body.title,
-        postedBy: user._id
+        title: title,
+        postedBy: user._id,
+        category: category,
+        tags: tags
       })
       video.save().then(vid => {res.status(200).json(vid)}).catch(err => console.log(err))
     })
@@ -67,6 +78,30 @@ router.get('/videos', (req,res) => {
     // Check if user exists
     if (!user) {
       return res.status(404).json({ data: "Email not found" });
+    }
+    else {
+      WorkoutVideo.find({postedBy: user._id}).then(video => {
+        if(!video)
+        {
+          return res.status(404).json({data: 'No videos found'});
+        }
+        else
+        {
+          return res.status(200).json({data: video});
+        }
+      })
+    }
+  });
+})
+
+router.get('/videosbyid', (req,res) => {
+  const { id } = req.query
+  var hex = /[0-9A-Fa-f]{6}/g;
+  userid = (hex.test(id))? mongoose.Types.ObjectId(id) : id;
+  UserProfile.findOne({'_id': id }).then(user => {
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ data: "No user not found" });
     }
     else {
       WorkoutVideo.find({postedBy: user._id}).then(video => {

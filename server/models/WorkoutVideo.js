@@ -6,10 +6,20 @@ const WorkoutVideoSchema = new Schema({
         type: String,
         required: 'title is required'
     },
-    description: String,
-    genre: String,
-    views: { type: Number, default: 0 },
-    postedBy: { type: mongoose.Schema.ObjectId, ref: 'userProfile' },
+    description: {
+        type: String
+    },
+    genre: {
+        type: String
+    },
+    views: { 
+        type: Number, 
+        default: 0 
+    },
+    postedBy: { 
+        type: mongoose.Schema.ObjectId, 
+        ref: 'userProfile' 
+    },
     created: {
         type: Date,
         default: Date.now
@@ -17,7 +27,16 @@ const WorkoutVideoSchema = new Schema({
     updated: {
         type: Date
     },
-    url: String
+    url: {
+        type: String
+    },
+    category: {
+        type: String,
+        required: true
+    },
+    tags: [{
+        type: String
+    }]
 })
 
 module.exports = WorkoutVideo = mongoose.model("workoutVideo", WorkoutVideoSchema)
