@@ -134,8 +134,7 @@ export default function TrainerProfile() {
                         </MDBCol>
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
-                            <MDBInput label='Name' value={userFullName}
-                              type='text' />
+                          <MDBCardText className="text-muted">{userFullName}</MDBCardText>
                           </MDBCardText>
                         </MDBCol>
                       </MDBRow>
@@ -146,8 +145,7 @@ export default function TrainerProfile() {
                         </MDBCol>
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
-                            <MDBInput label='Email' value={userEmail}
-                              type='text' />
+                            <MDBCardText className="text-muted">{userEmail}</MDBCardText>
                           </MDBCardText>
                         </MDBCol>
                       </MDBRow>
@@ -158,8 +156,7 @@ export default function TrainerProfile() {
                         </MDBCol>
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
-                            <MDBInput label='Phone' value={userPhone}
-                              type='text' />
+                          <MDBCardText className="text-muted">{userPhone}</MDBCardText>
                           </MDBCardText>
                         </MDBCol>
                       </MDBRow>
@@ -170,8 +167,7 @@ export default function TrainerProfile() {
                         </MDBCol>
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
-                            <MDBInput label='City' value={userCity}
-                              type='text' />
+                          <MDBCardText className="text-muted">{userCity}</MDBCardText>
                           </MDBCardText>
                         </MDBCol>
                       </MDBRow>

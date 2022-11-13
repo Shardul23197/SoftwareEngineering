@@ -19,6 +19,7 @@ const UserProfileSchema = new Schema({
     },
     profileImage: {
       type: String,
+      default: "https://ui-avatars.com/api/?name=ME&size=256"
     },
     user: {
       type: Schema.Types.ObjectId,

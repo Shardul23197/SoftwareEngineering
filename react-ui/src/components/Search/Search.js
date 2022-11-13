@@ -10,6 +10,8 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form'
 import Navigation from '../Navigation/Navigation';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 const Search = () => {
     const [search, setSearch] = useState('')
@@ -33,62 +35,26 @@ const Search = () => {
             setCategory("videos")
         }
         axios.get('/api/search/' + category, { params: { query: search } }).then((res) => {
-            setVideosData(res.data.data)
+            if (res.data.data.length > 0) {
+                setVideosData(res.data.data)
+            }
+            else {
+                toast('No results found!')
+            }
         }).catch((err) => {
             console.log(err)
         })
     }
 
-    // const renderData = () => {
-    //     if (videosData) {
-    //         if (category === 'videos') {
-    //             return (
-    //                 videosData.map((video) => {
-    //                     return (
-    //                         <Col xs>
-    //                             <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%' }}>
-    //                                 <Card.Body>
-    //                                     <Card.Title>{video.title}</Card.Title>
-    //                                     <Player
-    //                                         playsInline
-    //                                         src={video.url}
-    //                                     />
-    //                                 </Card.Body>
-    //                             </Card>
-    //                         </Col>
-    //                     )
-    //                 })
-    //             )
-    //         }
-    //         else {
-    //             return (
-    //                 videosData.map((video) => {
-    //                     return (
-    //                         <Col xs>
-    //                             <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%' }}>
-    //                                 <Card.Body>
-    //                                     <Card.Title>{video.fullName}</Card.Title>
-    //                                 </Card.Body>
-    //                             </Card>
-    //                         </Col>
-    //                     )
-    //                 })
-    //             )
-    //         }
-
-    //     }
-    //     else
-    //         return <div></div>
-    // }
-
     return (
         <div>
-            <br/>
-            <Navigation/>
+            <ToastContainer />
+            <br />
+            <Navigation />
             <form onSubmit={onSubmit}>
                 <MDBRow>
                     <MDBCol md="7">
-                        <MDBCardText style={{'marginLeft':'265px'}} className="text-muted">
+                        <MDBCardText style={{ 'marginLeft': '265px' }} className="text-muted">
                             <MDBInput label='Name' onChange={onSearchChange} value={search}
                                 type='text' required />
                         </MDBCardText>
@@ -102,31 +68,39 @@ const Search = () => {
                         </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="3">
-                    <MDBCardText className="text-muted">
-                        <MDBBtn>Search</MDBBtn>
-                    </MDBCardText>
+                        <MDBCardText className="text-muted">
+                            <MDBBtn>Search</MDBBtn>
+                        </MDBCardText>
                     </MDBCol>
                 </MDBRow>
             </form>
-            <br/>
+            <br />
             <Container>
                 <Row>
-                    {videosData ? videosData.map((video) => {
-                    return (
-                        <Col md="4">
-                        <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%', 'marginLeft':'145px' }}>
-                            <Card.Body>
-                                <Card.Title>{category === 'videos' ? video.title : <Link to={'/profile/' + video._id}>{video.fullName}</Link>}</Card.Title>
-                                {category === 'videos' ? <Player
-                                    playsInline
-                                    src={video.url}
-                                />: "" }
-    
-                            </Card.Body>
-                        </Card>
-                        </Col>
+                    {videosData.length > 0 && videosData ? videosData.map((video) => {
+                        return (
+
+                            <Col md="4" style={!video ? {'display': 'none'} : {}}>
+                                {video ?
+                                    <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%', 'marginLeft': '145px' }}>
+                                        <Card.Body>
+                                            <Card.Title>{category === 'videos' ? video.title :
+                                                <Link to={'/profile/' + video._id}>{video.fullName}</Link>}
+                                                <br />
+                                                <Card.Img variant="top" style={{ 'marginTop': '10px' }} src={video.profileImage} />
+                                            </Card.Title>
+                                            {category === 'videos' ? <Player
+                                                playsInline
+                                                src={video.url}
+                                            /> : ""}
+                                            <br/>
+                                            {video.postedBy && category === 'videos' ? <Card.Text>Uploaded By <Link to={'/profile/' + video.postedBy._id}>{video.postedBy.fullName}</Link></Card.Text> : ""}
+                                        </Card.Body>
+                                    </Card>
+                                    : ""}
+                            </Col>
                         )
-                }) : ""}
+                    }) : ""}
                 </Row>
             </Container>
         </div>

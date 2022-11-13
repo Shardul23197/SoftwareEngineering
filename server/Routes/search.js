@@ -5,7 +5,7 @@ const User = require("../models/User");
 
 router.get('/videos', (req, res) => {
     const { query } = req.query;
-    WorkoutVideo.find({ title: { "$regex": query, "$options": "i" } }).then(video => {
+    WorkoutVideo.find({ title: { "$regex": query, "$options": "i" } }).populate('postedBy').then(video => {
         if (!video) {
             return res.status(404).json({ data: 'No videos found for your search query' })
         }
