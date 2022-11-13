@@ -32,7 +32,6 @@ router.get('/getdetails', async (req, res) => {
 
 router.post('/updatedetails', (req, res) => {
   const { email, fullName, phone, city } = req.body;
-  console.log(req.body)
   UserProfile.findOneAndUpdate({ email: email }, { $set: { fullName: fullName, phone: phone, city: city } }, { new: true }, (err, doc) => {
     if (err) {
       console.log("Something wrong when updating data!");
