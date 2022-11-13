@@ -6,7 +6,7 @@
 2) Merge the changes into the `prod` branch.
 3) Replace the following lines of code (DO NOT replace any of the instances in README.md)
     1) Replace "`host: 'localhost:3000',`" with "`host: 'fitocity.herokuapp.com', `" in `/server/Routes/auth.js`
-    2) Replace "`protocol: 'http',`" with "`protocol: 'https', `" in `/server/Routes/auth.js`
+    2) Replace "`protocol: 'http',`" with "`protocol: 'https',`" in `/server/Routes/auth.js`
     3) Replace instances of "`http://localhost:3000`" with "`https://fitocity.herokuapp.com`"
     4) Replace instances of "`http://localhost:5000`" with "`https://fitocity.herokuapp.com`"
     5) Create a new commit
