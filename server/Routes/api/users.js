@@ -7,6 +7,7 @@ const scoreCalculator = require("../../utils/scoreCalculator");
 // Load User model
 const User = require("../../models/User");
 const UserProfile = require("../../models/UserProfile");
+const { type } = require("os");
 
 router.get('/getrole', (req, res) => {
     const {email} = req.query;
@@ -22,7 +23,7 @@ router.get('/getrole', (req, res) => {
 // @route GET /api/users/calculateWellnessScore
 // @desc Returns the user's wellness score.
 // @access Public
-router.get('/calculateBmi', async (req, res) => {
+router.get('/calculateWellnessScore', async (req, res) => {
     const { email } = req.body;
     // // Get the access token from the header
     // const { authorization } = req.headers;
@@ -52,15 +53,25 @@ router.get('/calculateBmi', async (req, res) => {
         res.status(401).json(err);
         return;
     }
-
-    if (!userProfile.heightFeet || !userProfile.heightInches || !userProfile.weight) {
-        let err = 'The user does has not provided wellness information!';
+    
+    const wellnessScore = await scoreCalculator.calculateWellnessScore(userProfile);
+    if (wellnessScore === -1) {
+        let err = 'User must have at least 3 meals logged!';
         res.status(401).json(err);
         return;
     }
-
-    const userHeightInches = userProfile.heightFeet * 12 + userProfile.heightInches;
-    res.status(200).json({ bmi: scoreCalculator.calculateBmi(userHeightInches, userProfile.weight) });
+    if (wellnessScore === -2) {
+        let err = 'User must have at least 3 sleeps logged!';
+        res.status(401).json(err);
+        return;
+    }
+    if (wellnessScore === -3) {
+        let err = 'User must have at least 3 workouts logged in the past week!';
+        res.status(401).json(err);
+        return;
+    }
+    
+    res.status(200).json({ wellnessScore });
 });
 
 module.exports = router;

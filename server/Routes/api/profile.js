@@ -57,12 +57,13 @@ router.post('/updatewellnessinfo', async (req, res) => {
       return;
   }
 
-  const { age, heightFeet, heightInches, weight, sleepHours, sleepMinutes, weightGoal, muscleMassGoal } = req.body;
+  const { age, gender, heightFeet, heightInches, weight, sleepHours, sleepMinutes, weightGoal, muscleMassGoal } = req.body;
   console.log(req.body)
   UserProfile.findOneAndUpdate(
     { email: session.email }, 
     { $set: { 
       age: age,
+      gender: gender,
       heightFeet: heightFeet, 
       heightInches: heightInches, 
       weight: weight,
