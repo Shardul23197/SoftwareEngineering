@@ -56,20 +56,20 @@ export default function ShowTrainers() {
                     <table className="table">
                   <thead>
                     <tr>
-                      <th>PHOTO</th>
                       <th>NAME</th>
                       <th>EMAIL</th>
-                      <th>CONTACT</th>
-                      <th>CITY</th>
+                      <th>PASSWORD</th>
+                      <th>ROLE</th>
+                      <th>SPECIALIZATION</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                    <td>{trainer.photo}</td>
-                      <td>{trainer.name}</td>
+                    <td>{trainer.name}</td>
                       <td>{trainer.email}</td>
-                      <td>{trainer.contact}</td>
-                      <td>{trainer.city}</td>
+                      <td>{trainer.password}</td>
+                      <td>{trainer.role}</td>
+                      <td>Yoga</td>
                     </tr>
                     {/* <tr>
                       <td>1</td>

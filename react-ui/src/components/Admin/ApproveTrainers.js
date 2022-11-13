@@ -2,7 +2,7 @@ import { React, useState, useEffect } from 'react';
 
 export default function ApproveTrainers() {
 
-  const [trainer, setListOfTrainers] = useState([]);
+  const [approval, setListOfTrainers] = useState([]);
 
   useEffect(()=>{
 
@@ -51,26 +51,23 @@ export default function ApproveTrainers() {
                 </div>
               </div>
               <div class="panel-body table-responsive">
-              {trainer.map((trainer)=>{
+              {approval.map((approval)=>{
                   return (
                 <table class="table">
                   <thead>
                   <tr>
-                      <th>NAME</th>
                       <th>EMAIL</th>
-                      <th>CONTACT</th>
-                      <th>SPECIALIZATION</th>
+                      <th>DESCRIPTION</th>
+                      <th>STATUS</th>
                       <th>ACTION</th>
 
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{trainer.username}</td>
-                      <td>{trainer.name}</td>
-                      <td>{trainer.email}</td>
-                      <td>{trainer.contact}</td>
-                      <td>{trainer.photo}</td>
+                      <td>{approval.email}</td>
+                      <td>{approval.desciption}</td>
+                      <td>{approval.status}</td>
                       <td>
                         <ul class="action-list">
                           <li>

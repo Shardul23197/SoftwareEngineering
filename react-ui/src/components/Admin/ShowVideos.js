@@ -62,6 +62,7 @@ export default function ShowVideos() {
                     <th>Description</th>
                     <th>Trainer</th>
                     <th>Views</th>
+                    <th>DATE</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -70,14 +71,15 @@ export default function ShowVideos() {
                     <td>{video.title}</td>
                     <td>{video.genre}</td>
                     <td>{video.description}</td>
-                    <td>{video.postedby}</td>
+                    <td>{video.postedBy}</td>
                     <td>{video.views}</td>
+                    <td>{video.updated}</td>
                     <td>
-                    <li>
+                    
                             <a href="#" class="btn btn-danger">
                               <i class="fa fa-times"></i>
                             </a>
-                          </li>
+                          
                     </td>
                   </tr>
                   

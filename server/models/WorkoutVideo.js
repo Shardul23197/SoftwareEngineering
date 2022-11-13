@@ -6,8 +6,9 @@ const WorkoutVideoSchema = new Schema({
         type: String,
         required: 'title is required'
     },
-    description: String,
-    genre: String,
+    description: {
+        type: String},
+    genre: {type: String},
     views: { type: Number, default: 0 },
     postedBy: { type: mongoose.Schema.ObjectId, ref: 'userProfile' },
     created: {
