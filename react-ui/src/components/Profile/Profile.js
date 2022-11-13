@@ -258,7 +258,7 @@ export default function Profile() {
       <ToastContainer />
 
       {/* Sidebar Navigation */}
-      <Navigation/>
+      {/* <Navigation/> */}
       <form onSubmit={updateProfile}>
         <MDBContainer className="py-5 h-100">
           <MDBRow className="justify-content-center align-items-center h-100">
@@ -272,11 +272,11 @@ export default function Profile() {
                     <MDBCardImage src={userImage}
                       alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ width: '150px', zIndex: '1' }} />
                       <div class="overlay">
-                        <Button class="icon" onClick={() => {
+                        {/* <Button class="icon" onClick={() => {
                           setVaryingUpload(!varyingUpload);
                         }}>
                           <CloudUploadIcon className='fa user' />
-                        </Button>
+                        </Button> */}
                       </div>
                       </div>
                   </div>
@@ -291,13 +291,14 @@ export default function Profile() {
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                   <div className="d-flex justify-content-end text-center py-1">
                     <div>
-                      {(true || status === 'approved') && role === 'trainer' ? <Button variant="contained" color="default"
+                      {/* {(true || status === 'approved') && role === 'trainer' ? <Button variant="contained" color="default"
                         className='material-button'
-                        startIcon={<CloudUploadIcon />}
+                        // startIcon={<CloudUploadIcon />}
                         onClick={() => {
                           setVaryingModal(!varyingModal);
                         }}
-                      >Upload</Button> : ''}
+                      >Upload
+                      </Button> : ''} */}
                     </div>
                   </div>
                 </div>
@@ -363,7 +364,7 @@ export default function Profile() {
 
                   {/* Trainer videos */}
                   <MDBRow md='4'>
-                    {(true || (status === 'approved' && role === 'trainer')) && videos ? <VideoCard videos={videos} /> : ''}
+                    {/* {(true || (status === 'approved' && role === 'trainer')) && videos ? <VideoCard videos={videos} /> : ''} */}
                   </MDBRow>
                 </MDBCardBody>
               </MDBCard>

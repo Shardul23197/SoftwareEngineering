@@ -8,7 +8,7 @@ export default function ShowVideos() {
   useEffect(()=>{
 
         const fetchVideos = async () =>{
-        const response = await fetch('/api/showvideos/')
+        const response = await fetch('/api/admin/showvideos/')
         const json = await response.json()
 
         if(response.ok){

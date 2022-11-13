@@ -10,7 +10,7 @@ export default function ShowUsers() {
   useEffect(()=>{
 
       const fetchUsers = async () =>{
-        const response = await fetch('/api/showusers/')
+        const response = await fetch('/api/admin/showusers/')
         const json = await response.json()
 
         if(response.ok){
@@ -66,19 +66,19 @@ export default function ShowUsers() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{user.username}</td>
-                      <td>{user.name}</td>
+                      <td>{user.profileImage}</td>
+                      <td>{user.fullName}</td>
                       <td>{user.email}</td>
-                      <td>{user.contact}</td>
-                      <td>{user.photo}</td>
+                      <td>{user.phone}</td>
+                      <td>{user.city}</td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <td>1</td>
                       <td>Vincent Williamson</td>
                       <td>vincent@gmail.com</td>
                       <td>413 406 4880</td>
                       <td>Zumba</td>
-                    </tr>
+                    </tr> */}
                     
                   </tbody>
                 </table>

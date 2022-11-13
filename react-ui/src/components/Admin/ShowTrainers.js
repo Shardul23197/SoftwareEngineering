@@ -8,7 +8,7 @@ export default function ShowTrainers() {
   useEffect(()=>{
 
       const fetchTrainers = async () =>{
-        const response = await fetch('/api/showtrainers/')
+        const response = await fetch('/api/admin/showtrainers/')
         const json = await response.json()
 
         if(response.ok){
@@ -71,13 +71,13 @@ export default function ShowTrainers() {
                       <td>{trainer.contact}</td>
                       <td>{trainer.city}</td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <td>1</td>
                       <td>Vincent Williamson</td>
                       <td>vincent@gmail.com</td>
                       <td>413 406 4880</td>
                       <td>Zumba</td>
-                    </tr>
+                    </tr> */}
                     
                   </tbody>
                 </table>

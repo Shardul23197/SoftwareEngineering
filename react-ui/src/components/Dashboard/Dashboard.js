@@ -56,7 +56,7 @@ export default function Dashboard() {
     setData(selector.email)
     axios.get('http://localhost:5000/api/users/getrole', { params: { email: data } })
     .then((res) => {
-      store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
+      // store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
       setRole(res.data.role)      
     })
     .catch((error) => {
@@ -209,7 +209,7 @@ export default function Dashboard() {
         <li>
           <a href="#">
             <i class='bx bx-coin-stack' ></i>
-            <span class="links_name" onClick={navigateToProfile}>Profile</span>
+            {/* <span class="links_name" onClick={navigateToProfile}>Profile</span> */}
           </a>
         </li>
         <li>

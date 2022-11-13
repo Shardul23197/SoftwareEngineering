@@ -7,7 +7,7 @@ export default function ApproveTrainers() {
   useEffect(()=>{
 
       const fetchTrainers = async () =>{
-        const response = await fetch('/api/showtrainers/')
+        const response = await fetch('/api/admin/approvetrainers/')
         const json = await response.json()
 
         if(response.ok){

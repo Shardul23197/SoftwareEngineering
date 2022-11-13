@@ -1,44 +1,46 @@
 const express = require('express')
+const path = require("path");
 const router = express.Router()
-const User = require("../models/UserProfile");
-const WorkoutVideo = require('../models/WorkoutVideo');
+const UserProfileSchema = require("../models/UserProfile");
+const WorkoutVideoSchema = require('../models/WorkoutVideo');
 
 // router.get('/showusers',(req,res)=>{
 //     return res.json({msSg:'GET DONE BRO'})
 // })
 
-const UserProfileSchema = require("../models/UserProfile");
+
 
 router.get('/showusers', (req, res) => {
 
-  User.find({}).then(user => {
+  UserProfileSchema.find({}).then(user => {
     // Check if user exists
     if (!user) {
       return res.status(404).json({ data: "No User Found" });
     }
-    return res.json(data)
+    // return res.json(data)
+    return res.json(user)
   });
 });
 
 router.get('/showtrainers', (req, res) => {
 
-  User.find({}).then(user => {
+  UserProfileSchema.find({}).then(user => {
     // Check if user exists
     if (!user) {
       return res.status(404).json({ data: "No Trainer Found" });
     }
-    return res.json(data)
+    return res.json(user)
   });
 });
 
 router.get('/showvideos', (req, res) => {
 
-  User.find({}).then(user => {
+  WorkoutVideoSchema.find({}).then(user => {
     // Check if user exists
     if (!user) {
       return res.status(404).json({ data: "No Workout Found" });
     }
-    return res.json(data)
+    return res.json(user)
   });
 });
 
