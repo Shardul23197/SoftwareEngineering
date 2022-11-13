@@ -42,7 +42,7 @@ export default function Recommendation() {
   }, [authToken])
 
   return (
-    <div className="mainbody gradient-custom-2">
+    <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
 
       {/* Sidebar Navigation */}
       <Navigation/>

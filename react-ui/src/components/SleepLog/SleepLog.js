@@ -112,29 +112,6 @@ export default function SleepLog() {
     window.location.reload(false); // reload the page
   };
 
-  /* When the user clicks log out, send post to {backend base url}/auth/logout
-   * and remove all items from local storage then navigate home.
-   */
-  const onLogout = async (event) => {
-    const headers = {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true,
-        headers: headers
-    });
-      
-    // Terminate the user's session information
-    await instance.post('/auth/logout', {}).then((res) => {})
-      .catch((error) => console.error(error));
-
-    // Navigate to home
-    localStorage.clear();
-    navigate('/');
-  };
-
   return (
     <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
 
@@ -144,7 +121,7 @@ export default function SleepLog() {
 
       {/* Sleeps section */}
       <div>
-      <MDBContainer className="py-5 h-100">
+      <MDBContainer className="py-5 h-100 section">
         <MDBRow className="justify-content-center align-items-center h-100">
           <MDBCol g="9" xl="7">
 
