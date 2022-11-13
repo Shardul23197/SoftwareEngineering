@@ -10,15 +10,19 @@ import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 import TwoFactor from './components/TwoFactor/TwoFactor';
 import WorkoutDetails from './components/WorkoutDetails';
+import MealLog from './components/MealLog/MealLog';
+import SleepLog from './components/SleepLog/SleepLog';
+import WorkoutLog from './components/WorkoutLog/WorkoutLog';
 import Profile from './components/Profile/Profile';
+import Search from './components/Search/Search';
 import Settings from './components/Settings/Settings';
+import Recommendation from './components/Recommendation/Recommendation'
 import PrivateRoute from './route_types/PrivateRoute';
 import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
 import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
-import Search from './components/Search/Search';
 
 function App() {
     // Auth token and refresh token state
@@ -57,6 +61,7 @@ function App() {
                     <ForgotPassword />
                 </UnauthenticatedRoute>    
             }/>
+            
             <Route path='/resetPassword' element={
                 <UnauthenticatedRoute>
                     <ResetPassword />
@@ -65,6 +70,26 @@ function App() {
             <Route path='/dashboard' element={
                 <PrivateRoute>
                     <Dashboard />
+                </PrivateRoute>    
+            }/>
+            <Route path='/mealLog' element={
+                <PrivateRoute>
+                    <MealLog/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/recommendation' element={
+                <PrivateRoute>
+                    <Recommendation/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/sleepLog' element={
+                <PrivateRoute>
+                    <SleepLog/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/workoutLog' element={
+                <PrivateRoute>
+                    <WorkoutLog/>
                 </PrivateRoute>    
             }/>
             <Route path='/homepage' element={

@@ -41,6 +41,7 @@ function UnverifiedRoute({ children }) {
             const authTokenValid = res.data.authTokenValid;
             const mfaRequired = res.data.mfaRequired;
             const mfaVerified = res.data.mfaVerified;
+            const email = res.data.email;
 
             // If the auth token is not valid remove session info from local storage
             if (!authTokenValid) {
@@ -48,8 +49,10 @@ function UnverifiedRoute({ children }) {
                 localStorage.removeItem('refreshToken');
                 localStorage.removeItem('mfaVerified');
                 localStorage.removeItem('mfaRequired');
+                localStorage.removeItem('email');
             }
             else {
+                localStorage.setItem('email', email);
                 localStorage.setItem('mfaRequired', mfaRequired+'');
                 localStorage.setItem('mfaVerified', mfaVerified+'');
             }
