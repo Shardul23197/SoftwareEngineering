@@ -54,18 +54,22 @@ export default function Profile() {
   const [hidden, setHidden] = useState(true);
 
   // User body measurements
-  const [age, setAge] = useState('')
-  const [gender, setGender] = useState('')
-  const [userHeightFeet, setUserHeightFeet] = useState('')
-  const [userHeightInches, setUserHeightInches] = useState('')
-  const [userWeight, setUserWeight] = useState('')
-  const [userSleepHours, setUserSleepHours] = useState('')
-  const [userSleepMinutes, setUserSleepMinutes] = useState('')
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [userHeightFeet, setUserHeightFeet] = useState('');
+  const [userHeightInches, setUserHeightInches] = useState('');
+  const [userWeight, setUserWeight] = useState('');
+  const [userSleepHours, setUserSleepHours] = useState('');
+  const [userSleepMinutes, setUserSleepMinutes] = useState('');
   const [error, setError] = useState(''); // String
 
   // User Goals
-  const [weightGoal, setWeightGoal] = useState('Loose')
-  const [muscleMassGoal, setMuscleMassGoal] = useState('Gain')
+  const [weightGoal, setWeightGoal] = useState('Loose');
+  const [muscleMassGoal, setMuscleMassGoal] = useState('Gain');
+
+  // Wellness Score
+  const [wellnessScore, setWellnessScore] = useState(NaN);
+  const [wellnessScoreError, setWellnessScoreError] = useState('');
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
@@ -130,12 +134,11 @@ export default function Profile() {
         });
     }
 
-    instance.get('/api/trainer/approvals', { params: { email: email } })
+    instance.get('/api/users/calculateWellnessScore')
       .then((res) => {
-        setStatus(res.data.status)
+        setWellnessScore(res.data.wellnessScore);
       }).catch((error) => {
-        setStatus('notfound')
-        console.log(error)
+        setWellnessScoreError(error);
       });
   }, [authToken, email, role])
 
@@ -404,88 +407,7 @@ export default function Profile() {
         <LinearProgress id='spinner' hidden={hidden} color="secondary" />
       <ToastContainer />
 
-      {/* Sidebar Navigation */}
-      {/* <div class="sidebar">
-        <div class="logo-details">
-          <i class='bx bxl-c-plus-plus'></i>
-          <span class="logo_name">Fitocity</span>
-        </div>
-        <ul class="nav-links">
-          <li>
-            <Link to='/dashboard'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Dashboard</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/recommendation" >
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Recommendation</span>
-            </Link>
-          </li>
-          {role === 'trainer' ? 
-          <li>
-            <a href="#">
-              <i class='bx bx-box' ></i>
-              <span class="links_name">Workout</span>
-            </a>
-          </li> : ""
-          }
-          <li>
-            <Link to='/mealLog'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Meal Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to='/sleepLog'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Sleep Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to='/workoutLog'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Workout Log</span>
-            </Link>
-          </li>
-          <li>
-            <a href="#">
-              <i class='bx bx-message' ></i>
-              <span class="links_name">Messages</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class='bx bx-heart' ></i>
-              <span class="links_name">Favrorites</span>
-            </a>
-          </li>
-          <li>
-            <Link to = '/profile' class="active">
-              <i class='bx bx-coin-stack' ></i>
-              <span class="links_name">Profile</span>
-            </Link>
-          </li>
-          <li>
-            <Link to = '/settings'>
-              <i class='bx bx-cog' ></i>
-              <span class="links_name">Settings</span>
-            </Link>
-          </li>
-          <li>
-          <button className='logoutbutton' onClick={onLogout} >
-              <i class='bx bx-coin-stack' ></i>
-              <span class="links_name">Logout</span>
-            </button>
-          </li>
-        </ul>
-      </div> */}
       <Navigation/>
-      {/* <form onSubmit={updateProfile}>
-        <MDBContainer className="py-5 h-100">
-          <MDBRow className="justify-content-center align-items-center h-100">
-            <MDBCol lg="9" xl="7"> */}
 
       {/* Profile section */}
       <MDBContainer className="py-5 h-100 section">
@@ -742,26 +664,42 @@ export default function Profile() {
                 </div>
                 </form>
 
-
+                {/* User wellness score */}
                 <h2 className="mt-2 mb-1">Your Wellness Score</h2>
-                  <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
-                    <MDBRow>
-                      <MDBCol sm="6">
-                        <MDBCardText>Your wellness score is:  <strong>{}</strong></MDBCardText>
-                      </MDBCol>
-                      
-                    </MDBRow>
-                    <hr/>
-                    <MDBAccordion alwaysOpen initialActive={1}>
-        <MDBAccordionItem collapseId={1} headerTitle="Know more about how your wellness score is calculated: ">
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-        </MDBAccordionItem>
-        </MDBAccordion>
-      
-                    
-                  </div>
-
-                
+                  {wellnessScoreError
+                    ?
+                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                      <MDBRow>
+                        <MDBCol sm="13">
+                          <MDBCardText>
+                            In order to calculate your Wellness Score you must have logged at least
+                            three meals, nights of sleep, and workouts in addition to having filled
+                            out your profile page!
+                          </MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                    </div>
+                    :
+                    <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                      <MDBRow>
+                        <MDBCol sm="6">
+                          <MDBCardText>Your wellness score is: <strong>{wellnessScore}</strong></MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                      <hr/>
+                      <MDBAccordion alwaysOpen initialActive={1}>
+                        <MDBAccordionItem collapseId={1} headerTitle="Know more about how your wellness score is calculated">
+                          Your Wellness Score (a number betwee 0 and 100) is calculated based on data that you input into Fitocity. Your BMI, level of
+                          physical activity, diet, and sleep all play a part in your overall wellness, so we use this
+                          information to provide you with a measurement of your progress!
+                          <br/>
+                          <br/>
+                          As you explore Fitocity and utilize the services our trainers provide, you will watch your Wellness Score
+                          rise as you become the best you you can be!
+                        </MDBAccordionItem>
+                      </MDBAccordion>
+                    </div>
+                  }
               </MDBCardBody>
             </MDBCard>
           </MDBCol>

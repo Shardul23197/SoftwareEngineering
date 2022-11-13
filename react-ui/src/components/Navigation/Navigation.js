@@ -45,7 +45,7 @@ const Navigation = () => {
       <li>
         <Link to="/recommendation" >
           <i class='bx bx-grid-alt' ></i>
-          <span class="links_name">Recommendation</span>
+          <span class="links_name">Diet Recommendations</span>
         </Link>
       </li>
       {role === 'trainer' ? 
@@ -81,19 +81,19 @@ const Navigation = () => {
         </a>
       </li>
       <li>
-        <Link to = '/profile'>
+        <Link to='/profile'>
           <i class='bx bx-coin-stack' ></i>
           <span class="links_name">Profile</span>
         </Link>
       </li>
       <li>
-        <Link to = '/settings'>
+        <Link to='/settings'>
           <i class='bx bx-cog' ></i>
           <span class="links_name">Settings</span>
         </Link>
       </li>
       <li>
-          <Link to = '/search'>
+          <Link to='/search'>
             <i class='bx bx-coin-stack' ></i>
             <span class="links_name">Search For Trainers</span>
           </Link>

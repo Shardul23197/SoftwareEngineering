@@ -21,6 +21,7 @@ export default function Settings() {
   const role = useSelector(state => state.role)
   const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
   const [mfaSecret, setMfaSecret] = useState('')
+  
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
   const [authToken] = useState(existingAuthtoken);

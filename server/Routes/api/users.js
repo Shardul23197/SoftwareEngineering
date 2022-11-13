@@ -25,27 +25,26 @@ router.get('/getrole', (req, res) => {
 // @desc Returns the user's wellness score.
 // @access Public
 router.get('/calculateWellnessScore', async (req, res) => {
-    const { email } = req.body;
-    // // Get the access token from the header
-    // const { authorization } = req.headers;
-    // const accessToken = authorization.split(' ')[1];
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
 
-    // let session = await Session.findOne({ accessToken: accessToken });
-    // // Check if a session with this user exists
-    // if (!session) {
-    //     let err = 'Could not find the given accessToken!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this user exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
+        return;
+    }
 
-    // let email = session.email;
-    // let user = await User.findOne({ email: email });
-    // // Check if the user exists
-    // if (!user) {
-    //     let err = 'Could not find a user with the given email!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
+    let email = session.email;
+    let user = await User.findOne({ email: email });
+    // Check if the user exists
+    if (!user) {
+        let err = 'Could not find a user with the given email!';
+        res.status(401).json(err);
+        return;
+    }
 
     let userProfile = await UserProfile.findOne({ email: email });
     // Check if the userProfile exists
@@ -79,27 +78,26 @@ router.get('/calculateWellnessScore', async (req, res) => {
 // @desc Returns dietary recommendations for the user.
 // @access Public
 router.get('/dietRecommendations', async (req, res) => {
-    const { email } = req.body;
-    // // Get the access token from the header
-    // const { authorization } = req.headers;
-    // const accessToken = authorization.split(' ')[1];
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
 
-    // let session = await Session.findOne({ accessToken: accessToken });
-    // // Check if a session with this user exists
-    // if (!session) {
-    //     let err = 'Could not find the given accessToken!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this user exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
+        return;
+    }
 
-    // let email = session.email;
-    // let user = await User.findOne({ email: email });
-    // // Check if the user exists
-    // if (!user) {
-    //     let err = 'Could not find a user with the given email!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
+    let email = session.email;
+    let user = await User.findOne({ email: email });
+    // Check if the user exists
+    if (!user) {
+        let err = 'Could not find a user with the given email!';
+        res.status(401).json(err);
+        return;
+    }
 
     let userProfile = await UserProfile.findOne({ email: email });
     // Check if the userProfile exists

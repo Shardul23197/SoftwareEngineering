@@ -575,7 +575,7 @@ h1.demo-title a {
 .sidebar{
   position: fixed;
   height: 100%;
-  width: 240px;
+  width: 260px;
   background: #323438;
   transition: all 0.5s ease;
 }
