@@ -1,6 +1,5 @@
 const Meal = require('../models/Meal');
-const Sleep = require('../models/Sleep');
-const Workout = require('../models/Workout');
+const scoreCalculator = require('./scoreCalculator');
 
 /**
  * Calcules a user's wellness score. A wellness score is an arbitrary
@@ -76,52 +75,23 @@ const Workout = require('../models/Workout');
  * @param {User} user A User object from MongoDB Cloud.
  * @return {int} A number between 0 and 100 arbitrarily rating a user's fitness.
  */
-const calculateWellnessScore = async (userProfile) => {
-    var bmiPoints = 0;
-    var mealPoints = 0;
-    var sleepPoints = 25;
-    var workoutPoints = 0;
+const provideRecommendations = async (userProfile) => {
+    var bmiRecommendation = '';
+    var calorieRecommendation = '';
+    var proteinRecommendation = '';
+    var fatRecommendation = '';
+    var carbsRecommendation = '';
 
     const email = userProfile.email;
-    const heightMeters = (userProfile.heightFeet * 12 + userProfile.heightInches) * 0.0254; // 1 ft = 0.0254 m
-    const weightKg = userProfile.weight * 0.453592; // 1 lb = 0.453592 kg
     
     // Give points for BMI
-    const bmi = calculateBmi(heightMeters, weightKg);
-    if (17 <= bmi && bmi < 18)
-        bmiPoints = 5;
-    else if (18 <= bmi && bmi < 19)
-        bmiPoints = 15;
-    else if (19 <= bmi && bmi < 20)
-        bmiPoints = 20;
-    else if (20 <= bmi && bmi <= 25)
-        bmiPoints = 30;
-    else if (25 < bmi && bmi < 27)
-        bmiPoints = 20;
-    else if (27 <= bmi && bmi < 29)
-        bmiPoints = 15;
-    else if (29 <= bmi && bmi < 31)
-        bmiPoints = 5;
-
-        
-
-    // Get workouts in the past 7 days
-    let startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
-    let workouts = await Workout.find({ email: email , date: { $gt: startDate.valueOf() } }).exec();
-    // Check if the user has workouts
-    if (!workouts) 
-        return -3;
-    else if (workouts.length < 3)
-        return -3;
-
-
-    // Calculate workout points
-    workoutPoints = workouts.reduce((totalPoints, workout) => 
-        workout.intensity === 'High' ? totalPoints+5 : (workout.intensity === 'Medium' ? totalPoints+4 : totalPoints+2),
-        0
-    );
-    if (workoutPoints > 20) workoutPoints = 20;
+    const bmi = scoreCalculator.calculateBmi(heightMeters, weightKg);
+    if (bmi < 20)
+        bmiRecommendation = 'You are underweight and could use additional calories.';
+    else if (25 < bmi && bmi < 30)
+        bmiRecommendation = 'You are overweight!';
+    else if (30 <= bmi)
+        bmiRecommendation = 'You are obese and need to take serious precautions regarding your health!';
 
 
     
@@ -151,53 +121,31 @@ const calculateWellnessScore = async (userProfile) => {
     let carbsNeededGrams = caloriesNeeded * .5 / 4;
     let fatNeededGrams = caloriesNeeded * .2 / 9;
     
-    let caloriePoints = 7 - Math.floor(Math.abs(caloriesNeeded - avgCalories) / 50);
-    let proteinPoints = 7 - (avgProtein < proteinNeededGrams ? Math.floor(Math.abs(proteinNeededGrams - avgProtein) / 2) : 0);
-    let carbPoints =    6 - Math.floor(Math.abs(carbsNeededGrams - avgCarbs) / 3);
-    let fatPoints =     5 - Math.floor(Math.abs(fatNeededGrams - avgFat) / 3);
-    if (caloriePoints < 0) caloriePoints = 0;
-    if (proteinPoints < 0) proteinPoints = 0;
-    if (carbPoints < 0) carbPoints = 0;
-    if (fatPoints < 0) fatPoints = 0;
-    mealPoints = caloriePoints + proteinPoints + carbPoints + fatPoints;
+    let calorieDifference = Math.abs(caloriesNeeded - avgCalories);
+    let proteinDifference = Math.abs(proteinNeededGrams - avgProtein);
+    let carbDifference =    Math.abs(carbsNeededGrams - avgCarbs);
+    let fatDifference =     Math.abs(fatNeededGrams - avgFat);
 
-
+    if (calorieDifference >= 100)
+        calorieRecommendation = `Your average calorie intake is ${avgCalories} cal/day, when you
+        should intake close to ${caloriesNeeded}!`
+    if (proteinDifference >= 100)
+        proteinRecommendation = `Your average protein intake is ${avgProtein} cal/day, when you
+        should intake close to ${proteinNeededGrams}!`
+    if (carbDifference >= 100)
+        carbsRecommendation = `Your average carbohydrate intake is ${avgCarbs} cal/day, when you
+        should intake close to ${carbsNeededGrams}!`
+    if (fatDifference >= 100)
+        fatRecommendation = `Your average fat intake is ${avgFat} cal/day, when you
+        should intake close to ${fatNeededGrams}!`
     
-    // Find the user's sleeps
-    let sleeps = await Sleep.find({ email: email }).exec();
-    // Check if the user has sleeps
-    if (!sleeps) 
-        return -2;
-    else if (sleeps.length < 3)
-        return -2;
-
-    let avgSleepMins = sleeps.reduce((totalMins, sleep) => 
-        totalMins + (new Date(sleep.endDate).valueOf() - new Date(sleep.startDate).valueOf()) * 0.001 / 60,
-        0
-        ) / sleeps.length;
-    const requiredMins = 480;
-    // Calculate sleep points
-    sleepPoints -= (avgSleepMins < requiredMins ? (Math.abs(requiredMins - avgSleepMins) / 10) * 2 : 0)
-    
-    return (bmiPoints + workoutPoints + mealPoints + sleepPoints);
+    return {
+        bmiRecommendation: bmiRecommendation,
+        calorieRecommendation: calorieRecommendation,
+        proteinRecommendation: proteinRecommendation,
+        fatRecommendation: fatRecommendation,
+        carbsRecommendation: carbsRecommendation
+    };
 }
 
-/**
- * Calcules a person's BMI.
- * 
- * @param {double} height Height of the person in meters
- * @param {double} weight Weight of the person in kilograms
- * @return {double} The BMI of the person where the range of 
- * values is as follows:
- *        
- *        - Underweight = (0, 18.5]
- *        - Normal weight = [18.5, 25)
- *        - Overweight = [25 – 30)
- *        - Obesity = [30, INF)
- */
-const calculateBmi = (heightMeters, weightKg) => {
-    return weightKg / Math.pow(heightMeters, 2);
-}
-
-module.exports.calculateWellnessScore = calculateWellnessScore;
-module.exports.calculateBmi = calculateBmi;
+module.exports.provideRecommendations = provideRecommendations;
