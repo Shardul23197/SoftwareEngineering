@@ -54,7 +54,7 @@ export default function Recommendation() {
             </Link>
           </li>
           <li>
-            <Link to="/recommendation">
+            <Link to="/recommendation" class="active">
               <i class="bx bx-grid-alt"></i>
               <span class="links_name">Recommendation</span>
             </Link>
@@ -68,7 +68,7 @@ export default function Recommendation() {
           </li> : ""
           } */}
           <li>
-            <Link to="/mealLog " class="active">
+            <Link to="/mealLog">
               <i class="bx bx-grid-alt"></i>
               <span class="links_name">Meal Log</span>
             </Link>

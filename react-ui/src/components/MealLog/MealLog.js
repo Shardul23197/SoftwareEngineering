@@ -191,7 +191,7 @@ export default function MealLog() {
           </li> : ""
           }
           <li>
-            <Link to='/mealLog ' class="active">
+            <Link to='/mealLog' class="active">
               <i class='bx bx-grid-alt' ></i>
               <span class="links_name">Meal Log</span>
             </Link>
