@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MDBAccordion, MDBAccordionItem} from "mdb-react-ui-kit";
 import {
   MDBCol,
@@ -28,7 +28,6 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import VideoCard from './VideoCard';
 import Button from '@material-ui/core/Button';
-// import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
 import util from 'util';
@@ -130,6 +129,14 @@ export default function Profile() {
           console.log(error);
         });
     }
+
+    instance.get('/api/trainer/approvals', { params: { email: email } })
+      .then((res) => {
+        setStatus(res.data.status)
+      }).catch((error) => {
+        setStatus('notfound')
+        console.log(error)
+      });
   }, [authToken, email, role])
 
   const onVideoTitleChange = (event) => {
@@ -391,29 +398,6 @@ export default function Profile() {
       }
     }
   }
-
-  /* When the user clicks log out, send post to {backend base url}/auth/logout
-   * and remove all items from local storage then navigate home.
-   */
-  const onLogout = async (event) => {
-    const headers = {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true,
-        headers: headers
-    });
-      
-    // Terminate the user's session information
-    await instance.post('/auth/logout', {}).then((res) => {})
-      .catch((error) => console.error(error));
-
-    // Navigate to home
-    localStorage.clear();
-    navigate('/');
-  };
 
   return (
     <div className="gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>

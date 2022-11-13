@@ -32,9 +32,10 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import SleepCard from './SleepCard';
 import Button from '@material-ui/core/Button';
+import Navigation from '../Navigation/Navigation';
+import './SleepLog.css';
 // import AddRounded from '@material-ui/icons/AddRounded';
 // import DateTimePicker from 'react-datetime-picker';
-import './SleepLog.css';
 
 export default function SleepLog() {
   let mfaRequired = localStorage.getItem('mfaRequired');
@@ -138,82 +139,8 @@ export default function SleepLog() {
     <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
 
       {/* Sidebar Navigation */}
-      <div class="sidebar">
-        <div class="logo-details">
-          <i class='bx bxl-c-plus-plus'></i>
-          <span class="logo_name">Fitocity</span>
-        </div>
-        <ul class="nav-links">
-          <li>
-            <Link to='/dashboard'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Dashboard</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/recommendation" >
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Recommendation</span>
-            </Link>
-          </li>
-          {role === 'trainer' ? 
-          <li>
-            <a href="#">
-              <i class='bx bx-box' ></i>
-              <span class="links_name">Workout</span>
-            </a>
-          </li> : ""
-          }
-          <li>
-            <Link to='/mealLog'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Meal Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to='/sleepLog' class="active">
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Sleep Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to='/workoutLog'>
-              <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Workout Log</span>
-            </Link>
-          </li>
-          <li>
-            <a href="#">
-              <i class='bx bx-message' ></i>
-              <span class="links_name">Messages</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class='bx bx-heart' ></i>
-              <span class="links_name">Favrorites</span>
-            </a>
-          </li>
-          <li>
-            <Link to = '/profile'>
-              <i class='bx bx-coin-stack' ></i>
-              <span class="links_name">Profile</span>
-            </Link>
-          </li>
-          <li>
-            <Link to = '/settings'>
-              <i class='bx bx-cog' ></i>
-              <span class="links_name">Settings</span>
-            </Link>
-          </li>
-          <li>
-          <button className='logoutbutton' onClick={onLogout} >
-              <i class='bx bx-coin-stack' ></i>
-              <span class="links_name">Logout</span>
-            </button>
-          </li>
-        </ul>
-      </div>
+      <Navigation/>
+
 
       {/* Sleeps section */}
       <div>

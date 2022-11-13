@@ -32,6 +32,7 @@ import {
 import axios from "axios";
 import qs from "qs";
 import { ToastContainer, toast } from "react-toastify";
+import Navigation from '../Navigation/Navigation';
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Recommendation() {
@@ -40,83 +41,10 @@ export default function Recommendation() {
       className="mainbody gradient-custom-2"
      
     >
-      {/* Sidebar Navigation */}
-      <div class="sidebar">
-        <div class="logo-details">
-          <i class="bx bxl-c-plus-plus"></i>
-          <span class="logo_name">Fitocity</span>
-        </div>
-        <ul class="nav-links">
-          <li>
-            <Link to="/dashboard">
-              <i class="bx bx-grid-alt"></i>
-              <span class="links_name">Dashboard</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/recommendation" class="active">
-              <i class="bx bx-grid-alt"></i>
-              <span class="links_name">Recommendation</span>
-            </Link>
-          </li>
-          {/* {role === 'trainer' ? 
-          <li>
-            <a href="#">
-              <i class='bx bx-box' ></i>
-              <span class="links_name">Workout</span>
-            </a>
-          </li> : ""
-          } */}
-          <li>
-            <Link to="/mealLog">
-              <i class="bx bx-grid-alt"></i>
-              <span class="links_name">Meal Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/sleepLog">
-              <i class="bx bx-grid-alt"></i>
-              <span class="links_name">Sleep Log</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/workoutLog">
-              <i class="bx bx-grid-alt"></i>
-              <span class="links_name">Workout Log</span>
-            </Link>
-          </li>
-          <li>
-            <a href="#">
-              <i class="bx bx-message"></i>
-              <span class="links_name">Messages</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="bx bx-heart"></i>
-              <span class="links_name">Favrorites</span>
-            </a>
-          </li>
-          <li>
-            <Link to="/profile">
-              <i class="bx bx-coin-stack"></i>
-              <span class="links_name">Profile</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/settings">
-              <i class="bx bx-cog"></i>
-              <span class="links_name">Settings</span>
-            </Link>
-          </li>
-          <li>
-            <button className="logoutbutton">
-              <i class="bx bx-coin-stack"></i>
-              <span class="links_name">Logout</span>
-            </button>
-          </li>
-        </ul>
-      </div>
+
+    {/* Sidebar Navigation */}
+    <Navigation/>
+
 
       <div>
         <MDBContainer className="py-5 section">
