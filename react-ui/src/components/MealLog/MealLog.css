@@ -2,6 +2,14 @@
   flex: left;
 }
 
+.section{
+  margin-left: 15%;
+}
+
+.subsection{
+  width: 65%;
+}
+
 .gram-input {
   flex: left;
   width: 150px;

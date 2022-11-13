@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { MDBAccordion, MDBAccordionItem} from "mdb-react-ui-kit";
 import {
   MDBCol,
   MDBContainer,
@@ -27,7 +28,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import VideoCard from './VideoCard';
 import Button from '@material-ui/core/Button';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+// import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
 import util from 'util';
@@ -432,10 +433,10 @@ export default function Profile() {
             </Link>
           </li>
           <li>
-            <a href="#" >
+            <Link to="/recommendation" >
               <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Explore</span>
-            </a>
+              <span class="links_name">Recommendation</span>
+            </Link>
           </li>
           {role === 'trainer' ? 
           <li>
@@ -497,9 +498,9 @@ export default function Profile() {
       </div>
 
       {/* Profile section */}
-      <MDBContainer className="py-5 h-100">
-        <MDBRow className="justify-content-center align-items-center h-100">
-          <MDBCol lg="9" xl="7">
+      <MDBContainer className="py-5 h-100 section">
+        <MDBRow className="justify-content-center align-items-center h-100 ">
+          <MDBCol lg="9" xl="7" className="subsection">
 
             {/* User Profile Card */}
             <MDBCard>
@@ -512,7 +513,7 @@ export default function Profile() {
                       <Button class="icon" onClick={() => {
                         setVaryingUpload(!varyingUpload);
                       }}>
-                        <CloudUploadIcon className='fa user' />
+                        {/* <CloudUploadIcon className='fa user' /> */}
                       </Button>
                     </div>
                     </div>
@@ -532,7 +533,7 @@ export default function Profile() {
                       ? 
                       <Button variant="contained" color="default"
                         className='material-button'
-                        startIcon={<CloudUploadIcon />}
+                        // startIcon={<CloudUploadIcon />}
                         onClick={() => {
                           setVaryingModal(!varyingModal);
                         }}
@@ -735,6 +736,11 @@ export default function Profile() {
                     </MDBRow>
                   </div>
 
+
+
+                  
+          
+
                   {/* Error message for wellness info submission */}
                   {error ?
                           <MDBTypography id="danger-text" note noteColor='danger' style={{ 'marginTop': '10px' }}>
@@ -745,6 +751,26 @@ export default function Profile() {
                   <MDBBtn style={{ 'marginTop': '10px' }}>Update</MDBBtn>
                 </div>
                 </form>
+
+
+                <h2 className="mt-2 mb-1">Your Wellness Score</h2>
+                  <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
+                    <MDBRow>
+                      <MDBCol sm="6">
+                        <MDBCardText>Your wellness score is:  <strong>{}</strong></MDBCardText>
+                      </MDBCol>
+                      
+                    </MDBRow>
+                    <hr/>
+                    <MDBAccordion alwaysOpen initialActive={1}>
+        <MDBAccordionItem collapseId={1} headerTitle="Know more about how your wellness score is calculated: ">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+        </MDBAccordionItem>
+        </MDBAccordion>
+      
+                    
+                  </div>
+
                 
               </MDBCardBody>
             </MDBCard>

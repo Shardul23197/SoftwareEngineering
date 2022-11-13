@@ -32,7 +32,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import WorkoutCard from './WorkoutCard';
 import Button from '@material-ui/core/Button';
-import AddRounded from '@material-ui/icons/AddRounded';
+// import AddRounded from '@material-ui/icons/AddRounded';
 import './WorkoutLog.css';
 
 export default function WorkoutLog() {
@@ -165,10 +165,10 @@ export default function WorkoutLog() {
             </Link>
           </li>
           <li>
-            <a href="#" >
+            <Link to="/recommendation" >
               <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Explore</span>
-            </a>
+              <span class="links_name">Recommendation</span>
+            </Link>
           </li>
           {role === 'trainer' ? 
           <li>
@@ -244,7 +244,7 @@ export default function WorkoutLog() {
                   <h1 className="fw-bold mb-1" style={{ width: '300px'}}>Workout Log</h1>
                   <Button variant="contained" color="default"
                     className='material-button'
-                    startIcon={<AddRounded />}
+                    // startIcon={<AddRounded />}
                     style={{width: '220px'}}
                     onClick={() => {
                       setWorkoutUploadModalVisible(!workoutUploadModalVisible);
