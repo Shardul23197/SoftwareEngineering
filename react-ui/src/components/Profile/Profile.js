@@ -32,6 +32,7 @@ import Button from '@material-ui/core/Button';
 import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
 import util from 'util';
+import Navigation from '../Navigation/Navigation';
 
 export default function Profile() {
   const mfaRequired = localStorage.getItem('mfaRequired');
@@ -420,7 +421,7 @@ export default function Profile() {
       <ToastContainer />
 
       {/* Sidebar Navigation */}
-      <div class="sidebar">
+      {/* <div class="sidebar">
         <div class="logo-details">
           <i class='bx bxl-c-plus-plus'></i>
           <span class="logo_name">Fitocity</span>
@@ -495,7 +496,12 @@ export default function Profile() {
             </button>
           </li>
         </ul>
-      </div>
+      </div> */}
+      <Navigation/>
+      {/* <form onSubmit={updateProfile}>
+        <MDBContainer className="py-5 h-100">
+          <MDBRow className="justify-content-center align-items-center h-100">
+            <MDBCol lg="9" xl="7"> */}
 
       {/* Profile section */}
       <MDBContainer className="py-5 h-100 section">

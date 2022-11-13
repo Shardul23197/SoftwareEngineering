@@ -14,14 +14,15 @@ import MealLog from './components/MealLog/MealLog';
 import SleepLog from './components/SleepLog/SleepLog';
 import WorkoutLog from './components/WorkoutLog/WorkoutLog';
 import Profile from './components/Profile/Profile';
+import Search from './components/Search/Search';
 import Settings from './components/Settings/Settings';
+import Recommendation from './components/Recommendation/Recommendation'
 import PrivateRoute from './route_types/PrivateRoute';
 import UnauthenticatedRoute from './route_types/UnauthenticatedRoute';
 import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
-import Recommendation from './components/Recommendation/Recommendation'
 
 function App() {
     // Auth token and refresh token state
@@ -109,6 +110,11 @@ function App() {
             <Route path='/settings' element={
                 <PrivateRoute>
                     <Settings />
+                </PrivateRoute>
+            }/>
+            <Route path='/search' element={
+                <PrivateRoute>
+                    <Search /> 
                 </PrivateRoute>    
             }/>
         </Routes>
