@@ -181,11 +181,11 @@ export default function Dashboard() {
       </Link>
     </li>
     <li>
-      <a href="#">
-        <i class='bx bx-grid-alt' ></i>
-        <span class="links_name">Explore</span>
-      </a>
-    </li>
+            <Link to="/recommendation" >
+              <i class='bx bx-grid-alt' ></i>
+              <span class="links_name">Recommendation</span>
+            </Link>
+          </li>
     {role === 'trainer' ? 
     <li>
       <a href="#">

@@ -1,7 +1,7 @@
 import React from 'react'
 import Card from 'react-bootstrap/Card';
-import "../../../node_modules/video-react/dist/video-react.css";
-import { Player } from 'video-react';
+// import "../../node_modules/video-react/dist/video-react.css";
+// import { Player } from 'video-react';
 
 const VideoCard = ({ videos }) => {
 
@@ -11,10 +11,10 @@ const VideoCard = ({ videos }) => {
                 <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%' }}>
                     <Card.Body>
                         <Card.Title>{video.title}</Card.Title>
-                        <Player
+                        {/* <Player
                             playsInline
                             src={video.url}
-                        />
+                        /> */}
                     </Card.Body>
                 </Card>)
         })

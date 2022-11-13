@@ -21,6 +21,7 @@ import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
+import Recommendation from './components/Recommendation/Recommendation'
 
 function App() {
     // Auth token and refresh token state
@@ -59,6 +60,7 @@ function App() {
                     <ForgotPassword />
                 </UnauthenticatedRoute>    
             }/>
+            
             <Route path='/resetPassword' element={
                 <UnauthenticatedRoute>
                     <ResetPassword />
@@ -72,6 +74,11 @@ function App() {
             <Route path='/mealLog' element={
                 <PrivateRoute>
                     <MealLog/>
+                </PrivateRoute>    
+            }/>
+            <Route path='/recommendation' element={
+                <PrivateRoute>
+                    <Recommendation/>
                 </PrivateRoute>    
             }/>
             <Route path='/sleepLog' element={

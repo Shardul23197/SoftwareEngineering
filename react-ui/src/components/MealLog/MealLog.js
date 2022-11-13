@@ -32,7 +32,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import MealCard from './MealCard';
 import Button from '@material-ui/core/Button';
-import AddRounded from '@material-ui/icons/AddRounded';
+// import AddRounded from '@material-ui/icons/AddRounded';
 import './MealLog.css';
 
 export default function MealLog() {
@@ -177,10 +177,10 @@ export default function MealLog() {
             </Link>
           </li>
           <li>
-            <a href="#" >
+            <Link to="/recommendation" >
               <i class='bx bx-grid-alt' ></i>
-              <span class="links_name">Explore</span>
-            </a>
+              <span class="links_name">Recommendation</span>
+            </Link>
           </li>
           {role === 'trainer' ? 
           <li>
@@ -243,9 +243,9 @@ export default function MealLog() {
 
       {/* Meals section */}
       <div>
-      <MDBContainer className="py-5 h-100">
+      <MDBContainer className="py-5 h-100 section">
         <MDBRow className="justify-content-center align-items-center h-100">
-          <MDBCol g="9" xl="7">
+          <MDBCol g="9" xl="7" className="subsection">
 
             {/* User Profile Card */}
             <MDBCard>
@@ -256,7 +256,7 @@ export default function MealLog() {
                   <h1 className="fw-bold mb-1" style={{ width: '300px'}}>Meal Log</h1>
                   <Button variant="contained" color="default"
                     className='material-button'
-                    startIcon={<AddRounded />}
+                    // startIcon={<AddRounded />}
                     style={{width: '220px'}}
                     onClick={() => {
                       setMealUploadModalVisible(!mealUploadModalVisible);
