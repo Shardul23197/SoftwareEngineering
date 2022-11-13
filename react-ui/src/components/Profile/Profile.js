@@ -54,6 +54,7 @@ export default function Profile() {
 
   // User body measurements
   const [age, setAge] = useState('')
+  const [gender, setGender] = useState('')
   const [userHeightFeet, setUserHeightFeet] = useState('')
   const [userHeightInches, setUserHeightInches] = useState('')
   const [userWeight, setUserWeight] = useState('')
@@ -88,6 +89,8 @@ export default function Profile() {
           setUserCity(res.data.userProfile.city);
           setUserFullName(res.data.userProfile.fullName);
           setUserPhone(res.data.userProfile.phone);
+          setAge(res.data.userProfile.age);
+          setGender(res.data.userProfile.gender);
           setUserHeightFeet(res.data.userProfile.heightFeet);
           setUserHeightInches(res.data.userProfile.heightInches);
           setUserWeight(res.data.userProfile.weight);
@@ -133,6 +136,11 @@ export default function Profile() {
 
   const onAgeChange = (event) => {
     setAge(event.target.value)
+  }
+
+  const onGenderChange = (event) => {
+    console.log(event.target.value);
+    setGender(event.target.value)
   }
 
   const onNameChange = (event) => {
@@ -198,6 +206,16 @@ export default function Profile() {
     return true;
   }
 
+  const genderValidation = (event) => {
+    if (!(gender === 'Male' || gender === 'Female')) {
+      setError('Please select a gender!');
+      return false;
+    }
+      
+    setError('');
+    return true;
+  }
+
   const userHeightValidation = (event) => {
     const isValidHeightFeet = Number.isInteger(userHeightFeet) && 
                               userHeightFeet >= 3 && 
@@ -231,9 +249,8 @@ export default function Profile() {
   const updateWellnessInfo = (event) => {
     event.preventDefault();
 
-    console.log(ageValidation() && userHeightValidation() && userWeightValidation());
     // Make sure the user entered valid wellness information
-    if (!ageValidation() || !userHeightValidation() || !userWeightValidation())
+    if (!ageValidation() || !userHeightValidation() || !userWeightValidation() || !genderValidation())
       return;
   
     
@@ -248,6 +265,7 @@ export default function Profile() {
     });
     const formData = {
       age: age,
+      gender: gender,
       heightFeet: userHeightFeet,
       heightInches: userHeightInches,
       weight: userWeight,
@@ -607,7 +625,7 @@ export default function Profile() {
                   <h1 className="fw-bold mb-2">Wellness Information</h1>
 
                   {/* User body measurements */}
-                  <h2 className="mb-">Body Measurements</h2>
+                  <h2 className="mb-">General Information</h2>
                   <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
                     <MDBRow>
                       <MDBCol sm="3">
@@ -626,6 +644,23 @@ export default function Profile() {
                       </MDBCol>
                     </MDBRow>
                     <hr />
+                    <MDBRow>
+                      <MDBCol sm="3">
+                        <MDBCardText>Gender</MDBCardText>
+                      </MDBCol>
+                      <MDBCol sm="3">
+                        <select value={gender} onChange={onGenderChange} class="form-select" aria-label="Category Select">
+                          <option value={''}>Select a Gender</option>
+                          <option value={'Male'}>Male</option>
+                          <option value={'Female'}>Female</option>
+                        </select>
+                      </MDBCol>
+                    </MDBRow>
+                  </div>
+
+                  {/* User body measurements */}
+                  <h2 className="mb-">Body Measurements</h2>
+                  <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
                     <MDBRow>
                       <MDBCol sm="3">
                         <MDBCardText>Height</MDBCardText>
@@ -686,7 +721,6 @@ export default function Profile() {
                       </MDBCol>
                     </MDBRow>
                     <hr />
-
                     <MDBRow>
                       <MDBCol sm="3">
                         <MDBCardText>Muscle Mass</MDBCardText>

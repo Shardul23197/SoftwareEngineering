@@ -27,6 +27,10 @@ const UserProfileSchema = new Schema({
     age: {
       type: Number
     },
+    gender: {
+      type: String,
+      enum: [ 'Male', 'Female']
+    },
     heightFeet: {
       type: Number
     },
