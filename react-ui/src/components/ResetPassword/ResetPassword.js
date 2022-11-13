@@ -21,7 +21,7 @@ import qs from 'qs' // needed for axios post to work properly
           'Content-Type': 'application/x-www-form-urlencoded'
       };
       const instance = axios.create({
-          baseURL: 'https://fitocity.herokuapp.com',
+          baseURL: 'http://localhost:5000',
           withCredentials: true,
           headers: headers
       });

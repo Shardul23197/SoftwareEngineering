@@ -73,13 +73,13 @@ const provideRecommendations = async (userProfile) => {
 
     // Provide statements to display about macros
     if (calorieDifference >= 100)
-        dietRecommendations.calorieRecommendation = `Your average calorie intake is ${avgCalories.toFixed(2)} cal/day, when you should intake close to ${requiredCalories.toFixed(2)}!`;
+        dietRecommendations.calorieRecommendation = `Your average calorie intake is ${avgCalories.toFixed(2)} cal/day, when you should intake close to ${requiredCalories.toFixed(2)} cals/da!`;
     if (proteinDifference >= 100)
-        dietRecommendations.proteinRecommendation = `Your average protein intake is ${avgProtein.toFixed(2)} cal/day, when you should intake close to ${requiredProtein.toFixed(2)}!`;
+        dietRecommendations.proteinRecommendation = `Your average protein intake is ${avgProtein.toFixed(2)} g/day, when you should intake close to ${requiredProtein.toFixed(2)} g/day!`;
     if (carbDifference >= 100)
-        dietRecommendations.carbsRecommendation = `Your average carbohydrate intake is ${avgCarbs.toFixed(2)} cal/day, when you should intake close to ${requiredCarbs.toFixed(2)}!`;
+        dietRecommendations.carbsRecommendation = `Your average carbohydrate intake is ${avgCarbs.toFixed(2)} g/day, when you should intake close to ${requiredCarbs.toFixed(2)} g/day!`;
     if (fatDifference >= 100)
-        dietRecommendations.fatRecommendation = `Your average fat intake is ${avgFat.toFixed(2)} cal/day, when you should intake close to ${requiredFat.toFixed(2)}!`;
+        dietRecommendations.fatRecommendation = `Your average fat intake is ${avgFat.toFixed(2)} g/day, when you should intake close to ${requiredFat.toFixed(2)} g/day!`;
     
     return {
         bmi: bmiRecommendation,

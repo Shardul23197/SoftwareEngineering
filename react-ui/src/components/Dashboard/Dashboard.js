@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   const getRole = () => {
     setData(selector.email)
-    axios.get('https://fitocity.herokuapp.com/api/users/getrole', { params: { email: data } })
+    axios.get('http://localhost:5000/api/users/getrole', { params: { email: data } })
     .then((res) => {
       store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
       setRole(res.data.role)      
@@ -70,30 +70,6 @@ export default function Dashboard() {
   useEffect(() => {
     getRole()
   }, []);
-
-
-  /* When the user clicks log out, send post to {backend base url}/auth/logout
-   * and remove all items from local storage then navigate home.
-   */
-  const onLogout = async (event) => {
-    const headers = {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    const instance = axios.create({
-        baseURL: 'https://fitocity.herokuapp.com',
-        withCredentials: true,
-        headers: headers
-    });
-      
-    // Terminate the user's session information
-    await instance.post('/auth/logout', {}).then((res) => {})
-      .catch((error) => console.error(error));
-
-    // Navigate to home
-    localStorage.clear();
-    navigate('/');
-  };
 
 
   return (

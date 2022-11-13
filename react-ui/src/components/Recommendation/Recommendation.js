@@ -28,7 +28,7 @@ export default function Recommendation() {
       'Content-Type': 'application/x-www-form-urlencoded'
     };
     const instance = axios.create({
-        baseURL: 'https://fitocity.herokuapp.com',
+        baseURL: 'http://localhost:5000',
         withCredentials: true,
         headers: headers
     });
@@ -42,7 +42,7 @@ export default function Recommendation() {
   }, [authToken])
 
   return (
-    <div className="mainbody gradient-custom-2">
+    <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
 
       {/* Sidebar Navigation */}
       <Navigation/>

@@ -32,7 +32,7 @@ function PrivateRoute({ children }) {
             'Content-Type': 'application/x-www-form-urlencoded'
         };
         const instance = axios.create({
-            baseURL: 'https://fitocity.herokuapp.com',
+            baseURL: 'http://localhost:5000',
             withCredentials: true,
             headers: headers
         });
