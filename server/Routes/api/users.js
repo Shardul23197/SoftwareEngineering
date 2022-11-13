@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Util functions
 const scoreCalculator = require("../../utils/scoreCalculator");
+const dietaryRecommendationEngine = require("../../utils/dietaryRecommendationEngine");
 
 // Load User model
 const User = require("../../models/User");
@@ -72,6 +73,50 @@ router.get('/calculateWellnessScore', async (req, res) => {
     }
     
     res.status(200).json({ wellnessScore });
+});
+
+// @route GET /api/users/dietRecommendations
+// @desc Returns dietary recommendations for the user.
+// @access Public
+router.get('/dietRecommendations', async (req, res) => {
+    const { email } = req.body;
+    // // Get the access token from the header
+    // const { authorization } = req.headers;
+    // const accessToken = authorization.split(' ')[1];
+
+    // let session = await Session.findOne({ accessToken: accessToken });
+    // // Check if a session with this user exists
+    // if (!session) {
+    //     let err = 'Could not find the given accessToken!';
+    //     res.status(401).json(err);
+    //     return;
+    // }
+
+    // let email = session.email;
+    // let user = await User.findOne({ email: email });
+    // // Check if the user exists
+    // if (!user) {
+    //     let err = 'Could not find a user with the given email!';
+    //     res.status(401).json(err);
+    //     return;
+    // }
+
+    let userProfile = await UserProfile.findOne({ email: email });
+    // Check if the userProfile exists
+    if (!userProfile) {
+        let err = 'Could not find a user profile with the given email!';
+        res.status(401).json(err);
+        return;
+    }
+    
+    const recommendations = await dietaryRecommendationEngine.provideRecommendations(userProfile);
+    if (recommendations === -1) {
+        let err = 'User must have at least 3 meals logged!';
+        res.status(401).json(err);
+        return;
+    }
+    
+    res.status(200).json({ recommendations });
 });
 
 module.exports = router;

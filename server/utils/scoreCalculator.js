@@ -73,7 +73,7 @@ const Workout = require('../models/Workout');
  *            a simple fashion:
  *              25 - (avg. sleep mins < 480 ? (abs(480 - avg. sleep mins) / 10) * 2 : 0)
  * 
- * @param {User} user A User object from MongoDB Cloud.
+ * @param {UserProfile} userProfile A UserProfile object from MongoDB Cloud.
  * @return {int} A number between 0 and 100 arbitrarily rating a user's fitness.
  */
 const calculateWellnessScore = async (userProfile) => {
@@ -83,9 +83,9 @@ const calculateWellnessScore = async (userProfile) => {
     var workoutPoints = 0;
 
     const email = userProfile.email;
+    
     const heightMeters = (userProfile.heightFeet * 12 + userProfile.heightInches) * 0.0254; // 1 ft = 0.0254 m
     const weightKg = userProfile.weight * 0.453592; // 1 lb = 0.453592 kg
-    
     // Give points for BMI
     const bmi = calculateBmi(heightMeters, weightKg);
     if (17 <= bmi && bmi < 18)
@@ -128,11 +128,6 @@ const calculateWellnessScore = async (userProfile) => {
     // Find the user's meals
     let meals = await Meal.find({ email: email }).exec();
     // Check if the user has meals
-    if (!meals) {
-        let err = `Could not find any meals for ${email}!`;
-        res.status(401).json(err);
-        return;
-    }
     if (!meals) 
         return -1;
     else if (meals.length < 3)
