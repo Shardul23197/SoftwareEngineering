@@ -109,7 +109,7 @@ router.get('/dietRecommendations', async (req, res) => {
     
     const recommendations = await dietaryRecommendationEngine.provideRecommendations(userProfile);
     if (recommendations === -1) {
-        let err = 'User must have at least 3 meals logged!';
+        let err = 'User must have at least 3 meals logged and their profile page filled out!';
         res.status(401).json(err);
         return;
     }
