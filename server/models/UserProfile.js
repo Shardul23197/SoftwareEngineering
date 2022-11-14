@@ -54,7 +54,7 @@ const UserProfileSchema = new Schema({
     muscleMassGoal: {
       type: String,
       enum: [ 'Loose', 'Maintain', 'Gain']
-    },
+    }
 })
   
 module.exports = UserProfile = mongoose.model("userProfile", UserProfileSchema)

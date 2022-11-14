@@ -14,7 +14,12 @@ const scoreCalculator = require('./scoreCalculator');
  */
 const provideRecommendations = async (userProfile) => {
     const email = userProfile.email;
-    
+
+    if (!userProfile.age || !userProfile.heightFeet 
+        || !userProfile.heightInches || !userProfile.weight 
+        || !userProfile.weightGoal || !userProfile.muscleMassGoal)
+        return -1;
+
     // Find the user's meals
     let meals = await Meal.find({ email: email }).exec();
     // Check if the user has meals

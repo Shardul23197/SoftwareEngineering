@@ -34,8 +34,8 @@ import SleepCard from './SleepCard';
 import Button from '@material-ui/core/Button';
 import Navigation from '../Navigation/Navigation';
 import './SleepLog.css';
-// import AddRounded from '@material-ui/icons/AddRounded';
-// import DateTimePicker from 'react-datetime-picker';
+import AddRounded from '@material-ui/icons/AddRounded';
+import DateTimePicker from 'react-datetime-picker';
 
 export default function SleepLog() {
   let mfaRequired = localStorage.getItem('mfaRequired');
@@ -165,7 +165,7 @@ export default function SleepLog() {
                   <h4>Start Date</h4>
                   <MDBRow className="" style={{flex: 'left'}}>
                   <div style={{ flex: 'left', width: '150px'}}>
-                  {/* <DateTimePicker
+                  <DateTimePicker
                     amPmAriaLabel="Select AM/PM"
                     calendarAriaLabel="Toggle calendar"
                     clearAriaLabel="Clear value"
@@ -179,7 +179,7 @@ export default function SleepLog() {
                     secondAriaLabel="Second"
                     value={startDate}
                     yearAriaLabel="Year"
-                  /> */}
+                  />
                   </div>
                   </MDBRow>
                 </div>
@@ -188,7 +188,7 @@ export default function SleepLog() {
                   <h4>End Date</h4>
                   <MDBRow className="" style={{flex: 'left'}}>
                   <div style={{ flex: 'left', width: '150px'}}>
-                  {/* <DateTimePicker
+                  <DateTimePicker
                     amPmAriaLabel="Select AM/PM"
                     calendarAriaLabel="Toggle calendar"
                     clearAriaLabel="Clear value"
@@ -202,7 +202,7 @@ export default function SleepLog() {
                     secondAriaLabel="Second"
                     value={endDate}
                     yearAriaLabel="Year"
-                  /> */}
+                  />
                   </div>
                   </MDBRow>
                 </div>
