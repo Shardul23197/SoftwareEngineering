@@ -8,6 +8,7 @@ const multer = Multer({
     fileSize: 10 * 1024 * 1024, // Maximum file size is 10MB
   },
 });
+const mongoose = require('mongoose')
 
 const UserProfile = require('../../models/UserProfile');
 
@@ -27,6 +28,19 @@ router.get('/getdetails', async (req, res) => {
       return res.status(404).json({ emailnotfound: "Email not found" });
     }
     return res.status(200).json({ userProfile, role: user.role});
+  });
+});
+
+router.get('/getdetailsbyid', (req, res) => {
+  const { id } = req.query
+  var hex = /[0-9A-Fa-f]{6}/g;
+  userid = (hex.test(id))? mongoose.Types.ObjectId(id) : id;
+  UserProfile.findOne({'_id': id }).then(user => {
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ emailnotfound: "Email not found" });
+    }
+    return res.status(200).json({ data: user });
   });
 });
 

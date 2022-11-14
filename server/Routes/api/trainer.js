@@ -12,7 +12,7 @@ const multer = Multer({
 });
 const WorkoutVideo = require('../../models/WorkoutVideo');
 const e = require('connect-flash');
-const UserProfile = require('../models/UserProfile')
+const UserProfile = require('../../models/UserProfile')
 var mongoose = require('mongoose')
 
 
@@ -88,30 +88,6 @@ router.get('/videos', (req,res) => {
         else
         {
           return res.status(200).json({data: video});
-        }
-      })
-    }
-  });
-})
-
-router.get('/videosbyid', (req,res) => {
-  const { id } = req.query
-  var hex = /[0-9A-Fa-f]{6}/g;
-  userid = (hex.test(id))? mongoose.Types.ObjectId(id) : id;
-  UserProfile.findOne({'_id': id }).then(user => {
-    // Check if user exists
-    if (!user) {
-      return res.status(404).json({ data: "No user not found" });
-    }
-    else {
-      WorkoutVideo.find({postedBy: user._id}).then(video => {
-        if(!video)
-        {
-          return res.status(404).json({data: 'No videos found'})
-        }
-        else
-        {
-          return res.status(200).json({data: video})
         }
       })
     }

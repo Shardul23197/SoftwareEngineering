@@ -23,7 +23,6 @@ import UnverifiedRoute from './route_types/UnverifiedRoute';
 import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
-import Search from './components/Search/Search';
 import TrainerProfile from './components/Profile/TrainerProfile';
 
 function App() {
