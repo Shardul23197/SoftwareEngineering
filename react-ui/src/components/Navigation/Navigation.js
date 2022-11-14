@@ -81,7 +81,7 @@ const Navigation = () => {
         </a>
       </li>
       <li>
-        <Link to='/profile'>
+        <Link to = '/profile'>
           <i class='bx bx-coin-stack' ></i>
           <span class="links_name">Profile</span>
         </Link>
@@ -92,12 +92,13 @@ const Navigation = () => {
           <span class="links_name">Settings</span>
         </Link>
       </li>
+      {role !== 'trainer' ? 
       <li>
           <Link to='/search'>
             <i class='bx bx-coin-stack' ></i>
-            <span class="links_name">Search For Trainers</span>
+            <span class="links_name">Search</span>
           </Link>
-        </li>
+        </li>: ""}
       <li>
       <button className='logoutbutton' onClick={onLogout} >
           <i class='bx bx-coin-stack' ></i>
