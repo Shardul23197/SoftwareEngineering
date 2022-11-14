@@ -20,7 +20,7 @@ router.get('/users', (req, res) => {
     const userProfiles = []
     User.find({ name: { "$regex": query, "$options": "i" }, role: "trainer" }).populate("profile").then(user => {
         if (!user) {
-            res.status(404).json({ data: 'No videos found for your search query' })
+            res.status(404).json({ data: 'No users found for your search query' })
         }
         else {
             user.forEach(profile => {

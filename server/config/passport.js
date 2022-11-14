@@ -62,8 +62,9 @@ module.exports = (passport) => {
                     return;
                 }
 
+                console.log(JSON.stringify(req.body));
                 let role = 'user';
-                if (req.body.isTrainer)
+                if (req.body.isTrainer === "true")
                     role = 'trainer'
                 let newUser = new User({
                     username: req.body.username,
