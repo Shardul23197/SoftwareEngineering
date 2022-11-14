@@ -9,7 +9,7 @@ const scoreCalculator = require('./scoreCalculator');
  * @return {Object} A JSON obj with the following pattern:
  *  {
  *      bmiRecommendation: '...', // Some bmi recommendation
- *      dietRecommendations: '...', // Some calorie intake recommendation
+ *      dietRecommendations: '...', // Some diet intake recommendations
  *  }
  */
 const provideRecommendations = async (userProfile) => {

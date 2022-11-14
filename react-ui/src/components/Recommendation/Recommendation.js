@@ -143,7 +143,7 @@ export default function Recommendation() {
                     <h2 className="mt-2 mb-1">Diet Recommendations</h2>
                     <p>
                       In order to receive diet recommendations you must have entered at 
-                      least 3 meals and have completely filled out your Profie page!
+                      least three meals and have completely filled out your Profie page!
                     </p>
                   </MDBCardBody>
                 }

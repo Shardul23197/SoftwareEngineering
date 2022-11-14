@@ -1,4 +1,0 @@
-
-
-      let dateMinute = date.getMinutes().toString();
-      if (dateMinute.length === 1) dateMinute = '0' + dateMinute;
