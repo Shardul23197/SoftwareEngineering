@@ -15,6 +15,7 @@ import SleepLog from './components/SleepLog/SleepLog';
 import WorkoutLog from './components/WorkoutLog/WorkoutLog';
 import Profile from './components/Profile/Profile';
 import Search from './components/Search/Search';
+import Chat from './components/Chat/Chat';
 import Settings from './components/Settings/Settings';
 import Recommendation from './components/Recommendation/Recommendation'
 import PrivateRoute from './route_types/PrivateRoute';
@@ -121,6 +122,11 @@ function App() {
             <Route path='/search' element={
                 <PrivateRoute>
                     <Search /> 
+                </PrivateRoute>    
+            }/>
+            <Route path='/chat' element={
+                <PrivateRoute>
+                    <Chat />
                 </PrivateRoute>    
             }/>
         </Routes>

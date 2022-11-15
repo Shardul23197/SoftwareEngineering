@@ -75,10 +75,10 @@ const Navigation = () => {
         </Link>
       </li>
       <li>
-        <a href="#">
-          <i class='bx bx-message' ></i>
-          <span class="links_name">Messages</span>
-        </a>
+      <Link to = '/chat'>
+            <i class='bx bx-message' ></i>
+            <span class="links_name">Messages</span>
+          </Link>
       </li>
       <li>
         <Link to = '/profile'>
