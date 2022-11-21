@@ -82,8 +82,7 @@ const calculateWellnessScore = async (userProfile) => {
     var sleepPoints = 25;
     var workoutPoints = 0;
 
-    const email = userProfile.email;
-    
+    const email = userProfile.email;    
     const heightMeters = (userProfile.heightFeet * 12 + userProfile.heightInches) * 0.0254; // 1 ft = 0.0254 m
     const weightKg = userProfile.weight * 0.453592; // 1 lb = 0.453592 kg
     // Give points for BMI
@@ -174,7 +173,7 @@ const calculateWellnessScore = async (userProfile) => {
     // Calculate sleep points
     sleepPoints -= (avgSleepMins < requiredMins ? (Math.abs(requiredMins - avgSleepMins) / 10) * 2 : 0)
     
-    return (bmiPoints + workoutPoints + mealPoints + sleepPoints);
+    return (bmiPoints + workoutPoints + mealPoints + sleepPoints).toFixed(2);
 }
 
 /**

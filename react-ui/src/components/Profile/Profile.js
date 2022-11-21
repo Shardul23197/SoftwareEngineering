@@ -32,6 +32,7 @@ import './Profile.css'
 import { LinearProgress } from '@material-ui/core';
 import util from 'util';
 import Navigation from '../Navigation/Navigation';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 export default function Profile() {
   const mfaRequired = localStorage.getItem('mfaRequired');
@@ -59,8 +60,6 @@ export default function Profile() {
   const [userHeightFeet, setUserHeightFeet] = useState('');
   const [userHeightInches, setUserHeightInches] = useState('');
   const [userWeight, setUserWeight] = useState('');
-  const [userSleepHours, setUserSleepHours] = useState('');
-  const [userSleepMinutes, setUserSleepMinutes] = useState('');
   const [error, setError] = useState(''); // String
 
   // User Goals
@@ -90,19 +89,17 @@ export default function Profile() {
 
     instance.get('/api/users/profile/getdetails', { params: { email: email } })
       .then((res) => {
-          setUserEmail(res.data.userProfile.email);
-          setUserCity(res.data.userProfile.city);
-          setUserFullName(res.data.userProfile.fullName);
-          setUserPhone(res.data.userProfile.phone);
-          setAge(res.data.userProfile.age);
-          setGender(res.data.userProfile.gender);
-          setUserHeightFeet(res.data.userProfile.heightFeet);
-          setUserHeightInches(res.data.userProfile.heightInches);
-          setUserWeight(res.data.userProfile.weight);
-          setUserSleepHours(res.data.userProfile.sleepHours);
-          setUserSleepMinutes(res.data.userProfile.sleepMinutes);
-          setWeightGoal(res.data.userProfile.weightGoal);
-          setMuscleMassGoal(res.data.userProfile.muscleMassGoal);
+          if (res.data.userProfile.email) setUserEmail(res.data.userProfile.email);
+          if (res.data.userProfile.city) setUserCity(res.data.userProfile.city);
+          if (res.data.userProfile.fullName) setUserFullName(res.data.userProfile.fullName);
+          if (res.data.userProfile.phone) setUserPhone(res.data.userProfile.phone);
+          if (res.data.userProfile.age) setAge(res.data.userProfile.age);
+          if (res.data.userProfile.gender) setGender(res.data.userProfile.gender);
+          if (typeof(res.data.userProfile.heightFeet) === 'number') setUserHeightFeet(res.data.userProfile.heightFeet);
+          if (typeof(res.data.userProfile.heightInches) === 'number') setUserHeightInches(res.data.userProfile.heightInches);
+          if (res.data.userProfile.weight) setUserWeight(res.data.userProfile.weight);
+          if (res.data.userProfile.weightGoal) setWeightGoal(res.data.userProfile.weightGoal);
+          if (res.data.userProfile.muscleMassGoal) setMuscleMassGoal(res.data.userProfile.muscleMassGoal);
           setRole(res.data.role)
         if (!res.data.userProfile.profileImage) {
           setUserImage("https://ui-avatars.com/api/?name=ME&size=256")
@@ -151,7 +148,6 @@ export default function Profile() {
   }
 
   const onGenderChange = (event) => {
-    console.log(event.target.value);
     setGender(event.target.value)
   }
 
@@ -281,11 +277,9 @@ export default function Profile() {
       heightFeet: userHeightFeet,
       heightInches: userHeightInches,
       weight: userWeight,
-      sleepHours: userSleepHours,
-      sleepMinutes: userSleepMinutes,
       weightGoal: weightGoal,
       muscleMassGoal: muscleMassGoal
-    }
+    };
     instance.post('/api/users/profile/updatewellnessinfo', qs.stringify(formData)).then((res) => {
       toast('Wellness Information Updated!')
     }).catch((err) => {
@@ -312,8 +306,8 @@ export default function Profile() {
     event.preventDefault()
     var formData = new FormData();
     var imagefile = document.getElementById('customFile');
-    formData.append("image", imagefile.files[0]);
-    formData.append('email', userEmail)
+    formData.append('image', imagefile.files[0]);
+    formData.append('email', userEmail);
     axios.post('/api/users/profile/upload', qs.stringify(formData)).then((res) => {
       toast('Profile Updated!')
       setUserImage(res.data.data)
@@ -326,7 +320,6 @@ export default function Profile() {
   const uploadVideo = (event) => {
     event.preventDefault();
     const file = document.getElementById('video').files[0];
-    console.log(file);
 
     if (!email || !title || !category || !(tags.length > 0) || !file) {
       toast('You must fill out all sections to upload a video!')
@@ -425,7 +418,7 @@ export default function Profile() {
                       <Button class="icon" onClick={() => {
                         setVaryingUpload(!varyingUpload);
                       }}>
-                        {/* <CloudUploadIcon className='fa user' /> */}
+                        <CloudUploadIcon className='fa user' />
                       </Button>
                     </div>
                     </div>
@@ -445,7 +438,7 @@ export default function Profile() {
                       ? 
                       <Button variant="contained" color="default"
                         className='material-button'
-                        // startIcon={<CloudUploadIcon />}
+                        startIcon={<CloudUploadIcon />}
                         onClick={() => {
                           setVaryingModal(!varyingModal);
                         }}
@@ -523,11 +516,13 @@ export default function Profile() {
                 {renderByStatus()}
 
                 {/* Trainer videos */}
-                <h1 className="fw-bold mb-1">Videos</h1>
                 <MDBRow md='4' className="justify-content-center align-items-center h-100">
                   {(true || (status === 'approved' && role === 'trainer')) && videos.length > 0
                       ? 
+                        <div>
+                        <h1 className="fw-bold mb-1">Videos</h1>
                         <VideoCard videos={videos} />
+                        </div>
                       :
                         ''}
                 </MDBRow>
@@ -626,7 +621,7 @@ export default function Profile() {
                         <MDBCardText>Weight</MDBCardText>
                       </MDBCol>
                       <MDBCol sm="3">
-                        <select onChange={onWeightGoalChange} class="form-select" aria-label="Category Select">
+                        <select value={weightGoal} onChange={onWeightGoalChange} class="form-select" aria-label="Category Select">
                           <option value={'Loose'}>Loose</option>
                           <option value={'Maintain'}>Maintain</option>
                           <option value={'Gain'}>Gain</option>
@@ -639,7 +634,7 @@ export default function Profile() {
                         <MDBCardText>Muscle Mass</MDBCardText>
                       </MDBCol>
                       <MDBCol sm="3">
-                        <select onChange={onMuscleMassGoalChange} class="form-select" aria-label="Category Select">
+                        <select value={muscleMassGoal} onChange={onMuscleMassGoalChange} class="form-select" aria-label="Category Select">
                           <option value={'Gain'}>Gain</option>
                           <option value={'Maintain'}>Maintain</option>
                           <option value={'Loose'}>Loose</option>

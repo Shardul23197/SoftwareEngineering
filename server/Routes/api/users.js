@@ -67,7 +67,7 @@ router.get('/calculateWellnessScore', async (req, res) => {
     }
     if (wellnessScore === -3) {
         let err = 'User must have at least 3 workouts logged in the past week!';
-        res.status(401).json(err);
+        res.status(400).json(err);
         return;
     }
     
@@ -110,7 +110,7 @@ router.get('/dietRecommendations', async (req, res) => {
     const recommendations = await dietaryRecommendationEngine.provideRecommendations(userProfile);
     if (recommendations === -1) {
         let err = 'User must have at least 3 meals logged and their profile page filled out!';
-        res.status(401).json(err);
+        res.status(400).json(err);
         return;
     }
     
@@ -118,6 +118,3 @@ router.get('/dietRecommendations', async (req, res) => {
 });
 
 module.exports = router;
-
-
-
