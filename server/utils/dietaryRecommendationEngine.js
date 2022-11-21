@@ -15,8 +15,8 @@ const scoreCalculator = require('./scoreCalculator');
 const provideRecommendations = async (userProfile) => {
     const email = userProfile.email;
 
-    if (!userProfile.age || !userProfile.heightFeet 
-        || !userProfile.heightInches || !userProfile.weight 
+    if (!userProfile.age || typeof(userProfile.heightFeet) !== 'number' 
+        || typeof(userProfile.heightInches) !== 'number' || !userProfile.weight 
         || !userProfile.weightGoal || !userProfile.muscleMassGoal)
         return -1;
 
@@ -60,7 +60,11 @@ const provideRecommendations = async (userProfile) => {
     
     // Calc user's requried macors
     let requiredCalories = basalMetabolicRate * userActityLevel;
-    let requiredProtein = userProfile.weight * 0.3636;
+    let requiredProtein = userProfile.muscleMassGoal === 'Loose' ? 
+      userProfile.weight * 0.33
+      : userProfile.muscleMassGoal === 'Gain' ?
+        userProfile.weight * 0.4
+        : userProfile.weight * 0.3636;
     let requiredCarbs = requiredCalories * .5 / 4;
     let requiredFat = requiredCalories * .2 / 9;
     
