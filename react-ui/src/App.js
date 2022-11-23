@@ -25,6 +25,15 @@ import store from './state/store';
 import { AuthContext } from './components/auth/auth';
 import { Provider } from 'react-redux';
 import TrainerProfile from './components/Profile/TrainerProfile';
+import PubNub from 'pubnub';
+import { PubNubProvider, usePubNub } from 'pubnub-react';
+import TrainerMessages from './components/Chat/TrainerMessages';
+
+const pubnub = new PubNub({
+  publishKey: 'pub-c-1a2459c5-bfde-409d-8ddb-86e9f45aaaa7',
+  subscribeKey: 'sub-c-1ec1cb78-6393-4f79-83e0-696211f566b1',
+  uuid: 'sec-c-M2RjNzAxOTItNjdhMi00ZWI4LTgyNzYtOTUwNzNiY2VlNGQz'
+});
 
 function App() {
     // Auth token and refresh token state
@@ -126,7 +135,16 @@ function App() {
             }/>
             <Route path='/chat' element={
                 <PrivateRoute>
-                    <Chat />
+                    <PubNubProvider client={pubnub}>
+                        <Chat />
+                    </PubNubProvider>
+                </PrivateRoute>    
+            }/>
+            <Route path='/messages' element={
+                <PrivateRoute>
+                    <PubNubProvider client={pubnub}>
+                        <TrainerMessages />
+                    </PubNubProvider>
                 </PrivateRoute>    
             }/>
         </Routes>

@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   MDBCol,
   MDBContainer,
@@ -9,8 +9,8 @@ import {
   MDBCardText,
   MDBCardBody,
   MDBCardImage,
-  MDBInput,
   MDBTypography,
+  MDBBtn,
 } from 'mdb-react-ui-kit';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'
@@ -18,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import VideoCard from './VideoCard';
 import './Profile.css'
 import Navigation from '../Navigation/Navigation';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function TrainerProfile() {
   let mfaRequired = localStorage.getItem('mfaRequired');
@@ -31,12 +32,12 @@ export default function TrainerProfile() {
   const [userImage, setUserImage] = useState('')
   const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
   const [mfaSecret, setMfaSecret] = useState('')
-  //const [dataFromState, setDataFromState] = useState(selector)
+  const [dataFromState, setDataFromState] = useState(selector)
   //const [dataFromStateRole, setDataFromStateRole] = useState(role)
   const [status, setStatus] = useState('todo')
   const [videos, setVideos] = useState([])
   const { id } = useParams()
-  console.log(id)
+  const [userId, setUserId] = useState('')
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem('authToken') || '';
@@ -45,7 +46,7 @@ export default function TrainerProfile() {
   //todo
   //get user data
   useEffect(() => {
-    //setDataFromState(selector)
+    setDataFromState(selector)
     //setDataFromStateRole(role)
     axios.get('/api/users/profile/getdetailsbyid', { params: { id: id } })
       .then((res) => {
@@ -65,6 +66,13 @@ export default function TrainerProfile() {
         setVideos(res.data.data)
       }).catch((error) => {
         setVideos('')
+        console.log(error)
+      })
+
+      axios.get('/api/chat/userid', {params: {email: dataFromState}})
+      .then((res) => {
+        setUserId(res.data.user)
+      }).catch((error) => {
         console.log(error)
       })
 
@@ -89,6 +97,20 @@ export default function TrainerProfile() {
       });
     }
   }, [authToken, mfaRequired, selector, setMfaQrCodeUrl, role])
+
+  const addUserToChat = () => {
+    const request = {
+      userId: userId,
+      trainerId: id,
+      conversationId: uuidv4()
+    }
+    axios.post('/api/chat/add', request).then((response) =>{
+      console.log(response)
+      navigate('/chat', {state:{conversationId: response.data.conversationId, userId: userId}})
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
 
 
   return (
@@ -120,6 +142,7 @@ export default function TrainerProfile() {
                 {/* Trainer video upload button */}
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                   <div className="d-flex justify-content-end text-center py-1">
+                  <MDBBtn onClick={addUserToChat}>Chat with Trainer</MDBBtn>
                   </div>
                 </div>
 

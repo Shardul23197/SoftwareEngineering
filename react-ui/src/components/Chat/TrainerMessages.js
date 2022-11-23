@@ -1,100 +1,5 @@
-// import {React,useEffect,useState} from "react";
-// import { useSelector } from 'react-redux';
-// import { Link, useNavigate } from "react-router-dom";
-// import axios from 'axios';
-// import { ToastContainer, toast } from 'react-toastify'
-// import 'react-toastify/dist/ReactToastify.css';
-// import Button from '@material-ui/core/Button';
-// import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-// //import './Chat.scss'
-// import { LinearProgress } from '@material-ui/core';
-// import ChatMessagesData from "./ChatMessages.json"
-
-
-// const Chat=()=> {
-//     let mfaRequired = localStorage.getItem('mfaRequired');
-//   const navigate = useNavigate();
-//   const selector = useSelector(state => state.email)
-//   const role = useSelector(state => state.role)
-//   const [userEmail, setUserEmail] = useState('')
-//   const [userFullName, setUserFullName] = useState('')
-//   const [userPhone, setUserPhone] = useState('')
-//   const [userCity, setUserCity] = useState('')
-//   const [userImage, setUserImage] = useState('')
-//   const [mfaQrCodeUrl, setMfaQrCodeUrl] = useState('')
-//   const [mfaSecret, setMfaSecret] = useState('')
-//   const [dataFromState, setDataFromState] = useState(selector)
-//   const [dataFromStateRole, setDataFromStateRole] = useState(role)
-//   const [trainerDetails, setTrainerDetails] = useState('')
-//   const [status, setStatus] = useState('todo')
-//   const [videos, setVideos] = useState([])
-//   const [varyingModal, setVaryingModal] = useState(false);
-//   const [videoTitle, setVideoTitle] = useState('')
-//   const [varyingUpload, setVaryingUpload] = useState(false)
-//   const [hidden, setHidden] = useState(true)
-//   const [chats,setChats]=useState([]);
-//   // Auth token and refresh token state
-//   const existingAuthtoken = localStorage.getItem('authToken') || '';
-//   const [authToken] = useState(existingAuthtoken);
-
-//   //const toast = useToast();
-
-//   const fetchChats = async () => {
-//     // console.log(user._id);
-//     // try {
-//     //   const { data } = await axios.get("/api/message/6372749b58eadcce62d32c19");
-//     //   console.log(data);
-//     //   setChats(data);
-//     //   console.log(chats);
-//     // } catch (error) {
-//     //   console.log(error);
-//     // }
-//   };
-
-//   useEffect(() => {
-//     // axios.get("/api/message/6372749b58eadcce62d32c19")
-//     // .then((res)=>{
-//     //   console.log(res.data);
-//     //   setChats(res.data);
-//     //   console.log(chats);
-//     // })
-//     fetchChats();
-//   },[authToken, dataFromState, mfaRequired, selector, setMfaQrCodeUrl, dataFromStateRole, role]); 
-
-
-//     return (
-//         // <div>
-//         //    <h1>Hey</h1>
-//         // </div>
-//         <div class='container'>
-//           <h1>Chat with trainer LKK</h1>
-//             <div class='chatbox'>
-//               <div class="chatbox__messages">
-//                 <div class="chatbox__messages__user-message">
-//                   <div class="chatbox__messages__user-message--ind-message">
-//                     {ChatMessagesData.map((item)=>(
-//                       <li key={item.id}>
-//                         <p>{item.Name}</p>
-//                         <p>{item.content}</p></li>
-//                     ))}
-//                   </div>
-//                 </div>
-//               </div>
-//           </div>
-//           <form>
-//             <input type="text" placeholder="Enter your message"/>
-//           </form>
-//         </div>
-//         // <ul>
-//         //     {ChatMessagesData.map((item) => (
-//         //         <li key={item.id}>{item.content}</li>
-//         //     ))}
-//         // </ul>
-//     )
-// }
-
-// export default Chat;
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux';
 import { usePubNub } from 'pubnub-react';
 import {
   MDBContainer,
@@ -105,17 +10,15 @@ import {
   MDBTypography,
 } from "mdb-react-ui-kit";
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 
-function Chat() {
-  const location = useLocation();
-  const conversationId = location.state.conversationId
-  const userId = location.state.userId
+function TrainerMessages() {
   const pubnub = usePubNub();
-  const [channels] = useState([conversationId]);
+  const [channels] = useState([]);
   const [messages, addMessage] = useState([]);
   const [message, setMessage] = useState('');
   const [list, setList] = useState([])
+  const selector = useSelector(state => state.email)
+  const [dataFromState, setDataFromState] = useState(selector)
 
   const handleMessage = event => {
     const message = event.message;
@@ -134,16 +37,25 @@ function Chat() {
   };
 
   useEffect(() => {
-    axios.get('/api/chat/list', { params: { userId: userId } }).then((response) => {
-      setList(response.data.list)
-    }).catch((err) => {
-      console.log(err)
+    setDataFromState(selector)
+    axios.get('/api/chat/trainerid', {params: {email: dataFromState}})
+    .then((res) => {
+        axios.get('/api/chat/trainerlist', { params: { chatWith: res.data.user } }).then((response) => {
+          setList(response.data.list)
+          console.log(response.data.list)
+          channels[0] = response.data.list[0]._doc.conversationId
+        }).catch((err) => {
+          console.log(err)
+        })
+    }).catch((error) => {
+      console.log(error)
     })
+    
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
     pubnub.fetchMessages(
       {
-        channels: [conversationId],
+        channels: [channels],
       },
       (status, response) => {
         if (response) {
@@ -162,12 +74,12 @@ function Chat() {
     pubnub.removeListener({message: handleMessage})
     pubnub.unsubscribe({channels})
     addMessage([])
-    channels[0] = el.conversationId
+    channels[0] = el._doc.conversationId
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
     pubnub.fetchMessages(
       {
-        channels: [el.conversationId],
+        channels: [el._doc.conversationId],
       },
       (status, response) => {
         if (response) {
@@ -194,7 +106,7 @@ function Chat() {
           <MDBCard>
             <MDBCardBody>
               <MDBTypography listUnStyled className="mb-0">
-                {list.length > 0 ? list.map((el) => {
+                {list.map((el) => {
                   return (
                   <li onClick={() => loadChat(el)}
                     className="p-2 border-bottom"
@@ -202,18 +114,18 @@ function Chat() {
                   >
                       <div className="d-flex flex-row">
                         <img
-                          src={el.chatWith.profileImage}
+                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp"
                           alt="avatar"
                           className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
                           width="60"
                         />
                         <div className="pt-1">
-                          <p className="fw-bold mb-0">{el.chatWith.fullName}</p>
+                          <p className="fw-bold mb-0">{el.fullName}</p>
                         </div>
                       </div>
                   </li>
                   )
-                }): ""}
+                })}
               </MDBTypography>
             </MDBCardBody>
           </MDBCard>
@@ -320,4 +232,4 @@ const buttonStyles = {
   fontSize: '1.1rem',
   padding: '10px 15px',
 };
-export default Chat
+export default TrainerMessages

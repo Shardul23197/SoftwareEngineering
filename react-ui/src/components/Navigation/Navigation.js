@@ -74,12 +74,14 @@ const Navigation = () => {
           <span class="links_name">Workout Log</span>
         </Link>
       </li>
+      {role === 'trainer' ? 
       <li>
-      <Link to = '/chat'>
+      <Link to = '/messages'>
             <i class='bx bx-message' ></i>
             <span class="links_name">Messages</span>
           </Link>
       </li>
+      : ""}
       <li>
         <Link to = '/profile'>
           <i class='bx bx-coin-stack' ></i>
