@@ -3,8 +3,8 @@ const router = express.Router();
 const Chat = require("../models/chatModel");
 //const {chats}=require("../models/data");
 const User = require("../models/User");
-const Conversation = require("../models/Conversation")
 const UserProfile = require("../models/UserProfile")
+const Conversation = require("../models/Conversation")
 const mongoose = require('mongoose')
 
 // router.get('/', (req, res)=>{
@@ -52,7 +52,7 @@ const mongoose = require('mongoose')
 //     try {
 //       const createdChat = await Chat.create(chatData);
 //       console.log("createdChat data here is ",createdChat);
-    
+
 //       res.status(200).json(createdChat);
 //     } catch (error) {
 //       res.status(400);
@@ -116,47 +116,46 @@ const mongoose = require('mongoose')
 //     res.send(singleChat);
 // })
 
-router.post('/add', (req,res) => {
-  var {userId} = req.body
-  var {trainerId} = req.body
-  var {conversationId} = req.body
+router.post('/add', (req, res) => {
+  var { userId } = req.body
+  var { trainerId } = req.body
+  var { conversationId } = req.body
   userId = userId.trim()
   trainerId = trainerId.trim()
   conversationId = conversationId.trim()
   var hex = /[0-9A-Fa-f]{6}/g;
-  Conversation.find({userId}).then((user) => {
-    if(user)
-    {
+  Conversation.find({ userId }).then((user) => {
+    if (user) {
       var found = false
-      trainerId = (hex.test(trainerId))? mongoose.Types.ObjectId(trainerId) : trainerId;
+      trainerId = (hex.test(trainerId)) ? mongoose.Types.ObjectId(trainerId) : trainerId;
       user.forEach((u) => {
-        if(u.chatWith.equals(trainerId)) {
+        if (u.chatWith.equals(trainerId)) {
           found = true
         }
       })
-      if(!found){
-        userid = (hex.test(userId))? mongoose.Types.ObjectId(userId) : userId;
+      if (!found) {
+        userid = (hex.test(userId)) ? mongoose.Types.ObjectId(userId) : userId;
         const newChat = new Conversation({
           userId: userId,
           chatWith: trainerId,
           conversationId: conversationId
         })
-  
+
         newChat.save()
-        .then(user => { return res.json(user.conversationId) })
-        .catch(err => console.log(err));
+          .then(user => { return res.json(user.conversationId) })
+          .catch(err => console.log(err));
       }
       else {
         user.forEach((u) => {
-          if(u.chatWith.equals(trainerId)) {
-            return res.status(200).json({conversationId: u.conversationId})
+          if (u.chatWith.equals(trainerId)) {
+            return res.status(200).json({ conversationId: u.conversationId })
           }
         })
       }
     }
     else {
-      userid = (hex.test(userId))? mongoose.Types.ObjectId(userId) : userId;
-      trainerId = (hex.test(trainerId))? mongoose.Types.ObjectId(trainerId) : trainerId;
+      userid = (hex.test(userId)) ? mongoose.Types.ObjectId(userId) : userId;
+      trainerId = (hex.test(trainerId)) ? mongoose.Types.ObjectId(trainerId) : trainerId;
       const newChat = new Conversation({
         userId: userId,
         chatWith: trainerId,
@@ -164,64 +163,79 @@ router.post('/add', (req,res) => {
       })
 
       newChat.save()
-      .then(user => { return res.json(user) })
-      .catch(err => console.log(err));
+        .then(user => { return res.json(user) })
+        .catch(err => console.log(err));
     }
   })
 })
 
 router.get('/list', (req, res) => {
-  const {userId} = req.params
-  Conversation.find(userId).then((user) => {
-    if(!user)
-    {
+  var { userId } = req.query
+  userId = decodeURIComponent(userId)
+  console.log(userId)
+  Conversation.find({ userId: userId }).populate('chatWith').then((user) => {
+    if (!user) {
       return res.status(404).json("No data")
     }
     else {
-      return res.status(200).json({list: user})
+      return res.status(200).json({ list: user })
     }
   })
 })
 
 router.get('/userid', (req, res) => {
-  const {email} = req.query.email
-  User.findOne(email).then((user) => {
-    if(!user)
-    {
+  var { email } = req.query
+  email = decodeURIComponent(email)
+  User.findOne({ email: email }).then((user) => {
+    if (!user) {
       return res.status(404).json("No data")
     }
     else {
-      return res.status(200).json({user: user._id})
+      return res.status(200).json({ user: user._id })
     }
   })
 })
 
 router.get('/trainerid', (req, res) => {
-  const {email} = req.query.email
-  UserProfile.findOne(email).then((user) => {
-    if(!user)
-    {
+  const { email } = req.query
+  UserProfile.findOne({ email: email }).then((user) => {
+    if (!user) {
       return res.status(404).json("No data")
     }
     else {
-      return res.status(200).json({user: user._id})
+      return res.status(200).json({ user: user._id })
     }
   })
 })
 
-router.get('/trainerlist', (req, res) => {
-  const {chatWith} = req.query
+router.get('/trainerlist', async (req, res) => {
+  const { chatWith } = req.query
   var hex = /[0-9A-Fa-f]{6}/g;
-  var trainerId = (hex.test(chatWith))? mongoose.Types.ObjectId(chatWith) : chatWith;
-  Conversation.find({chatWith: trainerId}).then((user) => {
-    if(!user)
-    {
+  var trainerId = (hex.test(chatWith)) ? mongoose.Types.ObjectId(chatWith) : chatWith;
+  Conversation.find({ chatWith: trainerId }).then(async (user) => {
+    if (!user) {
       return res.status(404).json("No data")
     }
     else {
-      return res.status(200).json({list: user})
+      // let x = Object.assign(user)
+      // x.profile = []
+      let x = {}
+      let t = []
+      for (let i = 0; i < user.length; i++) {
+        let userId = (hex.test(user[i].userId)) ? mongoose.Types.ObjectId(user[i].userId) : user[i].userId;
+        x = await User.findOne({ _id: userId }).populate('profile')
+        t.push({fullName: x.profile.fullName, profileImage: x.profile.profileImage})
+      }
+      for (let i = 0; i < user.length; i++) {
+      user[i] = {...user[i], ...t[i]}
+      //console.log(t[i])
+     
+      }
+      console.log(user)
+      return res.status(200).json({ list: user })
     }
   })
 })
+
 
 module.exports = router;

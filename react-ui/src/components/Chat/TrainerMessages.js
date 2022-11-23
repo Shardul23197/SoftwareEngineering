@@ -17,7 +17,6 @@ function TrainerMessages() {
   const [messages, addMessage] = useState([]);
   const [message, setMessage] = useState('');
   const [list, setList] = useState([])
-  const [userId, setUserId] = useState('')
   const selector = useSelector(state => state.email)
   const [dataFromState, setDataFromState] = useState(selector)
 
@@ -42,9 +41,9 @@ function TrainerMessages() {
     axios.get('/api/chat/trainerid', {params: {email: dataFromState}})
     .then((res) => {
         axios.get('/api/chat/trainerlist', { params: { chatWith: res.data.user } }).then((response) => {
-            console.log(response)
           setList(response.data.list)
-          channels[0] = response.data.list[0].conversationId
+          console.log(response.data.list)
+          channels[0] = response.data.list[0]._doc.conversationId
         }).catch((err) => {
           console.log(err)
         })
@@ -54,33 +53,33 @@ function TrainerMessages() {
     
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
-    // pubnub.fetchMessages(
-    //   {
-    //     channels: [conversationId],
-    //   },
-    //   (status, response) => {
-    //     if (response) {
-    //       response.channels[channels].map((message, index) => {
-    //         addMessage(messages => [...messages, message.message]);
-    //       })
-    //     }
-    //     else {
-    //       console.log("No chat")
-    //     }
-    //   }
-    // );
+    pubnub.fetchMessages(
+      {
+        channels: [channels],
+      },
+      (status, response) => {
+        if (response) {
+          response.channels[channels].map((message, index) => {
+            addMessage(messages => [...messages, message.message]);
+          })
+        }
+        else {
+          console.log("No chat")
+        }
+      }
+    );
   }, [pubnub, channels]);
 
   const loadChat = (el) => {
     pubnub.removeListener({message: handleMessage})
     pubnub.unsubscribe({channels})
     addMessage([])
-    channels[0] = el.conversationId
+    channels[0] = el._doc.conversationId
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
     pubnub.fetchMessages(
       {
-        channels: [el.conversationId],
+        channels: [el._doc.conversationId],
       },
       (status, response) => {
         if (response) {
@@ -121,7 +120,7 @@ function TrainerMessages() {
                           width="60"
                         />
                         <div className="pt-1">
-                          <p className="fw-bold mb-0">{el.userId}</p>
+                          <p className="fw-bold mb-0">{el.fullName}</p>
                         </div>
                       </div>
                   </li>

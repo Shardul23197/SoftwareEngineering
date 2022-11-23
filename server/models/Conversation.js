@@ -5,7 +5,7 @@ const ConversationSchema = new Schema({
     userId: String,
     chatWith: { 
         type : mongoose.Schema.Types.ObjectId, 
-        ref: 'UserProfile'
+        ref: 'userProfile'
     },
     conversationId: String 
 })
