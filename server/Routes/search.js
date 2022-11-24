@@ -15,6 +15,17 @@ router.get('/videos', (req, res) => {
     })
 });
 
+router.get('/all', (req, res) => {
+    WorkoutVideo.find({}).populate('postedBy').then(video => {
+        if (!video) {
+            return res.status(404).json({ data: 'No videos found for your search query' })
+        }
+        else {
+            return res.status(200).json({ data: video })
+        }
+    })
+});
+
 router.get('/users', (req, res) => {
     const { query } = req.query;
     const userProfiles = []

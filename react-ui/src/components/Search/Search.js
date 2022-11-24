@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MDBInput, MDBBtn, MDBRow, MDBCol, MDBCardText } from 'mdb-react-ui-kit'
 import axios from 'axios'
 import Card from 'react-bootstrap/Card';
@@ -45,6 +45,21 @@ const Search = () => {
             console.log(err)
         })
     }
+
+    useEffect(() => {
+        axios.get('/api/search/all').then((res) => {
+            if (res.data.data.length > 0) {
+                setVideosData(res.data.data)
+            }
+            else {
+                toast('No results found!')
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+    }, [])
+    
+
 
     return (
         <div>
