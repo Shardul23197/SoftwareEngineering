@@ -106,6 +106,9 @@ import {
 } from "mdb-react-ui-kit";
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import './chat.css'
+import Button from 'react-bootstrap/Button';
+import SendIcon from '@material-ui/icons/Send';
 
 function Chat() {
   const location = useLocation();
@@ -116,6 +119,7 @@ function Chat() {
   const [messages, addMessage] = useState([]);
   const [message, setMessage] = useState('');
   const [list, setList] = useState([])
+  var fetchMessages = true
 
   const handleMessage = event => {
     const message = event.message;
@@ -141,22 +145,25 @@ function Chat() {
     })
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
-    pubnub.fetchMessages(
-      {
-        channels: [conversationId],
-      },
-      (status, response) => {
-        if (response) {
-          response.channels[channels].map((message, index) => {
-            addMessage(messages => [...messages, message.message]);
-          })
+    if(fetchMessages) {
+      pubnub.fetchMessages(
+        {
+          channels: [conversationId],
+        },
+        (status, response) => {
+          if (response) {
+            response.channels[channels].map((message, index) => {
+              addMessage(messages => [...messages, message.message]);
+            })
+          }
+          else {
+            console.log("No chat")
+          }
         }
-        else {
-          console.log("No chat")
-        }
-      }
-    );
-  }, [pubnub, channels]);
+      );
+      fetchMessages = false
+    }
+  }, [pubnub, channels, fetchMessages]);
 
   const loadChat = (el) => {
     pubnub.removeListener({message: handleMessage})
@@ -197,7 +204,7 @@ function Chat() {
                 {list.length > 0 ? list.map((el) => {
                   return (
                   <li onClick={() => loadChat(el)}
-                    className="p-2 border-bottom"
+                    className="p-2 border-bottom listitemchat"
                     style={{ backgroundColor: "#eee",'cursor':'pointer' }}
                   >
                       <div className="d-flex flex-row">
@@ -243,15 +250,15 @@ function Chat() {
                   }}
                   onChange={e => setMessage(e.target.value)}
                 />
-                <button
+                <Button variant="primary"
                   style={buttonStyles}
                   onClick={e => {
                     e.preventDefault();
                     sendMessage(message);
                   }}
                 >
-                  Send Message
-                </button>
+                  <SendIcon></SendIcon>
+                </Button>
               </div>
             </div>
           </div>
@@ -263,7 +270,6 @@ function Chat() {
 
 const pageStyles = {
   alignItems: 'center',
-  background: '#282c34',
   display: 'flex',
   justifyContent: 'center',
   minHeight: '100vh',
@@ -295,6 +301,7 @@ const listStyles = {
   flexGrow: 1,
   overflow: 'auto',
   padding: '10px',
+  maxHeight: '615px'
 };
 
 const messageStyles = {

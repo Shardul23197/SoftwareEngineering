@@ -10,6 +10,9 @@ import {
   MDBTypography,
 } from "mdb-react-ui-kit";
 import axios from 'axios';
+import './chat.css'
+import Button from 'react-bootstrap/Button';
+import SendIcon from '@material-ui/icons/Send';
 
 function TrainerMessages() {
   const pubnub = usePubNub();
@@ -19,6 +22,7 @@ function TrainerMessages() {
   const [list, setList] = useState([])
   const selector = useSelector(state => state.email)
   const [dataFromState, setDataFromState] = useState(selector)
+  var fetchMessages = true
 
   const handleMessage = event => {
     const message = event.message;
@@ -53,22 +57,25 @@ function TrainerMessages() {
     
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
-    pubnub.fetchMessages(
-      {
-        channels: [channels],
-      },
-      (status, response) => {
-        if (response) {
-          response.channels[channels].map((message, index) => {
-            addMessage(messages => [...messages, message.message]);
-          })
+    if (fetchMessages) {
+      pubnub.fetchMessages(
+        {
+          channels: [channels],
+        },
+        (status, response) => {
+          if (response) {
+            response.channels[channels].map((message, index) => {
+              addMessage(messages => [...messages, message.message]);
+            })
+          }
+          else {
+            console.log("No chat")
+          }
         }
-        else {
-          console.log("No chat")
-        }
-      }
-    );
-  }, [pubnub, channels]);
+      );
+      fetchMessages = false
+    }
+  }, [pubnub, channels, fetchMessages]);
 
   const loadChat = (el) => {
     pubnub.removeListener({message: handleMessage})
@@ -109,12 +116,12 @@ function TrainerMessages() {
                 {list.map((el) => {
                   return (
                   <li onClick={() => loadChat(el)}
-                    className="p-2 border-bottom"
+                    className="p-2 border-bottom listitemchat"
                     style={{ backgroundColor: "#eee",'cursor':'pointer' }}
                   >
                       <div className="d-flex flex-row">
                         <img
-                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp"
+                          src={el.profileImage}
                           alt="avatar"
                           className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
                           width="60"
@@ -155,15 +162,15 @@ function TrainerMessages() {
                   }}
                   onChange={e => setMessage(e.target.value)}
                 />
-                <button
+                <Button variant="primary"
                   style={buttonStyles}
                   onClick={e => {
                     e.preventDefault();
                     sendMessage(message);
                   }}
                 >
-                  Send Message
-                </button>
+                  <SendIcon></SendIcon>
+                </Button>
               </div>
             </div>
           </div>
@@ -175,7 +182,6 @@ function TrainerMessages() {
 
 const pageStyles = {
   alignItems: 'center',
-  background: '#282c34',
   display: 'flex',
   justifyContent: 'center',
   minHeight: '100vh',
@@ -207,6 +213,7 @@ const listStyles = {
   flexGrow: 1,
   overflow: 'auto',
   padding: '10px',
+  maxHeight: '615px'
 };
 
 const messageStyles = {
