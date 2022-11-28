@@ -26,7 +26,63 @@ const formatDate = (date) => {
     if (dateMinute.length === 1) dateMinute = '0' + dateMinute;
 
     return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} at ${dateHour}:${dateMinute}:${dateSecond} ${dateAmOrPm}`;
-  }
+}
+
+// @route GET /api/scheduling/trainerAppointments
+// @desc Get a list of appointments for a trainer
+// @access Public
+router.get('/trainerAppointments', async (req, res) => {
+    // // Get the access token from the header
+    // const { authorization } = req.headers;
+    // const accessToken = authorization.split(' ')[1];
+  
+    // let session = await Session.findOne({ accessToken: accessToken });
+    // // Check if a session with this trainer exists
+    // if (!session) {
+    //     let err = 'Could not find the given accessToken!';
+    //     res.status(401).json(err);
+    //     return;
+    // }
+
+    // let email = session.email;
+    const { email, filterStartTime, filterEndTime } = req.body;
+    
+    const trainer = await User.findOne({ email: email });
+    // Check if trainer exists and if they are a trainer
+    if (!trainer) {
+        let err = 'Could not find the given email!';
+        res.status(401).send(err);
+        return;
+    }
+    // Check if trainer is a trainer
+    if (trainer.role !== 'trainer') {
+        let err = 'You must be a trainer to open appointments!';
+        res.status(401).send(err);
+        return;
+    }
+    
+
+    // Build the filters for the appointments
+    let filters = { email: email };
+    console.log(filterStartTime && filterEndTime);
+    if (filterStartTime && filterEndTime) {
+        filters.startTime = {
+            $gt: filterStartTime, 
+            $lt: filterEndTime
+        };
+    }
+
+    console.log(filters);
+    const appointments = await Appointment.find(filters);
+    // Check for an error
+    if (!appointments) {
+        let err = `Error finding appointments for ${email}!`;
+        res.status(401).send(err);
+        return;
+    }
+
+    res.status(200).json(appointments);
+});
 
 // @route POST /api/scheduling/openAppointment
 // @desc Open an appointment for scheduling
@@ -47,7 +103,7 @@ router.post('/openAppointment', async (req, res) => {
     // let email = session.email;
     const { email, startTime } = req.body; // get startTime from body
     
-    const trainer = await User.findOne({ email: email });
+    const trainer = await User.findOne({ email });
     // Check if trainer exists and if they are a trainer
     if (!trainer) {
         let err = 'Could not find the given email!';
@@ -76,8 +132,8 @@ router.post('/openAppointment', async (req, res) => {
         });    
 });
 
-// @route POST /api/scheduling/openAppointment
-// @desc Open an appointment for scheduling
+// @route POST /api/scheduling/closeAppointment
+// @desc Remove an appointment from the database
 // @access Public
 router.post('/closeAppointment', async (req, res) => {
     // // Get the access token from the header
@@ -93,7 +149,7 @@ router.post('/closeAppointment', async (req, res) => {
     // }
 
     // let email = session.email;
-    const { email, startTime } = req.body; // get startTime from body
+    const { email, appointmentId } = req.body; // get appointmentId from body
     
     const trainer = await User.findOne({ email: email });
     // Check if trainer exists
@@ -109,7 +165,7 @@ router.post('/closeAppointment', async (req, res) => {
         return;
     }
     
-    const closedAppointment = await Appointment.findOneAndDelete({ trainerId: trainer._id, startTime: startTime }).exec();
+    const closedAppointment = await Appointment.findByIdAndDelete(appointmentId).exec();
     if (!closedAppointment) {
         let err = 'Could not find the specified appointment!';
         res.status(401).send(err);
@@ -124,7 +180,8 @@ router.post('/closeAppointment', async (req, res) => {
         if (!customer)
             return;
 
-
+        // async process from here to endif
+        
         // Create a SMTP transporter to send mail to the trainer
         const transporter = nodemailer.createTransport({
             service: 'gmail',

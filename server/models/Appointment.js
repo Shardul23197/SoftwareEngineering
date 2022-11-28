@@ -12,22 +12,8 @@ const AppointmentSchema = new Schema({
     },
     customerId: {
         type: String,
-        default: '6360687555ff6b895230ff34'
+        default: ''
     }
 });
-
-// Prehook called before appointment time is saved to the database
-// Verifies the start time is at the start of an hour or the half
-// hour mark
-// UserSchema.pre(
-//     'save',
-//     async function (next) {
-//         // const user = this;
-//         const hash = await bcrypt.hash(this.password, 10);
-        
-//         this.password = hash;
-//         next();
-//     }
-// );
 
 module.exports = Appointment = mongoose.model("appointments", AppointmentSchema)
