@@ -63,7 +63,7 @@ export default function Profile() {
   const [error, setError] = useState(''); // String
 
   // User Goals
-  const [weightGoal, setWeightGoal] = useState('Loose');
+  const [weightGoal, setWeightGoal] = useState('Lose');
   const [muscleMassGoal, setMuscleMassGoal] = useState('Gain');
 
   // Wellness Score
