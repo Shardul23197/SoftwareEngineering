@@ -51,6 +51,7 @@ if (!isDev && cluster.isMaster) {
     // app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
     // app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
     app.use('/api/search', require(path.resolve(__dirname, './Routes/search')));
+    app.use('/api/scheduling', require(path.resolve(__dirname, './Routes/scheduling')));
     app.use('/api/chat', require(path.resolve(__dirname, './Routes/chat')));
     app.use('/api/message', require(path.resolve(__dirname, './Routes/message')));
 
