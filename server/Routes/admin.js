@@ -6,10 +6,6 @@ const WorkoutVideoSchema = require('../models/WorkoutVideo');
 const UserSchema = require('../models/User');
 const TrainerApprovalSchema = require('../models/TrainerApproval');
 
-// router.get('/showusers',(req,res)=>{
-//     return res.json({msSg:'GET DONE BRO'})
-// })
-
 
 
 router.get('/showusers', (req, res) => {
@@ -24,6 +20,7 @@ router.get('/showusers', (req, res) => {
   });
 });
 
+
 router.get('/showtrainers', (req, res) => {
 
   UserSchema.find({role:"trainer"}).then(trainer => {
@@ -34,6 +31,9 @@ router.get('/showtrainers', (req, res) => {
     return res.json(trainer)
   });
 });
+
+
+
 
 router.get('/showvideos', (req, res) => {
 
@@ -46,6 +46,20 @@ router.get('/showvideos', (req, res) => {
   });
 });
 
+router.get('/showvideos/:id', (req, res) => {
+
+  WorkoutVideoSchema.findByIdAndDelete(req.params.id, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      return res.json(data)
+  
+    }
+  })
+  
+});
+
+
 router.get('/approvetrainers', (req, res) => {
 
   TrainerApprovalSchema.find({}).then(approval => {
@@ -57,13 +71,36 @@ router.get('/approvetrainers', (req, res) => {
   });
 });
 
+// router.get('/approvetrainers/:id', (req, res) => {
 
-// router.PUT('/',(req,res)=>{
-//     res.json({msSg:'POST DONE BRO'})
+//   TrainerApprovalSchema.findById(req.params.id, (error, data) => {
+//     if (error) {
+//       return next(error)
+//     } else {
+//       return res.json(data)
+//       // console.log(res.params.id)
+//     }
+//   })
+  
+// });
+
+// router.route('/approvetrainers/:id').put((req, res, next) => {
+//   TrainerApprovalSchema.findByIdAndUpdate(req.params.id, {
+//     $set: req.body
+//   }, (error, data) => {
+//     if (error) {
+//       return next(error);
+//       console.log(error)
+//     } else {
+//       res.json(data)
+//       console.log('Updated successfully !')
+//     }
+//   })
 // })
 
-// router.delete('/:id',(req,res)=>{
-//     res.json({msSg:'DELETE DONE BRO'})
-// })
+
+
+
+
 
 module.exports = router

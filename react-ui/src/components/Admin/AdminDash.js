@@ -1,6 +1,6 @@
 import React from 'react'
 import '../../App.css'; 
-
+import pic from "./images/pie.png";
 
 export default function AdminDash() {
   
@@ -107,7 +107,7 @@ export default function AdminDash() {
              <li><a href="#">$46.52</a></li>
           </ul> */}
           {/* <Chart></Chart> */}
-          <img src='https://www.w3schools.com/statistics/img_piechart.svg'></img>
+          <img src={pic}></img>
           </div>
           
         </div>
@@ -138,7 +138,7 @@ export default function AdminDash() {
           <li>
             <a href="#">
           
-              <span class="product">Vegetarian Food</span>
+              <span class="product">Aerobics</span>
             </a>
             <span class="price">$2312</span>
           </li>

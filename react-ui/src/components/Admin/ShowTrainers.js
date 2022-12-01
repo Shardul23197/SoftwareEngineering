@@ -28,29 +28,10 @@ export default function ShowTrainers() {
     />
     <div class="container">
       <div class="row">
-        <div class="col-md-offset-1 col-md-10">
+        <div class="col-md-10">
           <div class="panel">
-            <div class="panel-heading">
-              <div class="row">
-                <div class="col-sm-12 col-xs-12">
-                  <a href="#" class="btn btn-sm btn-primary pull-left">
-                    <i class="fa fa-plus-circle"></i> Add New
-                  </a>
-                  <form class="form-horizontal pull-right">
-                    <div class="form-group">
-                      <label>Show : </label>
-                      <select class="form-control">
-                        <option>5</option>
-                        <option>10</option>
-                        <option>15</option>
-                        <option>20</option>
-                      </select>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <div className="panel-body table-responsive">
+            
+            <div className="panel-body">
                 {trainer.map((trainer)=>{
                   return (
                     <table className="table">
@@ -58,27 +39,17 @@ export default function ShowTrainers() {
                     <tr>
                       <th>NAME</th>
                       <th>EMAIL</th>
-                      <th>PASSWORD</th>
                       <th>ROLE</th>
-                      <th>SPECIALIZATION</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                     <td>{trainer.name}</td>
                       <td>{trainer.email}</td>
-                      <td>{trainer.password}</td>
                       <td>{trainer.role}</td>
-                      <td>Yoga</td>
-                    </tr>
-                    {/* <tr>
-                      <td>1</td>
-                      <td>Vincent Williamson</td>
-                      <td>vincent@gmail.com</td>
-                      <td>413 406 4880</td>
-                      <td>Zumba</td>
-                    </tr> */}
                     
+                    </tr>
+        
                   </tbody>
                 </table>
                   );

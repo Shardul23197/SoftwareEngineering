@@ -43,27 +43,15 @@ export default function Sidebar() {
           </Link>
         </li> 
         <li>
-          <Link to="/recipes">
-            <i class='bx bx-list-ul' ></i>
-            <span class="links_name">Recipes</span>
-          </Link>
-        </li>     
-        <li>
-          <Link to="/adminchat">
-            <i class='bx bx-message' ></i>
-            <span class="links_name">Messages</span>
-          </Link>
-        </li>
-        <li>
           <Link to="/adminprofile">
             <i class='bx bx-coin-stack' ></i>
-            <span class="links_name" >Profile</span>
+            <span class="links_name" >Add Profile</span>
           </Link>
         </li>
         <li>
-          <Link to="#">
-            <i class='bx bx-cog' ></i>
-            <span class="links_name">Settings</span>
+          <Link to="/feedback">
+            <i class='bx bx-coin-stack' ></i>
+            <span class="links_name" >Feedback</span>
           </Link>
         </li>
         <li>

@@ -1,9 +1,15 @@
 import { React, useState, useEffect } from 'react';
 import "../../App.css";
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function ShowVideos() {
 
   const [video, setListOfVideos] = useState([]);
+
+  
 
   useEffect(()=>{
 
@@ -19,10 +25,30 @@ export default function ShowVideos() {
       fetchVideos()
   },[])
 
+  const deleteVideo = async(id) => {
+
+    const response = await fetch(`/api/admin/showvideos/${id}`)
+    const json = await response.json()
+
+    if(response.ok){
+      toast("Video Deleted Successfully!")
+    }
+    else{
+      toast("Oops! Something went wrong")
+    }
+  }
+
+
+
+  
 
   
   return (
+
+    
     <div className="home-section app-trainers">
+
+<ToastContainer />
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -62,7 +88,7 @@ export default function ShowVideos() {
                     <th>Description</th>
                     <th>Trainer</th>
                     <th>Views</th>
-                    <th>DATE</th>
+                    <th>Date</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -76,9 +102,9 @@ export default function ShowVideos() {
                     <td>{video.updated}</td>
                     <td>
                     
-                            <a href="#" class="btn btn-danger">
+                            <button onClick={()=>deleteVideo(video._id)} class="btn btn-danger">
                               <i class="fa fa-times"></i>
-                            </a>
+                            </button>
                           
                     </td>
                   </tr>

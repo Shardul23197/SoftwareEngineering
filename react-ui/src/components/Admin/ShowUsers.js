@@ -31,26 +31,7 @@ export default function ShowUsers() {
         <div className="row">
           <div className="col-md-offset-1 col-md-10">
             <div className="panel">
-              <div className="panel-heading">
-                <div className="row">
-                  <div className="col-sm-12 col-xs-12">
-                    <a href="#" className="btn btn-sm btn-primary pull-left">
-                      <i className="fa fa-plus-circle"></i> Add New
-                    </a>
-                    <form className="form-horizontal pull-right">
-                      <div className="form-group">
-                        <label>Show : </label>
-                        <select className="form-control">
-                          <option>5</option>
-                          <option>10</option>
-                          <option>15</option>
-                          <option>20</option>
-                        </select>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+             
               <div className="panel-body table-responsive">
                 {user.map((user)=>{
                   return (
@@ -66,7 +47,7 @@ export default function ShowUsers() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{user.profileImage}</td>
+                      <td><img src={user.profileImage} width="150px" height="100px"></img></td>
                       <td>{user.fullName}</td>
                       <td>{user.email}</td>
                       <td>{user.phone}</td>
@@ -130,6 +111,11 @@ export default function ShowUsers() {
           </div>
         </div>
       </div>
+      
+      
     </div>
+
+
+
   )
 }

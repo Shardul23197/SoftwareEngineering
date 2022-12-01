@@ -1,4 +1,6 @@
 import { React, useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ApproveTrainers() {
 
@@ -18,10 +20,49 @@ export default function ApproveTrainers() {
       fetchTrainers()
   },[])
 
+  const approve = async(id) => {
+
+    const response = await fetch(`/api/admin/showvideos/${id}`)
+    const json = await response.json()
+
+    if(response.ok){
+      toast("Trainer Approved!")
+    }
+    else{
+      toast("Oops! Something went wrong")
+    }
+  }
+
+  const decline = async(id) => {
+
+    const response = await fetch(`/api/admin/showvideos/${id}`)
+    const json = await response.json()
+
+    if(response.ok){
+      toast("Trainer Declined!")
+    }
+    else{
+      toast("Oops! Something went wrong")
+    }
+  }
+
+  const inprocess = async(id) => {
+
+    const response = await fetch(`/api/admin/showvideos/${id}`)
+    const json = await response.json()
+
+    if(response.ok){
+      toast("Status Changed!")
+    }
+    else{
+      toast("Oops! Something went wrong")
+    }
+  }
 
 
   return (
     <div className="home-section app-trainers">
+      <ToastContainer />
       <link
         rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -36,17 +77,7 @@ export default function ApproveTrainers() {
                     <a href="#" class="btn btn-sm btn-primary pull-left">
                       <i class="fa fa-plus-circle"></i> Add New
                     </a>
-                    <form class="form-horizontal pull-right">
-                      <div class="form-group">
-                        <label>Show : </label>
-                        <select class="form-control">
-                          <option>5</option>
-                          <option>10</option>
-                          <option>15</option>
-                          <option>20</option>
-                        </select>
-                      </div>
-                    </form>
+                    
                   </div>
                 </div>
               </div>
@@ -66,19 +97,24 @@ export default function ApproveTrainers() {
                   <tbody>
                     <tr>
                       <td>{approval.email}</td>
-                      <td>{approval.desciption}</td>
+                      <td>{approval.description}</td>
                       <td>{approval.status}</td>
                       <td>
                         <ul class="action-list">
                           <li>
-                          <a href="#" class="btn btn-success">
+                          <button class="btn btn-success mx-2" onClick={()=>approve(approval._id)}>
                               <i class="fa fa-check"></i>
-                            </a>
+                            </button>
                           </li>
                           <li>
-                            <a href="#" class="btn btn-danger">
+                            <button class="btn btn-danger mx-2" onClick={()=>decline(approval._id)}>
                               <i class="fa fa-times"></i>
-                            </a>
+                            </button>
+                          </li>
+                          <li>
+                            <button class="btn btn-primary mx-2" onClick={()=>inprocess(approval._id)}>
+                              <i class="fa fa-question"></i>
+                            </button>
                           </li>
                         </ul>
                       </td>

@@ -59,6 +59,10 @@ export default function Admin() {
             <ApproveTrainers></ApproveTrainers>
             }/>
 
+        <Route path='/approvetrainers/:id' element={
+                    <ApproveTrainers></ApproveTrainers>
+                    }/>
+
 <       Route path='/adminchat' element={
             <AdminChat></AdminChat>
             }/>
