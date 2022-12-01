@@ -29,16 +29,6 @@ export default function Home() {
     >
       <i className="fas fa-bars"></i>
     </button>
-    <div className="collapse navbar-collapse" id="navbarNav">
-      <ul className="navbar-nav">
-        <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="#">About</a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" href="#">Contact</a>
-        </li>
-      </ul>
-      </div>
       <div className="d-flex align-items-center">
         <button type="button" className="btn px-3 me-2" onClick={routeToLogin}>
           Login
@@ -87,12 +77,11 @@ export default function Home() {
         <div className="content">
           <h1>About Fitocity</h1>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
+          We at Fitocity are dedicated to providing our clients, trainers, and partners with quality workout videos, routines, and health recommendations.
+          We are committed towards the goal of making the whole planet fit.
+          We know the ferocity it takes to get fit!
+
           </p>
-          <button className="button">Know More</button>
         </div>
 
         <div className="image">
@@ -125,16 +114,15 @@ export default function Home() {
       <div className="ptable-body">
         <div className="ptable-description">
           <ul>
-            <li>Pure HTML & CSS</li>
-            <li>Responsive Design</li>
-            <li>Well-commented Code</li>
-            <li>Easy to Use</li>
+            <li>Monthly recommendations</li>
+            <li>One on one with upto 10 trainers</li>
+            <li>Support times between 1-2 hours</li>
           </ul>
         </div>
       </div>
       <div className="ptable-footer">
         <div className="ptable-action">
-          <a href="">Buy Now</a>
+          <button className="btn btn-primary me-3" onClick={routeToRegister}>Buy Now</button>
         </div>
       </div>
     </div>
@@ -154,16 +142,15 @@ export default function Home() {
       <div className="ptable-body">
         <div className="ptable-description">
           <ul>
-            <li>Pure HTML & CSS</li>
-            <li>Responsive Design</li>
-            <li>Well-commented Code</li>
-            <li>Easy to Use</li>
+            <li>Monthly recommendations</li>
+            <li>One on one with upto 20 trainers</li>
+            <li>Support times between 30 min to 1 hour</li>
           </ul>
         </div>
       </div>
       <div className="ptable-footer">
         <div className="ptable-action">
-          <a href="">Buy Now</a>
+          <button className="btn btn-primary me-3" onClick={routeToRegister}>Buy Now</button>
         </div>
       </div>
     </div>
@@ -182,16 +169,15 @@ export default function Home() {
       <div className="ptable-body">
         <div className="ptable-description">
           <ul>
-            <li>Pure HTML & CSS</li>
-            <li>Responsive Design</li>
-            <li>Well-commented Code</li>
-            <li>Easy to Use</li>
+            <li>Monthly recommendations</li>
+            <li>One on one with any number of trainers</li>
+            <li>Priority support with 2 minutes</li>
           </ul>
         </div>
       </div>
       <div className="ptable-footer">
         <div className="ptable-action">
-          <a href="">Buy Now</a>
+          <button className="btn btn-primary me-3" onClick={routeToRegister}>Buy Now</button>
         </div>
       </div>
     </div>
@@ -219,8 +205,7 @@ export default function Home() {
               <i className="far fa-star"></i>
             </div>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              The user friendliness and the ease of moving around is very helpful.
             </p>
           </div>
 
@@ -235,8 +220,7 @@ export default function Home() {
               <i className="far fa-star"></i>
             </div>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Wonderful app to track my sleep, workouts and meals!
             </p>
           </div>
 
@@ -251,8 +235,7 @@ export default function Home() {
               <i className="far fa-star"></i>
             </div>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              The recommendations based on my logs is really helpful and made me improve my health overall!
             </p>
           </div>
         </div>
@@ -275,7 +258,7 @@ export default function Home() {
               <input placeholder="Ph No:" />
               <input placeholder="Comment:" />
 
-              <input className="button" placeholder="Send" />
+              <input style={{'color':'white'}} className="button" placeholder="Send" />
             </div>
           </div>
         </div>

@@ -105,7 +105,7 @@ export default function Profile() {
           setUserImage("https://ui-avatars.com/api/?name=ME&size=256")
         }
         else {
-          setUserImage(res.data.data.profileImage)
+          setUserImage(res.data.userProfile.profileImage)
         }
       })
       .catch((error) => {

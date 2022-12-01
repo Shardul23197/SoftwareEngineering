@@ -245,10 +245,6 @@ export default function Dashboard() {
   </div>
 </section>
 
-  <Paper elevation={6}>
-  <Pagination/>
-</Paper>
-
   {/* <script>
    let sidebar = document.querySelector(".sidebar");
 let sidebarBtn = document.querySelector(".sidebarBtn");
