@@ -84,8 +84,19 @@ router.get('/trainerAppointments', async (req, res) => {
     res.status(200).json(appointments);
 });
 
-// @route POST /api/scheduling/openAppointment
-// @desc Open an appointment for scheduling
+// @route POST /api/scheduling/openAppointments
+// @desc Open a series of recurring appointments for scheduling
+/*
+    Request:
+        - authorization: 'Bearer {accessToken}'
+        - startDay: A unix time representing 12:00:00 AM for the first date in the series
+        - endDay: A unix time representing 11:59:59 PM for the last date (excluded) in the series. 
+                    This date must be the same day of the week and must be at least 1 week from the startDay. 
+        - appointmentTime: A unix time representing the appointment start time for the series of appointments.
+                    This date must be the same day, month, and year as startDay.
+    
+
+*/
 // @access Public
 router.post('/openAppointment', async (req, res) => {
     // // Get the access token from the header
