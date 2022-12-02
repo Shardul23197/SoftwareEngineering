@@ -1,16 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const url = require('url');
 const User = require('../models/User');
 const Appointment = require('../models/Appointment');
-const Session = require('../models/Session');
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const authenticator = require('otplib').authenticator;
-const util = require('util');
 
 const formatDate = (date) => {
     const dateAmOrPm = date.getHours() / 12 === 1 ? 'PM' : 'AM';
@@ -89,16 +81,14 @@ router.get('/trainerAppointments', async (req, res) => {
 /*
     Request:
         - authorization: 'Bearer {accessToken}'
-        - startDay: A unix time representing 12:00:00 AM for the first date in the series
+        - startDay: A unix time representing 12:00:00 AM for the first date in the series.
         - endDay: A unix time representing 11:59:59 PM for the last date (excluded) in the series. 
-                    This date must be the same day of the week and must be at least 1 week from the startDay. 
+                    This date must be the same day of the week as and must be at least 1 week from the startDay. 
         - appointmentTime: A unix time representing the appointment start time for the series of appointments.
                     This date must be the same day, month, and year as startDay.
-    
-
 */
 // @access Public
-router.post('/openAppointment', async (req, res) => {
+router.post('/openAppointments', async (req, res) => {
     // // Get the access token from the header
     // const { authorization } = req.headers;
     // const accessToken = authorization.split(' ')[1];
@@ -112,7 +102,7 @@ router.post('/openAppointment', async (req, res) => {
     // }
 
     // let email = session.email;
-    const { email, startTime } = req.body; // get startTime from body
+    const { email, startDay, endDay, appointmentTime } = req.body; // get startTime from body
     
     const trainer = await User.findOne({ email });
     // Check if trainer exists and if they are a trainer
@@ -221,7 +211,56 @@ router.post('/closeAppointment', async (req, res) => {
         });
     }
 
-    res.status(200).json(closedAppointment)
+    res.status(200).json(closedAppointment);
+});
+
+// @route POST /api/scheduling/bookAppointment
+// @desc Register a user for an appointment with a trainer
+/*
+  Request:
+      - authorization: 'Bearer {accessToken}'
+      - appointmentId: the id of the appointment
+*/
+// @access Public
+router.post('/bookAppointment', async (req, res) => {
+  // // Get the access token from the header
+  // const { authorization } = req.headers;
+  // const accessToken = authorization.split(' ')[1];
+
+  // let session = await Session.findOne({ accessToken: accessToken });
+  // // Check if a session with this trainer exists
+  // if (!session) {
+  //     let err = 'Could not find the given accessToken!';
+  //     res.status(401).json(err);
+  //     return;
+  // }
+
+  // let email = session.email;
+  const { email, appointmentId } = req.body; // get startTime from body
+  
+  const user = await User.findOne({ email });
+  // Check if user exists
+  if (!user) {
+      let err = 'Could not find the given email!';
+      res.status(401).send(err);
+      return;
+  }
+  // Check if user is a user
+  if (user.role !== 'user') {
+      let err = 'You must be a user to book appointments!';
+      res.status(401).send(err);
+      return;
+  }
+  
+
+  let appointment = await Appointment.findByIdAndUpdate(appointmentId, { customerId: user._id }).exec();
+  if (!appointment) {
+      let err = 'Could not find the requested appointment!';
+      res.status(401).send(err);
+      return;
+  }
+
+  res.status(200).json(appointment);
 });
 
 module.exports = router;
