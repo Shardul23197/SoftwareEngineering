@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-
+import axios from 'axios'
 export default function ApproveTrainers() {
 
   const [approval, setListOfTrainers] = useState([]);
@@ -21,42 +21,45 @@ export default function ApproveTrainers() {
   },[])
 
   const approve = async(id) => {
-
-    const response = await fetch(`/api/admin/showvideos/${id}`)
-    const json = await response.json()
-
-    if(response.ok){
-      toast("Trainer Approved!")
-    }
-    else{
-      toast("Oops! Something went wrong")
-    }
+    axios.get('/api/admin/traineractions/', { params: { id: id, action:'approved' } }).then((response) => {
+      if(response.data){
+        var index = approval.findIndex(x => x._id == id)
+        //approval[index].status = response.data.status
+        let newArr = [...approval]
+        newArr[index].status = response.data.status
+        setListOfTrainers(newArr)
+        toast("Trainer Status Changed!")
+      }
+    }).catch(() => toast('Some error occured'))
   }
 
   const decline = async(id) => {
 
-    const response = await fetch(`/api/admin/showvideos/${id}`)
-    const json = await response.json()
+    axios.get('/api/admin/traineractions/', { params: { id: id, action:'declined' } }).then((response) => {
+      if(response.data){
+        var index = approval.findIndex(x => x._id == id)
+        //approval[index].status = response.data.status
+        let newArr = [...approval]
+        newArr[index].status = response.data.status
+        setListOfTrainers(newArr)
+        toast("Trainer Status Changed!")
+      }
+    }).catch(() => toast('Some error occured'))
 
-    if(response.ok){
-      toast("Trainer Declined!")
-    }
-    else{
-      toast("Oops! Something went wrong")
-    }
   }
 
   const inprocess = async(id) => {
+    axios.get('/api/admin/traineractions/', { params: { id: id, action:'inprocess' } }).then((response) => {
+      if(response.data){
+        var index = approval.findIndex(x => x._id == id)
+        //approval[index].status = response.data.status
+        let newArr = [...approval]
+        newArr[index].status = response.data.status
+        setListOfTrainers(newArr)
+        toast("Trainer Status Changed!")
+      }
+    }).catch(() => toast('Some error occured'))
 
-    const response = await fetch(`/api/admin/showvideos/${id}`)
-    const json = await response.json()
-
-    if(response.ok){
-      toast("Status Changed!")
-    }
-    else{
-      toast("Oops! Something went wrong")
-    }
   }
 
 

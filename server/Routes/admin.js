@@ -84,19 +84,17 @@ router.get('/approvetrainers', (req, res) => {
   
 // });
 
-// router.route('/approvetrainers/:id').put((req, res, next) => {
-//   TrainerApprovalSchema.findByIdAndUpdate(req.params.id, {
-//     $set: req.body
-//   }, (error, data) => {
-//     if (error) {
-//       return next(error);
-//       console.log(error)
-//     } else {
-//       res.json(data)
-//       console.log('Updated successfully !')
-//     }
-//   })
-// })
+router.get('/traineractions/', (req, res, next) => {
+  TrainerApprovalSchema.findByIdAndUpdate(req.query.id, {
+    $set: {status: req.query.action} }, { new: true }, (error, data) => {
+    if (error) {
+      return next(error);
+    } else {
+      res.json(data)
+      console.log('Updated successfully !')
+    }
+  })
+})
 
 
 

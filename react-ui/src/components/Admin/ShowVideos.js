@@ -3,34 +3,28 @@ import "../../App.css";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import Table from 'react-bootstrap/Table';
 
 
 export default function ShowVideos() {
 
   const [video, setListOfVideos] = useState([]);
 
-  
-
   useEffect(()=>{
-
-        const fetchVideos = async () =>{
-        const response = await fetch('/api/admin/showvideos/')
-        const json = await response.json()
-
-        if(response.ok){
-          setListOfVideos(json)
-        }
-      }
-
-      fetchVideos()
+        axios.get('/api/admin/showvideos/').then((response) => {
+          if(response.data){
+            setListOfVideos(response.data)
+          }
+        }).catch(() => toast('Some error occured'))
   },[])
 
-  const deleteVideo = async(id) => {
 
+  const deleteVideo = async(id) => {
     const response = await fetch(`/api/admin/showvideos/${id}`)
     const json = await response.json()
 
     if(response.ok){
+      setListOfVideos(video.filter(x => x._id != id))
       toast("Video Deleted Successfully!")
     }
     else{
@@ -80,7 +74,7 @@ export default function ShowVideos() {
             <div class="panel-body table-responsive">
             {video.map((video)=>{
                   return (
-              <table class="table">
+              <Table striped bordered hover>
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -110,7 +104,7 @@ export default function ShowVideos() {
                   </tr>
                   
                 </tbody>
-              </table>);
+              </Table>);
             })}
             </div>
             <div class="panel-footer">
