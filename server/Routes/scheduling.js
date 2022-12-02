@@ -76,16 +76,42 @@ router.get('/trainerAppointments', async (req, res) => {
     res.status(200).json(appointments);
 });
 
+// Returns an error if the request body does not follow the restrictions below
+const validateOpenAppointmentsRequest = (req) => {
+    const { startDay, endDay, appointmentTime } = req.body;
+
+    const startDayDate = new Date(Number.parseInt(startDay));
+    const endDayDate = new Date(Number.parseInt(endDay));
+    const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
+
+    console.log(startDayDate.getHours() === 0 || startDayDate.getMinutes() === 0 || startDayDate.getSeconds() === 0);
+    if (startDayDate.getHours() !== 0 || startDayDate.getMinutes() !== 0 || startDayDate.getSeconds() !== 0)
+        return 'startDay must represent 12:00:00 AM for the first date in the series.';
+    if (endDayDate.getHours() !== 23 || endDayDate.getMinutes() !== 59 || endDayDate.getSeconds() !== 59)
+        return 'endDay must represent 11:59:59 PM for the last date of the series.';
+    if (!(startDayDate <= endDayDate))
+        return 'startDay must be before endDay.'
+    if (startDayDate.getDay() !== endDayDate.getDay())
+        return 'endDay must be the same day of the week as startDay.'
+    if (startDayDate.getDate() !== appointmentTimeDate.getDate() 
+        || startDayDate.getMonth() !== appointmentTimeDate.getMonth() 
+        || startDayDate.getFullYear() !== appointmentTimeDate.getFullYear())
+        return 'appointmentTime must be the same day, month, and year as startDay.'
+    if (!(appointmentTimeDate.getMinutes() !== 0 || appointmentTimeDate.getMinutes() !== 30) || appointmentTimeDate.getSeconds() !== 0)
+        return 'appointmentTime must have a time of XX:00:00 XM or XX:30:00 XM.'
+}
+
 // @route POST /api/scheduling/openAppointments
 // @desc Open a series of recurring appointments for scheduling
 /*
     Request:
         - authorization: 'Bearer {accessToken}'
-        - startDay: A unix time representing 12:00:00 AM for the first date in the series.
-        - endDay: A unix time representing 11:59:59 PM for the last date (excluded) in the series. 
-                    This date must be the same day of the week as and must be at least 1 week from the startDay. 
-        - appointmentTime: A unix time representing the appointment start time for the series of appointments.
-                    This date must be the same day, month, and year as startDay.
+        - startDay: A unix time in milliseconds representing 12:00:00 AM for the first date in the series.
+        - endDay: A unix time in milliseconds representing 11:59:59 PM for the last date (excluded) in the series. 
+                    This date must be the same day of the week as nthe startDay. 
+        - appointmentTime: A unix time in milliseconds representing the appointment start time for the series of appointments.
+                    This date must be the same day, month, and year as startDay. It also must have a time of XX:00:00 XM or
+                    XX:30:00 XM.
 */
 // @access Public
 router.post('/openAppointments', async (req, res) => {
@@ -102,6 +128,12 @@ router.post('/openAppointments', async (req, res) => {
     // }
 
     // let email = session.email;
+    const validationErr = validateOpenAppointmentsRequest(req)
+    if (validationErr) {
+        let err = validationErr;
+        res.status(401).send(err);
+        return;
+    }
     const { email, startDay, endDay, appointmentTime } = req.body; // get startTime from body
     
     const trainer = await User.findOne({ email });
