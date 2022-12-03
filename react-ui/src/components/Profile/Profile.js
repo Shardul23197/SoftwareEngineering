@@ -660,6 +660,7 @@ export default function Profile() {
                 </form>
 
                 {/* User wellness score */}
+                <div style={role === 'trainer' ? {display : 'none'} : ""}>
                 <h2 className="mt-2 mb-1">Your Wellness Score</h2>
                   {wellnessScoreError
                     ?
@@ -695,6 +696,7 @@ export default function Profile() {
                       </MDBAccordion>
                     </div>
                   }
+                  </div>
               </MDBCardBody>
             </MDBCard>
           </MDBCol>
