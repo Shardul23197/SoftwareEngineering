@@ -379,7 +379,10 @@ export default function Profile() {
 
   const renderByStatus = () => {
     if (role === 'trainer') {
-      if (status === 'inprocess') {
+      if(status === 'inprocess' || status === 'pending') {
+        return (<h1>Your profile is under Review</h1>)
+      }
+      else if(status === 'notfound' || status === 'todo') {
         return (<MDBCol style={{ 'width': '100%' }} md="6">
           <br />
           <p className="lead fw-normal mb-1">Tell us about yourself</p>
@@ -388,9 +391,6 @@ export default function Profile() {
             <MDBBtn style={{ 'margin-top': '10px' }} >Submit</MDBBtn>
           </form>
         </MDBCol>)
-      }
-      else if (status === 'pending') {
-        return (<h1>Your profile is under Review</h1>)
       }
     }
   }
@@ -434,7 +434,7 @@ export default function Profile() {
               <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                 <div className="d-flex justify-content-end text-center py-1">
                   <div>
-                    {(true || status === 'approved') && role === 'trainer'
+                    {role === 'trainer' && status === 'approved'
                       ? 
                       <Button variant="contained" color="default"
                         className='material-button'
@@ -526,7 +526,7 @@ export default function Profile() {
                       :
                         ''}
                 </MDBRow>
-
+                      <hr/>
                 {/* User wellness information */}
                 <form onSubmit={updateWellnessInfo}>
                 <div className="mb-5">

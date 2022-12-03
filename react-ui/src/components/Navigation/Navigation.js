@@ -42,39 +42,39 @@ const Navigation = () => {
           <span class="links_name">Dashboard</span>
         </Link>
       </li>
+      {role !== 'trainer' ?  
       <li>
         <Link to="/recommendation" >
           <i class='bx bx-grid-alt' ></i>
           <span class="links_name">Diet Recommendations</span>
         </Link>
       </li>
-      {role === 'trainer' ? 
-      <li>
-        <a href="#">
-          <i class='bx bx-box' ></i>
-          <span class="links_name">Workout</span>
-        </a>
-      </li> : ""
-      }   
+      : ""}
+      {role !== 'trainer' ?  
       <li>
         <Link to='/mealLog'>
           <i class='bx bx-grid-alt' ></i>
           <span class="links_name">Meal Log</span>
         </Link>
       </li>
+      : ""}
+      {role !== 'trainer' ?  
       <li>
         <Link to='/sleepLog'>
           <i class='bx bx-grid-alt' ></i>
           <span class="links_name">Sleep Log</span>
         </Link>
       </li>
+      : ""}
+      {role !== 'trainer' ?  
       <li>
         <Link to='/workoutLog'>
           <i class='bx bx-grid-alt' ></i>
           <span class="links_name">Workout Log</span>
         </Link>
       </li>
-      {role === 'trainer' ? 
+: ""}
+      {role !== 'trainer' ? 
       <li>
       <Link to = '/messages'>
             <i class='bx bx-message' ></i>
