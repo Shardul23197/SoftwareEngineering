@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MDBAccordion, MDBAccordionItem } from "mdb-react-ui-kit";
+import DateTimePicker from 'react-datetime-picker';
 import {
   MDBCol,
   MDBContainer,
@@ -816,6 +817,23 @@ export default function Profile() {
                       Schedule your availability for appointments
                     </h2>
                     <div className="p-4" style={{ backgroundColor: "#f8f9fa" }}>
+
+                    <MDBRow>
+                        <MDBCol sm="3">
+                          <MDBCardText for="appt-time">Title:</MDBCardText>
+                        </MDBCol>
+                        <MDBCol sm="9">
+                          <MDBCardText className="text-muted">
+                            <MDBRow>
+                              <MDBCol sm="3">
+                                <MDBInput></MDBInput>
+                              </MDBCol>
+                            </MDBRow>
+                          </MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                      <hr />
+
                       <MDBRow>
                         <MDBCol sm="3">
                           <MDBCardText>Select Days:</MDBCardText>
@@ -844,6 +862,8 @@ export default function Profile() {
         
                 
                           </select> */}
+
+                          
 
                                 <div class="form-check">
                                   <input
@@ -955,6 +975,36 @@ export default function Profile() {
 
                       <MDBRow>
                         <MDBCol sm="3">
+                          <MDBCardText for="appt-time">End On:</MDBCardText>
+                        </MDBCol>
+                        <MDBCol sm="9">
+                          <MDBCardText className="text-muted">
+                          <MDBRow className="" style={{flex: 'left'}}>
+                  <div style={{ flex: 'left', width: '150px'}}>
+                  <DateTimePicker
+                    amPmAriaLabel="Select AM/PM"
+                    calendarAriaLabel="Toggle calendar"
+                    clearAriaLabel="Clear value"
+                    dayAriaLabel="Day"
+                    hourAriaLabel="Hour"
+                    maxDetail="second"
+                    minuteAriaLabel="Minute"
+                    monthAriaLabel="Month"
+                    nativeInputAriaLabel="Date and time"
+                    // onChange={setEndDate}
+                    secondAriaLabel="Second"
+                    // value={endDate}
+                    yearAriaLabel="Year"
+                  />
+                  </div>
+                  </MDBRow>
+                          </MDBCardText>
+                        </MDBCol>
+                      </MDBRow>
+                      <hr />
+
+                      <MDBRow>
+                        <MDBCol sm="3">
                           <MDBCardText for="appt-time">Start Time:</MDBCardText>
                         </MDBCol>
                         <MDBCol sm="9">
@@ -978,6 +1028,8 @@ export default function Profile() {
                         </MDBCol>
                       </MDBRow>
                       <hr />
+
+                      
 
                       <MDBRow>
                         <MDBCol sm="3">
