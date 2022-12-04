@@ -431,7 +431,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="gradient-custom-2" style={{ backgroundColor: "#9de2ff" }}>
+    <div className="gradient-custom-2" style={{ backgroundColor: "#cbe2f7"}}>
       <LinearProgress id="spinner" hidden={hidden} color="secondary" />
       <ToastContainer />
 

@@ -83,7 +83,7 @@ export default function Dashboard() {
 <Navigation/>
 
 
-<section class="home-section">
+<section class="home-section" style={{backgroundColor:'#cbe2f7'}}>
   <nav>
     <div class="sidebar-button">
       <i class='bx bx-menu sidebarBtn'></i>

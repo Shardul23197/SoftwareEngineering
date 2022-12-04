@@ -114,12 +114,12 @@ export default function TrainerProfile() {
 
 
   return (
-    <div className="gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
-      <ToastContainer />
+    <div className="gradient-custom-2" style={{ backgroundColor: '#cbe2f7' }}>
+   
 
       {/* Sidebar Navigation */}
       <Navigation/>
-        <MDBContainer className="py-5 h-100">
+        <MDBContainer className="py-5 h-100 section">
           <MDBRow className="justify-content-center align-items-center h-100">
             <MDBCol lg="9" xl="7">
 
