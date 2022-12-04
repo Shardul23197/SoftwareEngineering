@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MDBAccordion, MDBAccordionItem } from "mdb-react-ui-kit";
-import DateTimePicker from 'react-datetime-picker';
 import {
   MDBCol,
   MDBContainer,
@@ -31,7 +30,6 @@ import VideoCard from "./VideoCard";
 import Button from "@material-ui/core/Button";
 import "./Profile.css";
 import { LinearProgress } from "@material-ui/core";
-import util from "util";
 import Navigation from "../Navigation/Navigation";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 
@@ -66,6 +64,15 @@ export default function Profile() {
   // User Goals
   const [weightGoal, setWeightGoal] = useState("Lose");
   const [muscleMassGoal, setMuscleMassGoal] = useState("Gain");
+
+  // Trainer appointment input
+  const [days, setDays] = useState([]);
+  const [startTime, setStartTime] = useState('');
+  const [repeatFor, setRepeatFor] = useState(1);
+  const [duration, setDuration] = useState('15 minutes');
+  const [description, setDescription] = useState('');
+  const [aptTitle, setAptTitle] = useState('');
+  const [atpError, setAptError] = useState('');
 
   // Wellness Score
   const [wellnessScore, setWellnessScore] = useState(NaN);
@@ -160,6 +167,20 @@ export default function Profile() {
     setAge(event.target.value);
   };
 
+  const onDaysChange = (event) => {
+    const buttonId = event.target.value;
+    if (days.includes(event.target.value)) setDays(days.filter((e) => e !== buttonId))
+    else days.push(buttonId)
+  };
+
+  const onDescriptionChange = (event) => {
+    setDescription(event.target.value);
+  };
+
+  const onDurationChange = (event) => {
+    setDuration(event.target.value);
+  };
+
   const onGenderChange = (event) => {
     setGender(event.target.value);
   };
@@ -176,6 +197,10 @@ export default function Profile() {
     setUserPhone(event.target.value);
   };
 
+  const onRepeatForChange = (event) => {
+    setRepeatFor(Number.parseInt(event.target.value));
+  };
+
   const onCategoryChange = (event) => {
     setCategory(event.target.value);
   };
@@ -188,12 +213,21 @@ export default function Profile() {
     setMuscleMassGoal(event.target.value);
   };
 
+  const onStartTimeChange = (event) => {
+    setStartTime(event.target.value);
+    console.log(typeof event.target.value);
+  };
+
   const onTagsChange = (event) => {
     const clickedTag = event.target.value;
     if (tags.includes(clickedTag))
       setTags(tags.filter((tag) => tag !== clickedTag));
     // filter returns new array... ight
     else tags.push(clickedTag);
+  };
+
+  const onAptTitleChange = (event) => {
+    setAptTitle(event.target.value);
   };
 
   const onUserHeightFeetChange = (event) => {
@@ -265,6 +299,74 @@ export default function Profile() {
     setError("");
     return true;
   };
+
+  const createAppointmentTimestamps = () => {
+    let timestamps = [];
+    days.forEach(element => {
+        let aptDate = new Date();
+        let dayOffset = aptDate.getDay() - element;
+        aptDate.setDate(aptDate.getDate() - dayOffset);
+        aptDate.setHours(startTime.substring(0, 2));
+        aptDate.setMinutes(startTime.substring(3, 5));
+        aptDate.setSeconds(0);
+        aptDate.setMilliseconds(0);
+
+        let endDate = new Date(aptDate);
+        endDate.setDate(endDate.getDate() + repeatFor*7)
+        
+        timestamps.push(aptDate.getTime());
+        timestamps.push(endDate.getTime());
+    });
+
+    return timestamps;
+  }
+
+  const createAppointmentsValidation = () => {
+    console.log(typeof repeatFor);
+    if (!aptTitle) setAptError("Appointments must have a title!");
+    else if (!duration) setAptError("Appointments must have a duration!");
+    else if (!Number.isInteger(repeatFor) || repeatFor < 1) setAptError("Repeat For must be a whole number greater than 0!");
+    else if (days.length === 0) setAptError("You must select at least one day!");
+    else if (!startTime) setAptError("Appointments must have a start time!");
+    else setAptError('');
+
+    if (atpError) return false;
+    return true;
+  }
+
+  const createAppointments = (event) => {
+    event.preventDefault();
+    
+    setAptError('');
+    if (!createAppointmentsValidation()) return;
+    
+    let timestamps = createAppointmentTimestamps();
+
+    const headers = {
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const instance = axios.create({
+      baseURL: "http://localhost:5000",
+      withCredentials: true,
+      headers: headers,
+    });
+    const formData = {
+      timestamps,
+      title: aptTitle,
+      description,
+      duration
+    };
+    console.log(formData);
+    instance
+      .post("/api/scheduling/openAppointments", qs.stringify(formData))
+      .then((res) => {
+        toast("Appointments created!");
+      })
+      .catch((err) => {
+        setAptError(err.response.data);
+      });
+  }
 
   // Updates the wellness information of the user's profile
   const updateWellnessInfo = (event) => {
@@ -806,9 +908,8 @@ export default function Profile() {
                   </div>
                 )}
              {(true || status === "approved") && role === "trainer" ? (
-                <form onSubmit={updateWellnessInfo}>
-                  
-                  <div className="mb-5 my-5">
+                
+              <div className="mb-5 my-5">
                     
                     <h1 className="fw-bold mb-2">Appointment</h1>
 
@@ -826,7 +927,7 @@ export default function Profile() {
                           <MDBCardText className="text-muted">
                             <MDBRow>
                               <MDBCol sm="3">
-                                <MDBInput></MDBInput>
+                                <MDBInput onChange={onAptTitleChange}></MDBInput>
                               </MDBCol>
                             </MDBRow>
                           </MDBCardText>
@@ -841,35 +942,28 @@ export default function Profile() {
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
                             <MDBRow>
-                              <MDBCol sm="6">
-                                {/* <select
-                            value={muscleMassGoal}
-                            onChange={onMuscleMassGoalChange}
-                            class="form-select"
-                            aria-label="Category Select"
-                            id="test"
-                          >
-                            <option value={"Gain"} >Monday</option>
-                            <option value={"Maintain"}>Tuesday</option>
-                            <option value={"Loose"}>Wednesday</option>
-                            <option value={"Loose"}>Thursday</option>
-                            <option value={"Loose"}>Friday</option>
-                            <option value={"Loose"}>Saturday</option>
-                            <option value={"Loose"}>Sunday</option>
-
-
-
-        
-                
-                          </select> */}
-
-                          
-
+                              <MDBCol sm="6">                       
                                 <div class="form-check">
                                   <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
+                                    value="0"
+                                    onClick={onDaysChange}
+                                    id="flexCheckDefault"
+                                  />
+                                  <label
+                                    class="form-check-label"
+                                    for="flexCheckDefault"
+                                  >
+                                    Sunday
+                                  </label>
+                                </div>
+                                <div class="form-check">
+                                  <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    value="1"
+                                    onClick={onDaysChange}
                                     id="flexCheckDefault"
                                   />
                                   <label
@@ -883,7 +977,8 @@ export default function Profile() {
                                   <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
+                                    value="2"
+                                    onClick={onDaysChange}
                                     id="flexCheckDefault"
                                   />
                                   <label
@@ -897,7 +992,8 @@ export default function Profile() {
                                   <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
+                                    value="3"
+                                    onClick={onDaysChange}
                                     id="flexCheckDefault"
                                   />
                                   <label
@@ -912,7 +1008,8 @@ export default function Profile() {
                                   <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
+                                    value="4"
+                                    onClick={onDaysChange}
                                     id="flexCheckDefault"
                                   />
                                   <label
@@ -927,7 +1024,8 @@ export default function Profile() {
                                   <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
+                                    value="5"
+                                    onClick={onDaysChange}
                                     id="flexCheckDefault"
                                   />
                                   <label
@@ -941,7 +1039,8 @@ export default function Profile() {
                                   <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
+                                    value="6"
+                                    onClick={onDaysChange}
                                     id="flexCheckDefault"
                                   />
                                   <label
@@ -949,20 +1048,6 @@ export default function Profile() {
                                     for="flexCheckDefault"
                                   >
                                     Saturday
-                                  </label>
-                                </div>
-                                <div class="form-check">
-                                  <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    value=""
-                                    id="flexCheckDefault"
-                                  />
-                                  <label
-                                    class="form-check-label"
-                                    for="flexCheckDefault"
-                                  >
-                                    Sunday
                                   </label>
                                 </div>
                                 
@@ -975,29 +1060,32 @@ export default function Profile() {
 
                       <MDBRow>
                         <MDBCol sm="3">
-                          <MDBCardText for="appt-time">End On:</MDBCardText>
+                          <MDBCardText for="appt-time">Repeat For:</MDBCardText>
                         </MDBCol>
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
-                          <MDBRow className="" style={{flex: 'left'}}>
-                  <div style={{ flex: 'left', width: '150px'}}>
-                  <DateTimePicker
-                    amPmAriaLabel="Select AM/PM"
-                    calendarAriaLabel="Toggle calendar"
-                    clearAriaLabel="Clear value"
-                    dayAriaLabel="Day"
-                    hourAriaLabel="Hour"
-                    maxDetail="second"
-                    minuteAriaLabel="Minute"
-                    monthAriaLabel="Month"
-                    nativeInputAriaLabel="Date and time"
-                    // onChange={setEndDate}
-                    secondAriaLabel="Second"
-                    // value={endDate}
-                    yearAriaLabel="Year"
-                  />
-                  </div>
-                  </MDBRow>
+                          <MDBRow className="" style={{flex: 'left', width: '400px'}}>
+                            <div style={{ flex: 'left', width: '150px'}}>
+
+                            {/* <input 
+                              type="date" 
+                              id="start" 
+                              name="trip-start"
+                              min="2022-12-08"
+                              onChange={onEndOnChange}></input> */}
+
+                              {/* <DatePicker
+                                minDate={new Date()}
+                                selected={endOn}
+                                onChange={(date:Date) => setEndOn(date)} //only when value has changed
+                              /> */}
+
+                               <MDBInput value={repeatFor} onChange={onRepeatForChange}></MDBInput>
+                            </div>
+                            <div style={{position: 'relative', left: '-10px', width: '100px'}}>
+                              weeks
+                            </div>
+                          </MDBRow>
                           </MDBCardText>
                         </MDBCol>
                       </MDBRow>
@@ -1015,6 +1103,7 @@ export default function Profile() {
                                   id="appt-time"
                                   type="time"
                                   name="appt-time"
+                                  onChange={onStartTimeChange}
                                  
                                   style={{
                                     width: "120px",
@@ -1029,8 +1118,6 @@ export default function Profile() {
                       </MDBRow>
                       <hr />
 
-                      
-
                       <MDBRow>
                         <MDBCol sm="3">
                           <MDBCardText>Duration:</MDBCardText>
@@ -1040,8 +1127,8 @@ export default function Profile() {
                             <MDBRow>
                               <MDBCol sm="3">
                                 <select
-                                  value={muscleMassGoal}
-                                  onChange={onMuscleMassGoalChange}
+                                  value={duration}
+                                  onChange={onDurationChange}
                                   class="form-select"
                                   aria-label="Category Select"
                                 >
@@ -1062,34 +1149,6 @@ export default function Profile() {
                       </MDBRow>
                       <hr />
 
-                      {/* <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Number of attendees:</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <MDBRow>
-                              <MDBCol sm="3">
-                                <select
-                                  value={muscleMassGoal}
-                                  onChange={onMuscleMassGoalChange}
-                                  class="form-select"
-                                  aria-label="Category Select"
-                                >
-                                  <option value="5">5</option>
-                                  <option value="10">10</option>
-                                  <option value="20">20</option>
-                                  <option value="50">50</option>
-                                  <option value="70+">70+</option>
-                                </select>
-                              </MDBCol>
-                            </MDBRow>
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                      <hr /> */}
-
-
                       <MDBRow>
                         <MDBCol sm="3">
                           <MDBCardText>Description: </MDBCardText>
@@ -1098,24 +1157,7 @@ export default function Profile() {
                           <MDBCardText className="text-muted">
                             <MDBRow>
                               <MDBCol style={{width:'200px'}}>
-                                <MDBTextArea></MDBTextArea>
-                              </MDBCol>
-                            </MDBRow>
-                          </MDBCardText>
-                        </MDBCol>
-                      </MDBRow>
-                      <hr />
-                
-
-                      <MDBRow>
-                        <MDBCol sm="3">
-                          <MDBCardText>Meeting Link:</MDBCardText>
-                        </MDBCol>
-                        <MDBCol sm="9">
-                          <MDBCardText className="text-muted">
-                            <MDBRow>
-                              <MDBCol sm="4">
-                                <MDBInput label="Link" />
+                                <MDBTextArea onChange={onDescriptionChange}></MDBTextArea>
                               </MDBCol>
                             </MDBRow>
                           </MDBCardText>
@@ -1123,10 +1165,25 @@ export default function Profile() {
                       </MDBRow>
                       <hr />
 
-                      <MDBBtn>Save</MDBBtn>
+
+                      {/* Error message for wellness info submission */}
+                      {atpError ? (
+                        <MDBTypography
+                          id="danger-text"
+                          note
+                          noteColor="danger"
+                          style={{ marginTop: "10px" }}
+                        >
+                          <strong>{atpError}</strong>
+                        </MDBTypography>
+                      ) : (
+                        ""
+                      )}
+
+                      <MDBBtn onClick={createAppointments}>Save</MDBBtn>
                     </div>
                   </div>
-                </form>) :(
+                ) :(
                   "")}
               </MDBCardBody>
             </MDBCard>

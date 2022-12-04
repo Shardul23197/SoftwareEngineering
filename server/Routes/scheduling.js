@@ -81,23 +81,20 @@ router.get('/listAppointments', async (req, res) => {
 });
 
 // Returns an error if the request body does not follow the restrictions below
-const validateOpenAppointmentsRequest = (req) => {
-    const { times, title, description, duration } = req.body;
+const validateOpenAppointmentsRequest = async (req, trainerId) => {
+    const { timestamps, title, description, duration } = req.body;
 
-    if (!times) return 'You must pass an array of times!'
+    if (!timestamps) return 'You must pass an array of times!'
     if (!title) return 'You must pass a title!'
-    if (!description) return 'You must pass a description!'
     if (!duration) return 'You must pass a duration!'
 
 
-    if (times.length%2 !== 0)
+    if (timestamps.length%2 !== 0)
         return 'Each appointmentTime must have a matching endDay!';
 
-    for (let i = 0; i < times.length; i += 2) {
-        const appointmentTimeDate = new Date(Number.parseInt(times[i]));
-        const endDayDate = new Date(Number.parseInt(times[i+1]));
-        if (appointmentTimeDate < Date.now() || endDayDate < Date.now())
-            return 'Cannot open appointments in the past!';
+    for (let i = 0; i < timestamps.length; i += 2) {
+        const appointmentTimeDate = new Date(Number.parseInt(timestamps[i]));
+        const endDayDate = new Date(Number.parseInt(timestamps[i+1]));
 
         if (!(endDayDate.getMinutes() !== 0 || endDayDate.getMinutes() !== 30) || endDayDate.getSeconds() !== 0)
             return 'endDay must have a time of XX:00:00 XM or XX:30:00 XM.';
@@ -109,17 +106,21 @@ const validateOpenAppointmentsRequest = (req) => {
             return 'appointmentTime must be before endDay.'
         if (appointmentTimeDate.getDay() !== endDayDate.getDay())
             return 'appointmentTimeDate must be the same day of the week as endDayDate.'
+
+        let appointmentExistsAlready = await Appointment.findOne({ trainerId, startTime: appointmentTimeDate.getTime()});
+        if (appointmentExistsAlready)
+            return `The following appointments already exists: ${appointmentTimeDate}`
     }
 }
 
 // Returns an error if the request body does not follow the restrictions below
 const createAppointmentsList = (trainterId, req) => {
-    const { times, title, description, duration } = req.body;
+    const { timestamps, title, description, duration } = req.body;
 
     let appointmentsToOpen = [];
-    for (let i = 0; i < times.length; i += 2) {
-        const appointmentTimeDate = new Date(Number.parseInt(times[i]));
-        const endDayDate = new Date(Number.parseInt(times[i+1]));
+    for (let i = 0; i < timestamps.length; i += 2) {
+        const appointmentTimeDate = new Date(Number.parseInt(timestamps[i]));
+        const endDayDate = new Date(Number.parseInt(timestamps[i+1]));
 
         
         while (appointmentTimeDate < endDayDate) {
@@ -154,28 +155,19 @@ const createAppointmentsList = (trainterId, req) => {
                         XX:30:00 XM. 
 */
 router.post('/openAppointments', async (req, res) => {
-    // // Get the access token from the header
-    // const { authorization } = req.headers;
-    // const accessToken = authorization.split(' ')[1];
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
   
-    // let session = await Session.findOne({ accessToken: accessToken });
-    // // Check if a session with this trainer exists
-    // if (!session) {
-    //     let err = 'Could not find the given accessToken!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
-
-    // let email = session.email;
-    const validationErr = validateOpenAppointmentsRequest(req)
-    if (validationErr) {
-        let err = validationErr;
-        res.status(401).send(err);
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this trainer exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
         return;
     }
-    const { email } = req.body; // get startTime from body
-    // const endDayDate = new Date(Number.parseInt(endDay));
-    // const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
+
+    let email = session.email;
     
     const trainer = await User.findOne({ email });
     // Check if trainer exists and if they are a trainer
@@ -190,6 +182,15 @@ router.post('/openAppointments', async (req, res) => {
         res.status(401).send(err);
         return;
     }
+    
+    // Validate the requested appointments
+    const validationErr = await validateOpenAppointmentsRequest(req, trainer._id);
+    if (validationErr) {
+        let err = validationErr;
+        res.status(401).send(err);
+        return;
+    }
+
     
     let appointmentsToOpen = createAppointmentsList(trainer._id, req);
 
