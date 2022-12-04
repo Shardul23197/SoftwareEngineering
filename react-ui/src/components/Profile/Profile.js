@@ -804,9 +804,11 @@ export default function Profile() {
                     </MDBAccordion>
                   </div>
                 )}
-
+             {(true || status === "approved") && role === "trainer" ? (
                 <form onSubmit={updateWellnessInfo}>
+                  
                   <div className="mb-5 my-5">
+                    
                     <h1 className="fw-bold mb-2">Appointment</h1>
 
                     {/* User body measurements */}
@@ -1008,7 +1010,7 @@ export default function Profile() {
                       </MDBRow>
                       <hr />
 
-                      <MDBRow>
+                      {/* <MDBRow>
                         <MDBCol sm="3">
                           <MDBCardText>Number of attendees:</MDBCardText>
                         </MDBCol>
@@ -1033,7 +1035,7 @@ export default function Profile() {
                           </MDBCardText>
                         </MDBCol>
                       </MDBRow>
-                      <hr />
+                      <hr /> */}
 
 
                       <MDBRow>
@@ -1060,8 +1062,8 @@ export default function Profile() {
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
                             <MDBRow>
-                              <MDBCol sm="3">
-                                <MDBInput label="Link" type="number" />
+                              <MDBCol sm="4">
+                                <MDBInput label="Link" />
                               </MDBCol>
                             </MDBRow>
                           </MDBCardText>
@@ -1072,7 +1074,8 @@ export default function Profile() {
                       <MDBBtn>Save</MDBBtn>
                     </div>
                   </div>
-                </form>
+                </form>) :(
+                  "")}
               </MDBCardBody>
             </MDBCard>
           </MDBCol>

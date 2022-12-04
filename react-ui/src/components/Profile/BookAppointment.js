@@ -24,6 +24,7 @@ export default function BookAppointment() {
   return (
     <>
       <Navigation />
+      <ToastContainer/>
       <div className="gradient-custom-2" style={{ backgroundColor: "#cbe2f7", minHeight:'100vh'}}>
         <MDBContainer className="py-5 h-100 section">
           <MDBRow className="justify-content-center align-items-center h-100">
@@ -52,20 +53,18 @@ export default function BookAppointment() {
                       >
                         <thead>
                           <tr>
-                            <th scope="col">Name</th>
                             <th scope="col">Date</th>
                             <th scope="col">Start Time</th>
-                            <th scope="col">Available Seats</th>
+                            <th scope="col">Duration</th>
                             <th scope="col">Description</th>
                             <th scope="col">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr>
-                            <th scope="row">Yoga</th>
                             <td>10.12.2022</td>
                             <td>10:00am</td>
-                            <td>30</td>
+                            <td>30 minutes</td>
                             <td>This is an introductory class</td>
                             <td>
                               <button type="button" class="btn btn-primary">
@@ -74,10 +73,9 @@ export default function BookAppointment() {
                             </td>
                           </tr>
                           <tr>
-                            <th scope="row">Yoga</th>
                             <td>10.12.2022</td>
                             <td>10:00am</td>
-                            <td>30</td>
+                            <td>30 minutes</td>
                             <td>This is an introductory class</td>
                             <td>
                               <button type="button" class="btn btn-primary">
@@ -86,10 +84,9 @@ export default function BookAppointment() {
                             </td>
                           </tr>
                           <tr>
-                            <th scope="row">Yoga</th>
                             <td>10.12.2022</td>
                             <td>10:00am</td>
-                            <td>30</td>
+                            <td>30 minutes</td>
                             <td>This is an introductory class</td>
                             <td>
                               <button type="button" class="btn btn-primary">
@@ -98,10 +95,9 @@ export default function BookAppointment() {
                             </td>
                           </tr>
                           <tr>
-                            <th scope="row">Yoga</th>
                             <td>10.12.2022</td>
                             <td>10:00am</td>
-                            <td>30</td>
+                            <td>30 minutes</td>
                             <td>This is an introductory class</td>
                             <td>
                               <button type="button" class="btn btn-primary">

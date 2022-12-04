@@ -326,9 +326,8 @@ export default function Home() {
               Fitocity
             </h6>
             <p>
-              Here you can use rows and columns to organize your footer
-              content. Lorem ipsum dolor sit amet, consectetur adipisicing
-              elit.
+          We are committed towards the goal of making the
+            whole planet fit. We know the ferocity it takes to get fit!
             </p>
           </div>
        
@@ -336,18 +335,18 @@ export default function Home() {
           <hr className="w-100 clearfix d-md-none" />
 
           <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-            <h6 className="text-uppercase mb-4 font-weight-bold">Products</h6>
+            <h6 className="text-uppercase mb-4 font-weight-bold">Services</h6>
             <p>
-              <a className="text-white">MDBootstrap</a>
+              <a className="text-white">Workouts</a>
             </p>
             <p>
-              <a className="text-white">MDWordPress</a>
+              <a className="text-white">Personalised Meal Recommendations</a>
             </p>
             <p>
-              <a className="text-white">BrandFlow</a>
+              <a className="text-white">Trainer Interation</a>
             </p>
             <p>
-              <a className="text-white">Bootstrap Angular</a>
+              <a className="text-white">Track your Nutrition</a>
             </p>
           </div>
     
@@ -360,7 +359,7 @@ export default function Home() {
           <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
             <h6 className="text-uppercase mb-4 font-weight-bold">Contact</h6>
             <p><i className="fas fa-home mr-3"></i> New York, NY 10012, US</p>
-            <p><i className="fas fa-envelope mr-3"></i> info@gmail.com</p>
+            <p><i className="fas fa-envelope mr-3"></i> fitocity@gmail.com</p>
             <p><i className="fas fa-phone mr-3"></i> + 01 234 567 88</p>
             <p><i className="fas fa-print mr-3"></i> + 01 234 567 89</p>
           </div>
@@ -428,9 +427,9 @@ export default function Home() {
          className="text-center p-3"
          style={{backgroundColor: 'rgba(0, 0, 0, 0.2)'}}
          >
-      © 2020 Copyright:
+      © 2022 Copyright:
       <a className="text-white" href="https://mdbootstrap.com/"
-         >MDBootstrap.com</a>
+         >Fitocity.com</a>
     </div>
   
   </footer>
