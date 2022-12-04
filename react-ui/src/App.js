@@ -28,6 +28,7 @@ import TrainerProfile from './components/Profile/TrainerProfile';
 import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 import TrainerMessages from './components/Chat/TrainerMessages';
+import BookAppointment from './components/Profile/BookAppointment';
 
 const pubnub = new PubNub({
   publishKey: 'pub-c-1a2459c5-bfde-409d-8ddb-86e9f45aaaa7',
@@ -131,6 +132,11 @@ function App() {
             <Route path='/search' element={
                 <PrivateRoute>
                     <Search /> 
+                </PrivateRoute>    
+            }/>
+            <Route path='/book' element={
+                <PrivateRoute>
+                    <BookAppointment /> 
                 </PrivateRoute>    
             }/>
             <Route path='/chat' element={

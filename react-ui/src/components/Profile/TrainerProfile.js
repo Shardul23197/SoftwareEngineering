@@ -143,6 +143,8 @@ export default function TrainerProfile() {
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                   <div className="d-flex justify-content-end text-center py-1">
                   <MDBBtn onClick={addUserToChat}>Chat with Trainer</MDBBtn>
+    
+                  <Link to="/book"><MDBBtn className='mx-3' >Book Appointment</MDBBtn></Link>
                   </div>
                 </div>
 
