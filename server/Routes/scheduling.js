@@ -32,10 +32,10 @@ const formatDate = (date) => {
 
 
 
-// @route GET /api/scheduling/trainerAppointments
+// @route GET /api/scheduling/listAppointments
 // @desc Get a list of appointments for a trainer
 // @access Public
-router.get('/trainerAppointments', async (req, res) => {
+router.get('/listAppointments', async (req, res) => {
     // // Get the access token from the header
     // const { authorization } = req.headers;
     // const accessToken = authorization.split(' ')[1];
@@ -51,24 +51,16 @@ router.get('/trainerAppointments', async (req, res) => {
     // let email = session.email;
     const { email, filterStartTime, filterEndTime } = req.body;
     
-    const trainer = await User.findOne({ email: email });
-    // Check if trainer exists and if they are a trainer
-    if (!trainer) {
+    const user = await User.findOne({ email: email });
+    // Check if user exists and if they are a trainer
+    if (!user) {
         let err = 'Could not find the given email!';
         res.status(401).send(err);
         return;
-    }
-    // Check if trainer is a trainer
-    if (trainer.role !== 'trainer') {
-        let err = 'You must be a trainer to open appointments!';
-        res.status(401).send(err);
-        return;
-    }
-    
+    }    
 
     // Build the filters for the appointments
-    let filters = { email: email };
-    console.log(filterStartTime && filterEndTime);
+    let filters = { email: user.email };
     if (filterStartTime && filterEndTime) {
         filters.startTime = {
             $gt: filterStartTime, 
@@ -90,21 +82,60 @@ router.get('/trainerAppointments', async (req, res) => {
 
 // Returns an error if the request body does not follow the restrictions below
 const validateOpenAppointmentsRequest = (req) => {
-    const { startDay, endDay, appointmentTime } = req.body;
+    const { times, title, description, duration } = req.body;
 
-    const endDayDate = new Date(Number.parseInt(endDay));
-    const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
+    if (!times) return 'You must pass an array of times!'
+    if (!title) return 'You must pass a title!'
+    if (!description) return 'You must pass a description!'
+    if (!duration) return 'You must pass a duration!'
 
-    if (!(endDayDate.getMinutes() !== 0 || endDayDate.getMinutes() !== 30) || endDayDate.getSeconds() !== 0)
-        return 'endDay must have a time of XX:00:00 XM or XX:30:00 XM.';
-    if (endDayDate.getHours() !== appointmentTimeDate.getHours() 
-        || endDayDate.getMinutes() !== appointmentTimeDate.getMinutes()
-        || endDayDate.getSeconds() !== appointmentTimeDate.getSeconds())
-        return 'appointmentTime must have a time of XX:00:00 XM or XX:30:00 XM.'
-    if (!(appointmentTimeDate <= endDayDate))
-        return 'appointmentTime must be before endDay.'
-    if (appointmentTimeDate.getDay() !== endDayDate.getDay())
-        return 'appointmentTimeDate must be the same day of the week as endDayDate.'
+
+    if (times.length%2 !== 0)
+        return 'Each appointmentTime must have a matching endDay!';
+
+    for (let i = 0; i < times.length; i += 2) {
+        const appointmentTimeDate = new Date(Number.parseInt(times[i]));
+        const endDayDate = new Date(Number.parseInt(times[i+1]));
+        if (appointmentTimeDate < Date.now() || endDayDate < Date.now())
+            return 'Cannot open appointments in the past!';
+
+        if (!(endDayDate.getMinutes() !== 0 || endDayDate.getMinutes() !== 30) || endDayDate.getSeconds() !== 0)
+            return 'endDay must have a time of XX:00:00 XM or XX:30:00 XM.';
+        if (endDayDate.getHours() !== appointmentTimeDate.getHours() 
+            || endDayDate.getMinutes() !== appointmentTimeDate.getMinutes()
+            || endDayDate.getSeconds() !== appointmentTimeDate.getSeconds())
+            return 'appointmentTime must have a time of XX:00:00 XM or XX:30:00 XM.'
+        if (!(appointmentTimeDate <= endDayDate))
+            return 'appointmentTime must be before endDay.'
+        if (appointmentTimeDate.getDay() !== endDayDate.getDay())
+            return 'appointmentTimeDate must be the same day of the week as endDayDate.'
+    }
+}
+
+// Returns an error if the request body does not follow the restrictions below
+const createAppointmentsList = (trainterId, req) => {
+    const { times, title, description, duration } = req.body;
+
+    let appointmentsToOpen = [];
+    for (let i = 0; i < times.length; i += 2) {
+        const appointmentTimeDate = new Date(Number.parseInt(times[i]));
+        const endDayDate = new Date(Number.parseInt(times[i+1]));
+
+        
+        while (appointmentTimeDate < endDayDate) {
+            appointmentsToOpen.push(new Appointment({
+                title: title,
+                description: description,
+                duration: duration,
+                trainerId: trainterId,
+                startTime: appointmentTimeDate.getTime(),
+                meetingLink: `https://zoom.us/j/${Math.floor(Math.random() * 99999999999)}`
+            }));
+            appointmentTimeDate.setDate(appointmentTimeDate.getDate() + 7);
+        }
+    }
+
+    return appointmentsToOpen;
 }
 
 // @route POST /api/scheduling/openAppointments
@@ -113,12 +144,14 @@ const validateOpenAppointmentsRequest = (req) => {
 /*
     Request:
         - authorization: 'Bearer {accessToken}'
-        - endDay: A unix time in milliseconds representing the last date (excluded) in the series. 
-                    This must have the same hours, minutes, and time as appointmentTime and must have a time of XX:00:00 XM or
-                    XX:30:00 XM. 
-        - appointmentTime: A unix time in milliseconds representing the appointment start time for the series of appointments.
-                    This must have the same hours, minutes, and time as endDay and must have a time of XX:00:00 XM or
-                    XX:30:00 XM. 
+        - times: an array of unix timestamp pairs where even indecies are appointmentTimes, and odd indicies are the corresponding
+                    endDays. 
+            + endDay: A unix time in milliseconds representing the last date (excluded) in the series. 
+                        This must have the same hours, minutes, and time as appointmentTime and must have a time of XX:00:00 XM or
+                        XX:30:00 XM. 
+            + appointmentTime: A unix time in milliseconds representing the appointment start time for the series of appointments.
+                        This must have the same hours, minutes, and time as endDay and must have a time of XX:00:00 XM or
+                        XX:30:00 XM. 
 */
 router.post('/openAppointments', async (req, res) => {
     // // Get the access token from the header
@@ -140,10 +173,9 @@ router.post('/openAppointments', async (req, res) => {
         res.status(401).send(err);
         return;
     }
-    const { email, startDay, endDay, appointmentTime } = req.body; // get startTime from body
-    // const startDayDate = new Date(Number.parseInt(startDay));
-    const endDayDate = new Date(Number.parseInt(endDay));
-    const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
+    const { email } = req.body; // get startTime from body
+    // const endDayDate = new Date(Number.parseInt(endDay));
+    // const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
     
     const trainer = await User.findOne({ email });
     // Check if trainer exists and if they are a trainer
@@ -159,15 +191,8 @@ router.post('/openAppointments', async (req, res) => {
         return;
     }
     
-    let appointmentsToOpen = [];
-    while (appointmentTimeDate < endDayDate) {
-        appointmentsToOpen.push(new Appointment({
-            trainerId: trainer._id,
-            startTime: appointmentTimeDate.getTime(),
-        }));
-        appointmentTimeDate.setDate(appointmentTimeDate.getDate() + 7);
-    }
-    
+    let appointmentsToOpen = createAppointmentsList(trainer._id, req);
+
     let savedAppointments = await Appointment.insertMany(appointmentsToOpen);
     if(!savedAppointments) {
         let err = 'Could not save appointments to the database!';
