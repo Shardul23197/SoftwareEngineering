@@ -20,6 +20,18 @@ const formatDate = (date) => {
     return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} at ${dateHour}:${dateMinute}:${dateSecond} ${dateAmOrPm}`;
 }
 
+
+
+
+
+// TODO: - Clean up commented code in functs
+//       - Perform validation of tokens at beginning of each method
+
+
+
+
+
+
 // @route GET /api/scheduling/trainerAppointments
 // @desc Get a list of appointments for a trainer
 // @access Public
@@ -80,40 +92,34 @@ router.get('/trainerAppointments', async (req, res) => {
 const validateOpenAppointmentsRequest = (req) => {
     const { startDay, endDay, appointmentTime } = req.body;
 
-    const startDayDate = new Date(Number.parseInt(startDay));
     const endDayDate = new Date(Number.parseInt(endDay));
     const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
 
-    console.log(startDayDate.getHours() === 0 || startDayDate.getMinutes() === 0 || startDayDate.getSeconds() === 0);
-    if (startDayDate.getHours() !== 0 || startDayDate.getMinutes() !== 0 || startDayDate.getSeconds() !== 0)
-        return 'startDay must represent 12:00:00 AM for the first date in the series.';
-    if (endDayDate.getHours() !== 23 || endDayDate.getMinutes() !== 59 || endDayDate.getSeconds() !== 59)
-        return 'endDay must represent 11:59:59 PM for the last date of the series.';
-    if (!(startDayDate <= endDayDate))
-        return 'startDay must be before endDay.'
-    if (startDayDate.getDay() !== endDayDate.getDay())
-        return 'endDay must be the same day of the week as startDay.'
-    if (startDayDate.getDate() !== appointmentTimeDate.getDate() 
-        || startDayDate.getMonth() !== appointmentTimeDate.getMonth() 
-        || startDayDate.getFullYear() !== appointmentTimeDate.getFullYear())
-        return 'appointmentTime must be the same day, month, and year as startDay.'
-    if (!(appointmentTimeDate.getMinutes() !== 0 || appointmentTimeDate.getMinutes() !== 30) || appointmentTimeDate.getSeconds() !== 0)
+    if (!(endDayDate.getMinutes() !== 0 || endDayDate.getMinutes() !== 30) || endDayDate.getSeconds() !== 0)
+        return 'endDay must have a time of XX:00:00 XM or XX:30:00 XM.';
+    if (endDayDate.getHours() !== appointmentTimeDate.getHours() 
+        || endDayDate.getMinutes() !== appointmentTimeDate.getMinutes()
+        || endDayDate.getSeconds() !== appointmentTimeDate.getSeconds())
         return 'appointmentTime must have a time of XX:00:00 XM or XX:30:00 XM.'
+    if (!(appointmentTimeDate <= endDayDate))
+        return 'appointmentTime must be before endDay.'
+    if (appointmentTimeDate.getDay() !== endDayDate.getDay())
+        return 'appointmentTimeDate must be the same day of the week as endDayDate.'
 }
 
 // @route POST /api/scheduling/openAppointments
 // @desc Open a series of recurring appointments for scheduling
+// @access Public
 /*
     Request:
         - authorization: 'Bearer {accessToken}'
-        - startDay: A unix time in milliseconds representing 12:00:00 AM for the first date in the series.
-        - endDay: A unix time in milliseconds representing 11:59:59 PM for the last date (excluded) in the series. 
-                    This date must be the same day of the week as nthe startDay. 
+        - endDay: A unix time in milliseconds representing the last date (excluded) in the series. 
+                    This must have the same hours, minutes, and time as appointmentTime and must have a time of XX:00:00 XM or
+                    XX:30:00 XM. 
         - appointmentTime: A unix time in milliseconds representing the appointment start time for the series of appointments.
-                    This date must be the same day, month, and year as startDay. It also must have a time of XX:00:00 XM or
-                    XX:30:00 XM.
+                    This must have the same hours, minutes, and time as endDay and must have a time of XX:00:00 XM or
+                    XX:30:00 XM. 
 */
-// @access Public
 router.post('/openAppointments', async (req, res) => {
     // // Get the access token from the header
     // const { authorization } = req.headers;
@@ -135,6 +141,9 @@ router.post('/openAppointments', async (req, res) => {
         return;
     }
     const { email, startDay, endDay, appointmentTime } = req.body; // get startTime from body
+    // const startDayDate = new Date(Number.parseInt(startDay));
+    const endDayDate = new Date(Number.parseInt(endDay));
+    const appointmentTimeDate = new Date(Number.parseInt(appointmentTime));
     
     const trainer = await User.findOne({ email });
     // Check if trainer exists and if they are a trainer
@@ -150,19 +159,23 @@ router.post('/openAppointments', async (req, res) => {
         return;
     }
     
+    let appointmentsToOpen = [];
+    while (appointmentTimeDate < endDayDate) {
+        appointmentsToOpen.push(new Appointment({
+            trainerId: trainer._id,
+            startTime: appointmentTimeDate.getTime(),
+        }));
+        appointmentTimeDate.setDate(appointmentTimeDate.getDate() + 7);
+    }
+    
+    let savedAppointments = await Appointment.insertMany(appointmentsToOpen);
+    if(!savedAppointments) {
+        let err = 'Could not save appointments to the database!';
+        res.status(401).send(err);
+        return;
+    }
 
-    let newAppointment = new Appointment({
-        trainerId: trainer._id,
-        startTime: new Date() // startTime
-    });
-
-    newAppointment.save()
-        .then(openAppointment => {
-            res.status(200).json(openAppointment);
-        })
-        .catch(err => {
-            res.status(400).json(err);
-        });    
+    res.status(200).json(savedAppointments);
 });
 
 // @route POST /api/scheduling/closeAppointment
@@ -285,12 +298,23 @@ router.post('/bookAppointment', async (req, res) => {
   }
   
 
-  let appointment = await Appointment.findByIdAndUpdate(appointmentId, { customerId: user._id }).exec();
+  let appointment = await Appointment.findById(appointmentId).exec();
   if (!appointment) {
+    console.log(appointment);
       let err = 'Could not find the requested appointment!';
       res.status(401).send(err);
       return;
   }
+  // Check if the appointment is already booked
+  if (appointment.customerId !== '') {
+      let err = 'The requested appointment has already been booked!';
+      res.status(401).send(err);
+      return;
+  }
+
+  // Change the customerId of the appointment (i.e. book the appointment)
+  appointment.customerId = user._id;
+  await appointment.save();
 
   res.status(200).json(appointment);
 });
