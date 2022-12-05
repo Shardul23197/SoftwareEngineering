@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { MDBInput, MDBBtn, MDBRow, MDBCol, MDBCardText } from 'mdb-react-ui-kit'
 import axios from 'axios'
 import Card from 'react-bootstrap/Card';
 import "../../../node_modules/video-react/dist/video-react.css";
@@ -12,6 +11,18 @@ import Navigation from '../Navigation/Navigation';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import {
+    MDBCol,
+    MDBContainer,
+    MDBRow,
+    MDBCard,
+    MDBCardText,
+    MDBCardBody,
+    MDBCardImage,
+    MDBTypography,
+    MDBBtn,
+    MDBInput,
+  } from 'mdb-react-ui-kit';
 
 const Search = () => {
     const [search, setSearch] = useState('')
@@ -62,16 +73,16 @@ const Search = () => {
 
 
     return (
-        <div>
-            <ToastContainer />
-            <br />
+        <div style={{backgroundColor:'#cbe2f7'}}>
             <Navigation />
+            <MDBContainer className="py-5 h-100">
             <form onSubmit={onSubmit}>
-                <MDBRow>
+           
+                <MDBRow style={{backgroundColor:'#cbe2f7'}}>
                     <MDBCol md="7">
                         <MDBCardText style={{ 'marginLeft': '265px' }} className="text-muted">
                             <MDBInput label='Name' onChange={onSearchChange} value={search}
-                                type='text' required />
+                                type='text' required  style={{backgroundColor:'white'}}/>
                         </MDBCardText>
                     </MDBCol>
                     <MDBCol md="2">
@@ -89,15 +100,16 @@ const Search = () => {
                     </MDBCol>
                 </MDBRow>
             </form>
+            </MDBContainer>
             <br />
-            <Container>
-                <Row>
+            <MDBContainer>
+                <MDBRow>
                     {videosData.length > 0 && videosData ? videosData.map((video) => {
                         return (
 
-                            <Col md="4" style={!video ? {'display': 'none'} : {}}>
+                            <MDBCol md="4" style={!video ? {'display': 'none'} : {}}>
                                 {video ?
-                                    <Card style={{ width: '18rem', 'marginRight': '6%', 'marginBottom': '10%', 'marginLeft': '145px' }}>
+                                    <MDBCard style={{ width: '18rem', 'marginRight': '4%', 'marginBottom': '10%', 'marginLeft': '190px' }}>
                                         <Card.Body>
                                             <Card.Title>{category === 'videos' ? video.title :
                                                 <Link to={'/profile/' + video._id}>{video.fullName}</Link>}
@@ -109,15 +121,19 @@ const Search = () => {
                                                 src={video.url}
                                             /> : ""}
                                             <br/>
-                                            {video.postedBy && category === 'videos' ? <Card.Text>Uploaded By <Link to={'/profile/' + video.postedBy._id}>{video.postedBy.fullName}</Link></Card.Text> : ""}
+                                            {console.log(JSON.stringify(video))}
+                                            {video.postedBy && category === 'videos' ? 
+                                                <Card.Text>Uploaded By <Link to={'/profile/' + video.postedBy._id}>{video.postedBy.fullName}</Link></Card.Text> 
+                                                : 
+                                            ""}
                                         </Card.Body>
-                                    </Card>
+                                    </MDBCard>
                                     : ""}
-                            </Col>
+                            </MDBCol>
                         )
                     }) : ""}
-                </Row>
-            </Container>
+                </MDBRow>
+            </MDBContainer>
         </div>
     )
 }

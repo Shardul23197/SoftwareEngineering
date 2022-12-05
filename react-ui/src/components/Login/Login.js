@@ -73,6 +73,7 @@ export default function Login() {
     };
 
     return (
+        <div className='container'>
         <form onSubmit={onSubmit}>
             <MDBContainer fluid className="p-3 my-5 h-custom">
                 <MDBRow>
@@ -117,5 +118,6 @@ export default function Login() {
                 </MDBRow>
             </MDBContainer>
         </form>
+        </div>
     );
 };

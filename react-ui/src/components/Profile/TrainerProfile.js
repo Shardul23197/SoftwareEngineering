@@ -87,7 +87,6 @@ export default function TrainerProfile() {
         withCredentials: true,
         headers: headers
       });
-      
       instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
         setMfaQrCodeUrl(res.data.qrImage);
         setMfaSecret(res.data.mfa_secret);
@@ -114,12 +113,12 @@ export default function TrainerProfile() {
 
 
   return (
-    <div className="gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
-      <ToastContainer />
+    <div className="gradient-custom-2" style={{ backgroundColor: '#cbe2f7' }}>
+   
 
       {/* Sidebar Navigation */}
       <Navigation/>
-        <MDBContainer className="py-5 h-100">
+        <MDBContainer className="py-5 h-100 section">
           <MDBRow className="justify-content-center align-items-center h-100">
             <MDBCol lg="9" xl="7">
 
@@ -143,6 +142,8 @@ export default function TrainerProfile() {
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                   <div className="d-flex justify-content-end text-center py-1">
                   <MDBBtn onClick={addUserToChat}>Chat with Trainer</MDBBtn>
+    
+                  <Link to={`/book/${id}`}><MDBBtn className='mx-3' >Book Appointment</MDBBtn></Link>
                   </div>
                 </div>
 

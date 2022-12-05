@@ -126,7 +126,7 @@ export default function WorkoutLog() {
   };
 
   return (
-    <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#9de2ff' }}>
+    <div className="mainbody gradient-custom-2" style={{ backgroundColor: '#cbe2f7' }}>
 
       {/* Sidebar Navigation */}
       <Navigation/>
