@@ -916,8 +916,8 @@ export default function Profile() {
                         <MDBCol sm="9">
                           <MDBCardText className="text-muted">
                             <MDBRow>
-                              <MDBCol sm="3">
-                                <MDBInput onChange={onAptTitleChange}></MDBInput>
+                              <MDBCol sm="12" >
+                                <MDBInput onChange={onAptTitleChange} style={{width: '400px'}}></MDBInput>
                               </MDBCol>
                             </MDBRow>
                           </MDBCardText>
@@ -1056,20 +1056,6 @@ export default function Profile() {
                           <MDBCardText className="text-muted">
                           <MDBRow className="" style={{flex: 'left', width: '400px'}}>
                             <div style={{ flex: 'left', width: '150px'}}>
-
-                            {/* <input 
-                              type="date" 
-                              id="start" 
-                              name="trip-start"
-                              min="2022-12-08"
-                              onChange={onEndOnChange}></input> */}
-
-                              {/* <DatePicker
-                                minDate={new Date()}
-                                selected={endOn}
-                                onChange={(date:Date) => setEndOn(date)} //only when value has changed
-                              /> */}
-
                                <MDBInput value={repeatFor} onChange={onRepeatForChange}></MDBInput>
                             </div>
                             <div style={{position: 'relative', left: '-10px', width: '100px'}}>

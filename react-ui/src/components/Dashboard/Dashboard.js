@@ -11,7 +11,7 @@ import {
   MDBCard,
   MDBCardBody,
 } from "mdb-react-ui-kit";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 
 export default function Dashboard() {
@@ -23,13 +23,14 @@ export default function Dashboard() {
   const [authToken] = useState(existingAuthtoken);
 
   // Appointment table information
-  const columns = [
+  let columns = [
     { heading: 'Title', value: 'title' },
     { heading: 'Date', value: 'date' },
     { heading: 'Time', value: 'time' },
     { heading: 'Duration', value: 'duration' },
     { heading: 'Description', value: 'description' },
-    { heading: 'Meeting Link', value: 'meetingLink' },
+    { heading: 'Meeting Link', value: 'meetingLink'},
+    { heading: 'Booked', value: 'customerId'},
     { heading: 'Action' }
   ];
   const [dataTable, setDataTable] = useState([]);
@@ -65,7 +66,6 @@ export default function Dashboard() {
       .post("/api/scheduling/listAppointments", qs.stringify(formData))
       .then((res) => {
         let appointments = res.data;
-        console.log(`appointments: ${appointments}`);
 
         // Transform data for this table
         for (let i = 0; i < appointments.length; i++) {
@@ -185,7 +185,6 @@ export default function Dashboard() {
                           className="justify-content-center align-items-center h-100"
                         >
                           <div>
-                            {console.log(dataTable)}
                             {dataTable.length === 0 ?
                               <h2>You do not have any upcoming appointments!</h2>
                             :

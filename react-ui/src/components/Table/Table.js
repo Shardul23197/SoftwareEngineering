@@ -20,7 +20,12 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   if (onBookClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                if (index !== columns.length-1)
+                if (columnsItem.heading === 'Meeting Link') {
+                    const href = `${columnsItem.value}`
+                    console.log(href)
+                    return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
+                }
+                if (columnsItem.heading !== 'Action')
                   return <td>{item[`${columnsItem.value}`]}</td>;
                 
                 return ''
@@ -35,7 +40,12 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   else if (onCancelClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                if (index !== columns.length-1)
+                if (columnsItem.heading === 'Meeting Link') {
+                    const href = `${columnsItem.value}`
+                    console.log(href)
+                    return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
+                }
+                if (columnsItem.heading !== 'Action')
                   return <td>{item[`${columnsItem.value}`]}</td>;
                 
                 return ''
@@ -50,7 +60,16 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   else if (onDeleteClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                if (index !== columns.length-1)
+                console.log(columnsItem.heading)
+                if (columnsItem.heading === 'Meeting Link') {
+                    const href = `${columnsItem.value}`
+                    console.log(href)
+                    return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
+                }
+                if (columnsItem.heading === 'Booked') {
+                    return <td>{item[`${columnsItem.value}`] === '' ? 'No' : 'Yes'}</td>;
+                }
+                if (columnsItem.heading !== 'Action')
                   return <td>{item[`${columnsItem.value}`]}</td>;
                 
                 return ''

@@ -35,6 +35,7 @@ export default function BookAppointment() {
     { heading: 'Time', value: 'time' },
     { heading: 'Duration', value: 'duration' },
     { heading: 'Description', value: 'description' },
+    { heading: 'Booked', value: 'customerId'},
     { heading: 'Action' }
   ];
   const [dataTable, setDataTable] = useState([]);
