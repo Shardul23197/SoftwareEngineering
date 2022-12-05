@@ -5,7 +5,6 @@ import ShowUsers from './ShowUsers';
 import ShowTrainers from './ShowTrainers';
 import ApproveTrainers from './ApproveTrainers';
 import { BrowserRouter, Switch, Route,Routes } from "react-router-dom";
-import AdminChat from './AdminChat';
 import AdminDash from './AdminDash';
 import Adminprofile from './Adminprofile';
 import ShowVideos from './ShowVideos';
@@ -63,9 +62,7 @@ export default function Admin() {
                     <ApproveTrainers></ApproveTrainers>
                     }/>
 
-<       Route path='/adminchat' element={
-            <AdminChat></AdminChat>
-            }/>
+
 
 <Route path='/adminprofile' element={
             <Adminprofile></Adminprofile>

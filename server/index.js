@@ -52,7 +52,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/users', require(path.resolve(__dirname, './Routes/api/users')));
     app.use('/api/users/log', require(path.resolve(__dirname, './Routes/api/log')));
     app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/api/profile')));
-    app.use('/api/trainer', require(path.resolve(__dirname, './Routes/api/trainer')));
+    // app.use('/api/trainer', require(path.resolve(__dirname, './Routes/api/trainer')));
     // app.use('/api/users', require(path.resolve(__dirname, './Routes/routes')));
     // app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
     // app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
@@ -61,9 +61,9 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/chat', require(path.resolve(__dirname, './Routes/chat')));
     app.use('/api/message', require(path.resolve(__dirname, './Routes/message')));
 
-    app.use('/api/users', require(path.resolve(__dirname, './Routes/routes')));
+    // app.use('/api/users', require(path.resolve(__dirname, './Routes/routes')));
     app.use('/api/users/profile', require(path.resolve(__dirname, './Routes/profile')));
-    app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
+    //app.use('/api/trainer', require(path.resolve(__dirname, './Routes/trainer')));
     app.use('/api/search', require(path.resolve(__dirname, './Routes/search')))
     app.use('/api/admin', require(path.resolve(__dirname, './Routes/admin')))
 

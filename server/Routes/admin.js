@@ -8,9 +8,9 @@ const TrainerApprovalSchema = require('../models/TrainerApproval');
 const User = require("../models/UserProfile");
 
 require ('dotenv').config()
-const express = require('./Routes/admin')
+// const express = require('./Routes/admin')
 const app = express();
-const adminRoutes = require('./Routes/admin')
+const adminRoutes = require('../Routes/admin')
 const cors = require("cors")
 app.use(express.json())
 app.use(cors())
