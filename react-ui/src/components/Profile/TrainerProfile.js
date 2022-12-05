@@ -87,7 +87,6 @@ export default function TrainerProfile() {
         withCredentials: true,
         headers: headers
       });
-      
       instance.get('/auth/mfa/google/authenticator/info', {}).then((res) => {
         setMfaQrCodeUrl(res.data.qrImage);
         setMfaSecret(res.data.mfa_secret);
@@ -144,7 +143,7 @@ export default function TrainerProfile() {
                   <div className="d-flex justify-content-end text-center py-1">
                   <MDBBtn onClick={addUserToChat}>Chat with Trainer</MDBBtn>
     
-                  <Link to="/book"><MDBBtn className='mx-3' >Book Appointment</MDBBtn></Link>
+                  <Link to={`/book/${id}`}><MDBBtn className='mx-3' >Book Appointment</MDBBtn></Link>
                   </div>
                 </div>
 

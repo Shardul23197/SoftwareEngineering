@@ -35,21 +35,21 @@ const formatDate = (date) => {
 // @route GET /api/scheduling/listAppointments
 // @desc Get a list of appointments for a trainer
 // @access Public
-router.get('/listAppointments', async (req, res) => {
-    // // Get the access token from the header
-    // const { authorization } = req.headers;
-    // const accessToken = authorization.split(' ')[1];
+router.post('/listAppointments', async (req, res) => {
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
   
-    // let session = await Session.findOne({ accessToken: accessToken });
-    // // Check if a session with this trainer exists
-    // if (!session) {
-    //     let err = 'Could not find the given accessToken!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this trainer exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
+        return;
+    }
 
-    // let email = session.email;
-    const { email, filterStartTime, filterEndTime } = req.body;
+    let email = session.email;
+    const { trainerId, filterStartTime, filterEndTime } = req.body;
     
     const user = await User.findOne({ email: email });
     // Check if user exists and if they are a trainer
@@ -60,16 +60,21 @@ router.get('/listAppointments', async (req, res) => {
     }    
 
     // Build the filters for the appointments
-    let filters = { email: user.email };
+    let filters = { trainerId };
     if (filterStartTime && filterEndTime) {
         filters.startTime = {
             $gt: filterStartTime, 
             $lt: filterEndTime
         };
     }
+    else if (filterStartTime) {
+        filters.startTime = {
+            $gt: filterStartTime
+        };
+    }
 
-    console.log(filters);
     const appointments = await Appointment.find(filters);
+    console.log(appointments);
     // Check for an error
     if (!appointments) {
         let err = `Error finding appointments for ${email}!`;
@@ -294,20 +299,20 @@ router.post('/closeAppointment', async (req, res) => {
 */
 // @access Public
 router.post('/bookAppointment', async (req, res) => {
-  // // Get the access token from the header
-  // const { authorization } = req.headers;
-  // const accessToken = authorization.split(' ')[1];
+  // Get the access token from the header
+  const { authorization } = req.headers;
+  const accessToken = authorization.split(' ')[1];
 
-  // let session = await Session.findOne({ accessToken: accessToken });
-  // // Check if a session with this trainer exists
-  // if (!session) {
-  //     let err = 'Could not find the given accessToken!';
-  //     res.status(401).json(err);
-  //     return;
-  // }
+  let session = await Session.findOne({ accessToken: accessToken });
+  // Check if a session with this trainer exists
+  if (!session) {
+      let err = 'Could not find the given accessToken!';
+      res.status(401).json(err);
+      return;
+  }
 
-  // let email = session.email;
-  const { email, appointmentId } = req.body; // get startTime from body
+  let email = session.email;
+  const { appointmentId } = req.body; // get startTime from body
   
   const user = await User.findOne({ email });
   // Check if user exists

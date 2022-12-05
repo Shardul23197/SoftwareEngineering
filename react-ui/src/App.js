@@ -134,7 +134,7 @@ function App() {
                     <Search /> 
                 </PrivateRoute>    
             }/>
-            <Route path='/book' element={
+            <Route path='/book/:id' element={
                 <PrivateRoute>
                     <BookAppointment /> 
                 </PrivateRoute>    

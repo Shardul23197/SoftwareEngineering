@@ -15,12 +15,115 @@ import {
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import VideoCard from "./VideoCard";
 import "./Profile.css";
 import Navigation from "../Navigation/Navigation";
-import { v4 as uuidv4 } from "uuid";
+import Table from '../Table/Table';
+import qs from "qs";
 
 export default function BookAppointment() {
+  // Trainer ID from parameters
+  const { id } = useParams()
+
+  // Auth token and refresh token state
+  const existingAuthtoken = localStorage.getItem("authToken") || "";
+  const [authToken] = useState(existingAuthtoken);
+
+  const column = [
+    { heading: 'Title', value: 'title' },
+    { heading: 'Date', value: 'date' },
+    { heading: 'Time', value: 'time' },
+    { heading: 'Duration', value: 'duration' },
+    { heading: 'Description', value: 'description' },
+  ];
+  const [dataTable, setDataTable] = useState([]);
+
+
+  //get user data
+  useEffect(() => {
+    const headers = {
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const instance = axios.create({
+      baseURL: "http://localhost:5000",
+      withCredentials: true,
+      headers: headers,
+    });
+    const formData = {
+      trainerId: id,
+      filterStartTime: Date.now()
+    }
+
+    instance
+      .post("/api/scheduling/listAppointments", qs.stringify(formData))
+      .then((res) => {
+        let appointments = res.data;
+        // Filter out booked appointments
+        appointments = appointments.filter(apt => apt.customerId === '');
+        console.log(appointments);
+
+        // Transform data for this table
+        for (let i = 0; i < appointments.length; i++) {
+          appointments[i].id = i;
+          let dateTime = new Date(appointments[i].startTime);
+
+          appointments[i].date = `${dateTime.getFullYear()}/${dateTime.getMonth()+1}/${dateTime.getDate()+1}`;
+          
+          
+          const dateAmOrPm = dateTime.getHours() / 12 === 1 ? 'PM' : 'AM';
+
+          let dateHour = dateTime.getHours();
+          if (dateHour === 0) dateHour = 12;
+          else if (dateHour > 12) dateHour -= - 12;
+
+
+          let dateMinute = dateTime.getMinutes().toString();
+          if (dateMinute.length === 1) dateMinute = '0' + dateMinute;
+
+          appointments[i].time = `${dateHour}:${dateMinute} ${dateAmOrPm}`;
+        }
+
+        setDataTable(appointments);
+      })
+      .catch((error) => {
+        console.error(error);
+        setDataTable([]);
+      });
+  }, [authToken, id]);
+
+  const onBookClick = (event) => {
+    event.preventDefault();
+
+    const headers = {
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const instance = axios.create({
+      baseURL: "http://localhost:5000",
+      withCredentials: true,
+      headers: headers,
+    });
+    const formData = {
+      appointmentId: dataTable.filter(apt => apt.id === Number.parseInt(event.target.value))[0]._id
+    }
+
+    instance
+      .post("/api/scheduling/bookAppointment", qs.stringify(formData))
+      .then((res) => {
+        console.log(res);
+        setDataTable(dataTable
+          .filter(apt => apt._id !== dataTable[event.target.value]._id) // filter out booked apt
+          .map(apt => { // decrement ids of each row
+            apt.id -= 1;
+            return apt;
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   return (
     <>
       <Navigation />
@@ -47,66 +150,8 @@ export default function BookAppointment() {
                     className="justify-content-center align-items-center h-100"
                   >
                     <div>
-                      <table
-                        class="table table-bordered"
-                        style={{ textAlign: "center" }}
-                      >
-                        <thead>
-                          <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Start Time</th>
-                            <th scope="col">Duration</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>10.12.2022</td>
-                            <td>10:00am</td>
-                            <td>30 minutes</td>
-                            <td>This is an introductory class</td>
-                            <td>
-                              <button type="button" class="btn btn-primary">
-                                Book
-                              </button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>10.12.2022</td>
-                            <td>10:00am</td>
-                            <td>30 minutes</td>
-                            <td>This is an introductory class</td>
-                            <td>
-                              <button type="button" class="btn btn-primary">
-                                Book
-                              </button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>10.12.2022</td>
-                            <td>10:00am</td>
-                            <td>30 minutes</td>
-                            <td>This is an introductory class</td>
-                            <td>
-                              <button type="button" class="btn btn-primary">
-                                Book
-                              </button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>10.12.2022</td>
-                            <td>10:00am</td>
-                            <td>30 minutes</td>
-                            <td>This is an introductory class</td>
-                            <td>
-                              <button type="button" class="btn btn-primary">
-                                Book
-                              </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                    {console.log(dataTable)}
+                      <Table data={dataTable} column={column} onBookClick={onBookClick} />
                     </div>
                   </MDBRow>
                 </MDBCardBody>

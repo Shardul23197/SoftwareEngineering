@@ -82,8 +82,6 @@ export default function Profile() {
   const existingAuthtoken = localStorage.getItem("authToken") || "";
   const [authToken] = useState(existingAuthtoken);
 
-  //todo
-  //get user data
   useEffect(() => {
     const headers = {
       Authorization: `Bearer ${authToken}`,
