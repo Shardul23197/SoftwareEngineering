@@ -69,7 +69,7 @@ export default function ApproveTrainers() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers">
+    <div className="home-section app-trainers container">
       <ToastContainer />
       <link
         rel="stylesheet"

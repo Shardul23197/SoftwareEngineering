@@ -26,7 +26,7 @@ export default function ShowUsers() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers">
+    <div className="home-section app-trainers container">
       <link
         rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"

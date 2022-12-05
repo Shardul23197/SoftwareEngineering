@@ -3,7 +3,7 @@ import '../../App.css';
 
 export default function AdminHeader() {
   return (
-    <section class="admin-header">
+    <section class="admin-header container">
     <div>
       <nav>
       <div class="sidebar-button">

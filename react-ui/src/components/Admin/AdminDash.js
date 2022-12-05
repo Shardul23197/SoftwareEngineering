@@ -9,7 +9,7 @@ export default function AdminDash() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className='admin-dash-content'>
+    <div className='admin-dash-content container'>
           <div>
         <section class="home-section">
       <div class="home-content">

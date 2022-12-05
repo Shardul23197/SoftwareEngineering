@@ -41,7 +41,7 @@ export default function ShowVideos() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers">
+    <div className="home-section app-trainers container">
 
 <ToastContainer />
     <link
