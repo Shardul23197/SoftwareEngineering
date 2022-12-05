@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../App.css";
 
 export default function Home() {
@@ -10,6 +10,10 @@ export default function Home() {
 
   const routeToLogin = () => {
     navigate("/login");
+  };
+
+  const routeToAdmin = () => {
+    navigate("/admin");
   };
   return (
     <>
@@ -329,6 +333,7 @@ export default function Home() {
           We are committed towards the goal of making the
             whole planet fit. We know the ferocity it takes to get fit!
             </p>
+            <p onClick={routeToAdmin}>Admin</p>
           </div>
        
 

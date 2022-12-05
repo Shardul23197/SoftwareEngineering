@@ -29,6 +29,13 @@ import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 import TrainerMessages from './components/Chat/TrainerMessages';
 import BookAppointment from './components/Profile/BookAppointment';
+import Admin from './components/Admin/Admin'
+import AdminDash from './components/Admin/AdminDash'
+import ShowTrainers from './components/Admin/ShowTrainers'
+import ShowUsers from './components/Admin/ShowUsers'
+import ApproveTrainers from './components/Admin/ApproveTrainers'
+import Adminprofile from './components/Admin/Adminprofile'
+import ShowVideos from './components/Admin/ShowVideos';
 
 const pubnub = new PubNub({
   publishKey: 'pub-c-1a2459c5-bfde-409d-8ddb-86e9f45aaaa7',
@@ -153,6 +160,43 @@ function App() {
                     </PubNubProvider>
                 </PrivateRoute>    
             }/>
+
+
+<Route path='/admin' element={
+                <UnauthenticatedRoute>
+                    <Admin></Admin>
+                </UnauthenticatedRoute>    
+            }/>
+
+<Route path='/admindash' element={
+            <AdminDash></AdminDash>
+            }/>
+        <Route path='/showtrainers' element={
+            <ShowTrainers></ShowTrainers>
+            }/>
+        
+        <Route path='/showusers' element={
+            <ShowUsers></ShowUsers>
+            }/>
+
+        <Route path='/approvetrainers' element={
+            <ApproveTrainers></ApproveTrainers>
+            }/>
+
+        <Route path='/approvetrainers/:id' element={
+                    <ApproveTrainers></ApproveTrainers>
+                    }/>
+
+
+
+<Route path='/adminprofile' element={
+            <Adminprofile></Adminprofile>
+            }/>
+
+<Route path='/showvideos' element={
+            <ShowVideos></ShowVideos>
+            }/>
+
         </Routes>
         </BrowserRouter>
         </AuthContext.Provider>
