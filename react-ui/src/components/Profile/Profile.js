@@ -507,7 +507,7 @@ export default function Profile() {
       });
   };
 
-  const renderByStatus = () => {
+  const renderByStatus = () => {    
     if (role === 'trainer') {
       if(status === 'inprocess' || status === 'pending') {
         return (<h1>Your profile is under Review</h1>)
