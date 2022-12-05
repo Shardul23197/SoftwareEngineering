@@ -6,11 +6,11 @@ const nodemailer = require('nodemailer');
 const { ObjectId } = require('mongodb');
 
 const formatDate = (date) => {
-    const dateAmOrPm = date.getHours() / 12 === 1 ? 'PM' : 'AM';
+    const dateAmOrPm = date.getHours() / 12 >= 1 ? 'PM' : 'AM';
 
     let dateHour = date.getHours();
     if (dateHour === 0) dateHour = 12;
-    else if (dateHour > 12) dateHour -= - 12;
+    else if (dateHour > 12) dateHour -= 12;
 
     let dateSecond = date.getSeconds().toString();
     if (dateSecond.length === 1) dateSecond = '0' + dateSecond;
@@ -18,7 +18,7 @@ const formatDate = (date) => {
     let dateMinute = date.getMinutes().toString();
     if (dateMinute.length === 1) dateMinute = '0' + dateMinute;
 
-    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} at ${dateHour}:${dateMinute}:${dateSecond} ${dateAmOrPm}`;
+    return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()+1} at ${dateHour}:${dateMinute}:${dateSecond} ${dateAmOrPm}`;
 }
 
 // @route GET /api/scheduling/listAppointments
