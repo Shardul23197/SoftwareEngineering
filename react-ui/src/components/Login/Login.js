@@ -14,6 +14,8 @@ export default function Login() {
     const [error, setError] = useState(''); // String
     const navigate = useNavigate();
 
+    const [role, setRole] = useState("user");
+
     const onEmailChange = (event) => {
       setEmail(event.target.value);
     }
@@ -39,6 +41,15 @@ export default function Login() {
             headers: headers
         });
 
+        instance
+      .get("/api/users/profile/getdetails", { params: { email: email } })
+      .then((res) => {
+        setRole(res.data.role);
+      })
+      .catch((error) => {
+        if (error.response) console.log(error.response.data);
+      });
+
         const formData = {
             email: email,
             password: password
@@ -58,12 +69,17 @@ export default function Login() {
             store.dispatch({type: 'SET_EMAIL', payload: email});
 
             console.log(mfaRequired);
+
             if (mfaRequired) {
                 navigate('/twoFactor');
                 return;
             }
+            else if(role==="admin"){
+                navigate('/admindash')
+            }
             else {
                 navigate('/dashboard');
+                console.log(role)
                 return;
             }
         })
