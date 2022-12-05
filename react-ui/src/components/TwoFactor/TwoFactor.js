@@ -22,7 +22,7 @@ export default function TwoFactor() {
             'Content-Type': 'application/x-www-form-urlencoded'
         };
         const instance = axios.create({
-            baseURL: 'https://fitocity.herokuapp.com',
+            baseURL: 'https://fitocity-scheduling-frontend.herokuapp.com',
             withCredentials: true,
             headers: headers
         });
@@ -44,7 +44,7 @@ export default function TwoFactor() {
             'Content-Type': 'application/x-www-form-urlencoded'
         };
         const instance = axios.create({
-            baseURL: 'https://fitocity.herokuapp.com',
+            baseURL: 'https://fitocity-scheduling-frontend.herokuapp.com',
             withCredentials: true,
             headers: headers
         });
