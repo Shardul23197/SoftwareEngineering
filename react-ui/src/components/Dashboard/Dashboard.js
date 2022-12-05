@@ -16,9 +16,19 @@ import { useDispatch } from 'react-redux';
 import store from '../../state/store'
 import './Dashboard.css'
 import Navigation from '../Navigation/Navigation';
-// import { Datepicker, Eventcalendar } from "@mobiscroll/react-lite";
-// import "@mobiscroll/react-lite/dist/css/mobiscroll.min.css";
-import {Inject,ScheduleComponent, Day, Week, WorkWeek, Month, Agenda} from '@syncfusion/ej2-react-schedule';
+import {
+  MDBCol,
+  MDBContainer,
+  MDBRow,
+  MDBCard,
+  MDBCardText,
+  MDBCardBody,
+  MDBCardImage,
+  MDBTypography,
+  MDBBtn,
+} from "mdb-react-ui-kit";
+import { ToastContainer, toast } from "react-toastify";
+
 
 
 
@@ -81,6 +91,7 @@ export default function Dashboard() {
     <>
 
 <Navigation/>
+<ToastContainer/>
 
 
 <section class="home-section" style={{backgroundColor:'#cbe2f7'}}>
@@ -91,96 +102,67 @@ export default function Dashboard() {
     </div>
   </nav>
 
-  <div class="home-content">
-    <div class="overview-boxes">
-    {/* <div className="card-dashboard 3">
-          <div className="card_image-dashboard">
-            <img src="https://img.freepik.com/free-photo/woman-doing-yoga-cleaning-chakra_23-2149276019.jpg?w=2000" />
-          </div>
-          <div className="card_title-dashboard">
-    
-          </div>
-        </div> */}
-{/*   
 
-        <div className="card-dashboard 3">
-          <div className="card_image-dashboard">
-            <img src="https://media.istockphoto.com/photos/dance-fitness-picture-id1067009516?k=20&m=1067009516&s=612x612&w=0&h=yQnFT71CeAq8R3QG4hlv4IyLLKnfwl28lMXy9xSn8sk=" />
-          </div>
-          <div className="card_title-dashboard">
-
-          </div>
-        </div> */}
-        {/* <div className="card-dashboard 3">
-          <div className="card_image-dashboard">
-            <img src="https://media.istockphoto.com/photos/attractive-sporty-girls-in-bodysuits-training-at-aerobics-workout-on-picture-id1064119338?k=20&m=1064119338&s=612x612&w=0&h=osPNv5SEc-mZvOisVdhvWGk2dqK-l5lYGIxi_WlAfZ4=" />
-          </div>
-          <div className="card_title-dashboard">
-  
-          </div>
-        </div>
-        <div className="card-dashboard  3">
-          <div className="card_image-dashboard ">
-            <img src="https://media.istockphoto.com/photos/workout-concept-sporty-african-american-woman-doing-abs-exercise-with-picture-id1322878383?k=20&m=1322878383&s=612x612&w=0&h=efco7G7L5NxOm956w6YApf_mYmXBGDEYVVyjsqgl9nI=" />
-          </div>
-          <div className="card_title-dashboard">
- 
-          </div>
-        </div> */}
-{/* 
-        <div className="card-dashboard  3">
-          <div className="card_image-dashboard ">
-            <img src="https://www.eatthis.com/wp-content/uploads/sites/4/2021/07/shutterstock_woman-lifting-dumbbells-arm-curls.jpeg?quality=82&strip=all" />
-          </div>
-          <div className="card_title">
- 
-          </div>
-        </div>
-
-        <div className="card-dashboard  3">
-          <div className="card_image-dashboard ">
-            <img src="https://post.healthline.com/wp-content/uploads/2019/10/Female_Exercise_Bike_732x549-thumbnail.jpg" />
-          </div>
-          <div className="card_title">
-
-          </div>
-        </div> */}
-
-{/* 
-        <div className="card-dashboard  3">
-          <div className="card_image-dashboard ">
-            <img src="https://media.istockphoto.com/photos/indian-food-curry-butter-chicken-palak-paneer-chiken-tikka-biryani-picture-id1127563435?b=1&k=20&m=1127563435&s=612x612&w=0&h=eILdqLWa1ilkJm5qCq7s3HOnPuFea99CxYB5HxDbbVs=" />
-          </div>
-          <div className="card_title-dashboard ">
-
-          </div>
-        </div> */}
-
-        {/* <div className="card-dashboard  3">
-          <div className="card_image-dashboard ">
-            <img src="https://media.istockphoto.com/photos/indian-chicken-curry-picture-id471614507?k=20&m=471614507&s=612x612&w=0&h=snprycYKdTlsTn9vDNuFkWVPv-mwwRJoz2UidfhKvwQ=" />
-          </div>
-          <div className="card_title-dashboard ">
-   
-          </div>
-        </div>
-
-        <div className="card-dashboard  3">
-          <div className="card_image-dashboard ">
-            <img src="https://media.istockphoto.com/photos/healhty-vegan-lunch-bowl-avocado-quinoa-sweet-potato-tomato-spinach-picture-id893716434?k=20&m=893716434&s=612x612&w=0&h=wSf5StzaDtfpRhzdnUlQFhslcDgwLoQFC_ARycIVRwI=" />
-          </div>
-          <div className="card_title">
-   
-          </div>
-        </div> */}
-
-        <ScheduleComponent>
-          <Inject services={[Day, Week, WorkWeek, Month, Agenda]}/>
-        </ScheduleComponent>
-
-  
-    </div>
-  </div>
+      <div className="gradient-custom-2" style={{ backgroundColor: "#cbe2f7", minHeight:'100vh', marginTop:'100px'}}>
+        
+          <MDBRow className="justify-content-center align-items-center h-100">
+            <MDBCol className="subsection">
+              {/* User Profile Card */}
+              <MDBCard>
+                {/* User information card */}
+                <MDBCardBody className="text-black p-4">
+                  <MDBRow
+                    className="justify-content-left align-items-center"
+                    md="6"
+                    style={{ marginBottom: "30px" }}
+                  >
+                    <h1 className="fw-bold" style={{ width: "600px" }}>
+                      Your Agenda
+                    </h1>
+                  </MDBRow>
+                  <MDBRow
+                    md="4"
+                    className="justify-content-center align-items-center h-100"
+                  >
+                    <div>
+                      <table
+                        class="table table-bordered"
+                        style={{ textAlign: "center" }}
+                      >
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Start Time</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Meeting Link</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>10.12.2022</td>
+                            <td>10:00am</td>
+                            <td>30 minutes</td>
+                            <td>This is an introductory class</td>
+                            <td>https://zoom.com</td>
+                            <td>
+                              <button type="button" class="btn btn-danger">
+                                Cancel
+                              </button>
+                            </td>
+                          </tr>
+                 
+                        </tbody>
+                      </table>
+                    </div>
+                  </MDBRow>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          </MDBRow>
+     
+      </div>
 </section>
     </>
   )
