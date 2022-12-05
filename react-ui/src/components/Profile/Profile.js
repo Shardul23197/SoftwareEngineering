@@ -579,8 +579,7 @@ export default function Profile() {
               >
                 <div className="d-flex justify-content-end text-center py-1">
                   <div>
-                    {role === 'trainer' && status === 'approved'
-                      ? 
+                    {role === 'trainer' && status === 'approved' ? 
                       <Button variant="contained" color="default"
                         className='material-button'
                         startIcon={<CloudUploadIcon />}
@@ -590,9 +589,9 @@ export default function Profile() {
                       >
                         Upload
                       </Button>
-                    ) : (
-                      ""
-                    )}
+                     : 
+                      ''
+                    }
                   </div>
                 </div>
               </div>
