@@ -82,10 +82,8 @@ router.post('/listAppointments', async (req, res) => {
             $gt: filterStartTime
         };
     }
-    console.log(filters);
 
     const appointments = await Appointment.find(filters);
-    console.log(appointments);
     // Check for an error
     if (!appointments) {
         let err = `Error finding appointments for ${email}!`;
@@ -220,8 +218,89 @@ router.post('/openAppointments', async (req, res) => {
     res.status(200).json(savedAppointments);
 });
 
-// @route POST /api/scheduling/cancelAppointment
+// @route POST /api/scheduling/deleteAppointment
 // @desc Remove an appointment from the database
+// @access Public
+router.post('/deleteAppointment', async (req, res) => {
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
+  
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this trainer exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
+        return;
+    }
+
+    let email = session.email;
+    const { appointmentId } = req.body; // get appointmentId from body
+    
+    const user = await User.findOne({ email: email });
+    // Check if user exists
+    if (!user) {
+        let err = 'Could not find the given email!';
+        res.status(401).send(err);
+        return;
+    }
+    if (user.role !== 'trainer') {        
+      let err = 'You must be a trainer to delete appointments!';
+      res.status(401).send(err);
+      return;
+    }
+
+    // Find the appointment to delete
+    const deletedAppointment = await Appointment.findByIdAndDelete(appointmentId).exec();
+    if (!deletedAppointment) {
+        let err = 'Could not find the requested appointment!';
+        res.status(401).send(err);
+        return;
+    }
+
+    // Email the customer if the appointment was booked
+    if (deletedAppointment.customerId) {
+        const customer = await User.findOne({ _id: deletedAppointment.customerId });
+        // Check if customer exists
+        if (!customer)
+            return;
+
+        // async process from here to endif
+        
+        // Create a SMTP transporter to send mail to the trainer
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
+                pass: `${process.env.SCHEDULING_EMAIL_PASSWORD}`
+            }
+        });
+
+        // Configure the email
+        const mailOptions = {
+            from: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
+            to: customer.email,
+            subject: 'Appointment Cancellation',
+            text:
+            `Dear ${customer.name},\n\nYou are receiving this because ${user.name} canceled your appointment for`
+            + ` ${formatDate(new Date(deletedAppointment.startTime))}. Please note you will need to`
+            + ` schedule a new appointment with ${user.name} because of this cancellation.\n\n`
+            + `Sincerely,\nThe Fitocity Team`
+        };
+
+        // Send the eamil
+        transporter.sendMail(mailOptions, (err) => {
+            if (err)
+                console.error(err);
+        });
+    }
+
+
+    res.status(200).json(deletedAppointment);
+});
+
+// @route POST /api/scheduling/cancelAppointment
+// @desc Un-books a user from the requested appointment
 // @access Public
 router.post('/cancelAppointment', async (req, res) => {
     // Get the access token from the header
@@ -246,107 +325,62 @@ router.post('/cancelAppointment', async (req, res) => {
         res.status(401).send(err);
         return;
     }
-
-    // Check if user is a trainer
-    if (user.role === 'trainer') {
-        // Find the appointment to delete
-        const deletedAppointment = await Appointment.findByIdAndDelete(appointmentId).exec();
-        if (!deletedAppointment) {
-            let err = 'Could not find the requested appointment!';
-            res.status(401).send(err);
-            return;
-        }
-
-        // Email the customer if the appointment was booked
-        if (deletedAppointment.customerId) {
-        
-            const customer = await User.findOne({ _id: deletedAppointment.customerId });
-            // Check if customer exists
-            if (!customer)
-                return;
-
-            // async process from here to endif
-            
-            // Create a SMTP transporter to send mail to the trainer
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
-                    pass: `${process.env.SCHEDULING_EMAIL_PASSWORD}`
-                }
-            });
-
-            // Configure the email
-            const mailOptions = {
-                from: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
-                to: customer.email,
-                subject: 'Appointment Cancellation',
-                text:
-                `Dear ${customer.name},\n\nYou are receiving this because ${trainer.name} canceled your appointment for`
-                + ` ${formatDate(new Date(closedAppointment.startTime))}. Please note you will need to`
-                + ` schedule a new appointment with ${trainer.name} because of this cancellation.\n\n`
-                + `Sincerely,\nThe Fitocity Team`
-            };
-
-            // Send the eamil
-            transporter.sendMail(mailOptions, (err) => {
-                if (err)
-                    console.error(err);
-            });
-        }
-    }
-    // Check if user is a trainer
-    else if (user.role === 'user') {
-        // Find the appointment to cancel/close
-        const canceledAppointment = await Appointment.findByIdAndUpdate(appointmentId).exec();
-        if (!canceledAppointment) {
-            let err = 'Could not find the requested appointment!';
-            res.status(401).send(err);
-            return;
-        }
-
-        // Email the trainer
-        const trainer = await User.findOne({ _id: canceledAppointment.customerId });
-        // Check if trainer exists
-        if (!trainer)
-            return;
-
-        // async process from here to endif
-        
-        // Create a SMTP transporter to send mail to the trainer
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
-                pass: `${process.env.SCHEDULING_EMAIL_PASSWORD}`
-            }
-        });
-
-        // Configure the email
-        const mailOptions = {
-            from: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
-            to: trainer.email,
-            subject: 'Appointment Cancellation',
-            text:
-            `Dear ${trainer.name},\n\nYou are receiving this because ${user.name} canceled your appointment for`
-            + ` ${formatDate(new Date(closedAppointment.startTime))}.\n\n`
-            + `Sincerely,\nThe Fitocity Team`
-        };
-
-        // Send the eamil
-        transporter.sendMail(mailOptions, (err) => {
-            if (err)
-                console.error(err);
-        });
-    }
-    else {
-        let error = 'User did not have a role specified';
-        res.status(401).json(error);
+    // Check if user is a user
+    if (user.role !== 'user') {
+        let err = 'You must be a user to cancel an appointment!';
+        res.status(401).send(err);
         return;
     }
 
 
-    res.status(200).json(closedAppointment);
+    const updateQuery = {
+        customerId: '',
+        customerEmail: ''
+    };
+    const canceledAppointment = await Appointment.findByIdAndUpdate(appointmentId, updateQuery).exec();
+    if (!canceledAppointment) {
+        let err = 'Could not find the requested appointment!';
+        res.status(401).send(err);
+        return;
+    }
+
+    // Email the trainer
+    const trainer = await User.findOne({ _id: canceledAppointment.trainerId });
+    // Check if trainer exists
+    if (!trainer)
+        return;
+
+    // async process from here to endif
+    
+    // Create a SMTP transporter to send mail to the trainer
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
+            pass: `${process.env.SCHEDULING_EMAIL_PASSWORD}`
+        }
+    });
+
+    console.log(trainer.email);
+    // Configure the email
+    const mailOptions = {
+        from: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
+        to: trainer.email,
+        subject: 'Appointment Cancellation',
+        text:
+        `Dear ${trainer.name},\n\nYou are receiving this because ${user.name} canceled their appointment for`
+        + ` ${formatDate(new Date(canceledAppointment.startTime))}.\n\n`
+        + `Sincerely,\nThe Fitocity Team`
+    };
+
+    // Send the eamil
+    transporter.sendMail(mailOptions, (err) => {
+        if (err)
+            console.error(err);
+    });
+
+console.log(canceledAppointment);
+    res.status(200).json(canceledAppointment);
 });
 
 // @route POST /api/scheduling/bookAppointment

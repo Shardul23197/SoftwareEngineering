@@ -1,6 +1,6 @@
 import './Table.css'
 
-const Table = ({ data, columns, onBookClick, onCancelClick }) => {
+const Table = ({ data, columns, onBookClick, onCancelClick, onDeleteClick }) => {
   return (
     <table>
       <thead>
@@ -9,15 +9,30 @@ const Table = ({ data, columns, onBookClick, onCancelClick }) => {
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => <TableRow item={item} columns={columns} onBookClick={onBookClick} onCancelClick={onCancelClick} />)}
+        {data.map((item, index) => <TableRow item={item} columns={columns} onBookClick={onBookClick} onCancelClick={onCancelClick} onDeleteClick={onDeleteClick} />)}
       </tbody>
     </table>
   );
 }
 
 const TableHeadItem = ({ item }) => <th scope='col'>{item.heading}</th>
-const TableRow = ({ item, columns, onBookClick, onCancelClick }) => {
-  if (onCancelClick) {
+const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) => {
+  if (onBookClick) {
+    return (<tr>
+              {columns.map((columnsItem, index) => {
+                if (index !== columns.length-1)
+                  return <td>{item[`${columnsItem.value}`]}</td>;
+                
+                return ''
+              })}
+              <td>
+                <button value={item.id} onClick={onBookClick} type="button" class="btn btn-primary">
+                  Book
+                </button>
+              </td>
+            </tr>);
+  }
+  else if (onCancelClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
                 if (index !== columns.length-1)
@@ -32,7 +47,7 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick }) => {
               </td>
             </tr>);
   }
-  else if (onBookClick) {
+  else if (onDeleteClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
                 if (index !== columns.length-1)
@@ -41,8 +56,8 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick }) => {
                 return ''
               })}
               <td>
-                <button value={item.id} onClick={onBookClick} type="button" class="btn btn-primary">
-                  Book
+                <button value={item.id} onClick={onDeleteClick} type="button" class="btn btn-danger">
+                  Delete
                 </button>
               </td>
             </tr>);

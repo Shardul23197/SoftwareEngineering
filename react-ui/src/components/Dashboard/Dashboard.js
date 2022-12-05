@@ -1,53 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import {Link, useNavigate, useSearchParams } from "react-router-dom";
 import '../../App.css'; 
-import Alert from 'react-bootstrap/Alert';
-import Pagination from '../Pagination';
-import { Paper, AppBar, TextField, Button } from '@material-ui/core';
-import ChipInput from 'material-ui-chip-input';
-import useStyles from './styles'
 import axios from 'axios'
 import qs from "qs";
-import { useAuth } from '../auth/auth'
-import {useSelector } from 'react-redux';
-import Dropdown from 'react-bootstrap/Dropdown'
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import {getWorkoutsBySearch} from '../../actions/workouts'
-import { useDispatch } from 'react-redux';
-import store from '../../state/store'
 import './Dashboard.css'
 import Navigation from '../Navigation/Navigation';
 import Table from '../Table/Table';
 import {
   MDBCol,
-  MDBContainer,
   MDBRow,
   MDBCard,
-  MDBCardText,
   MDBCardBody,
-  MDBCardImage,
-  MDBTypography,
-  MDBBtn,
 } from "mdb-react-ui-kit";
 import { ToastContainer, toast } from "react-toastify";
 
 
-
-
-
-
 export default function Dashboard() {
-  // const [searchParams, setSearchParams] = useSearchParams();
-  // const dispatch = useDispatch();
-  // const page=searchParams.get('page')||1;
-  // const searchQuery=searchParams.get('searchQuery');
-  // const classes = useStyles();
-  // const [search,setSearch]=useState('');
-  // const [tags,setTags]=useState([]);
-  // const navigate = useNavigate();
-  // const selector = useSelector(state => state)
-  // const [data, setData] = useState(selector.email)
-  // const [roleFromState, setRoleFromState] = useState(selector.role)
   const email = localStorage.getItem("email");
   const [role, setRole] = useState("user");
 
@@ -131,7 +98,7 @@ export default function Dashboard() {
 
   const onCancelClick = (event) => {
     event.preventDefault();
-console.log('hi');
+
     const headers = {
       Authorization: `Bearer ${authToken}`,
       "Content-Type": "application/x-www-form-urlencoded",
@@ -146,16 +113,35 @@ console.log('hi');
     }
 
     instance
-      .post("/api/scheduling/bookAppointment", qs.stringify(formData))
+      .post("/api/scheduling/cancelAppointment", qs.stringify(formData))
       .then((res) => {
-        console.log(res);
-        setDataTable(dataTable
-          .filter(apt => apt._id !== dataTable[event.target.value]._id) // filter out booked apt
-          .map(apt => { // decrement ids of each row
-            apt.id -= 1;
-            return apt;
-          })
-        );
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  const onDeleteClick = (event) => {
+    event.preventDefault();
+
+    const headers = {
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const instance = axios.create({
+      baseURL: "http://localhost:5000",
+      withCredentials: true,
+      headers: headers,
+    });
+    const formData = {
+      appointmentId: dataTable.filter(apt => apt.id === Number.parseInt(event.target.value))[0]._id
+    }
+
+    instance
+      .post("/api/scheduling/deleteAppointment", qs.stringify(formData))
+      .then((res) => {
+        window.location.reload();
       })
       .catch((error) => {
         console.error(error);
@@ -203,7 +189,10 @@ console.log('hi');
                             {dataTable.length === 0 ?
                               <h2>You do not have any upcoming appointments!</h2>
                             :
-                              <Table data={dataTable} columns={columns} onCancelClick={onCancelClick} />
+                              role === 'trainer' ?
+                                <Table data={dataTable} columns={columns} onDeleteClick={onDeleteClick} />
+                              :
+                                <Table data={dataTable} columns={columns} onCancelClick={onCancelClick} />
                             }
                           </div>
                         </MDBRow>
