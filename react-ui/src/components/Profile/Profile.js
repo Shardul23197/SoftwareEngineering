@@ -508,25 +508,19 @@ export default function Profile() {
   };
 
   const renderByStatus = () => {
-    if (role === "trainer") {
-      if (status === "inprocess") {
-        return (
-          <MDBCol style={{ width: "100%" }} md="6">
-            <br />
-            <p className="lead fw-normal mb-1">Tell us about yourself</p>
-            <form onSubmit={submitForApproval}>
-              <MDBTextArea
-                value={trainerDetails}
-                onChange={tellUsMore}
-                id="textAreaExample"
-                rows={10}
-              />
-              <MDBBtn style={{ "margin-top": "10px" }}>Submit</MDBBtn>
-            </form>
-          </MDBCol>
-        );
-      } else if (status === "pending") {
-        return <h1>Your profile is under Review</h1>;
+    if (role === 'trainer') {
+      if(status === 'inprocess' || status === 'pending') {
+        return (<h1>Your profile is under Review</h1>)
+      }
+      else if(status === 'notfound' || status === 'todo') {
+        return (<MDBCol style={{ 'width': '100%' }} md="6">
+          <br />
+          <p className="lead fw-normal mb-1">Tell us about yourself</p>
+          <form onSubmit={submitForApproval}>
+            <MDBTextArea value={trainerDetails} onChange={tellUsMore} id='textAreaExample' rows={10} />
+            <MDBBtn style={{ 'margin-top': '10px' }} >Submit</MDBBtn>
+          </form>
+        </MDBCol>)
       }
     }
   };
@@ -585,11 +579,10 @@ export default function Profile() {
               >
                 <div className="d-flex justify-content-end text-center py-1">
                   <div>
-                    {(true || status === "approved") && role === "trainer" ? (
-                      <Button
-                        variant="contained"
-                        color="default"
-                        className="material-button"
+                    {role === 'trainer' && status === 'approved'
+                      ? 
+                      <Button variant="contained" color="default"
+                        className='material-button'
                         startIcon={<CloudUploadIcon />}
                         onClick={() => {
                           setVaryingModal(!varyingModal);
@@ -697,7 +690,7 @@ export default function Profile() {
                     ""
                   )}
                 </MDBRow>
-
+                      <hr/>
                 {/* User wellness information */}
                 <form onSubmit={updateWellnessInfo}>
                   <div className="mb-5">
@@ -1136,10 +1129,6 @@ export default function Profile() {
                                   <option value="60 minutes">60 minutes</option>
                                 </select>
 
-{/* <Datepicker
-    controls={['calendar', 'time']}
-    touchUi={true}
-/> */}
                               </MDBCol>
                             </MDBRow>
                           </MDBCardText>
