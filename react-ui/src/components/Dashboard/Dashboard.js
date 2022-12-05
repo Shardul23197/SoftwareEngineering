@@ -74,7 +74,7 @@ export default function Dashboard() {
     setData(selector.email)
     axios.get('http://localhost:5000/api/users/getrole', { params: { email: data } })
     .then((res) => {
-      store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
+      // store.dispatch({type: 'SET_ROLE', payload: res.data.role}) 
       setRole(res.data.role)      
     })
     .catch((error) => {
