@@ -1,10 +1,14 @@
 import React from 'react'
 import '../../App.css'; 
 import pic from "./images/pie.png";
-
+import Sidebar from './Sidebar';
+import AdminHeader from './AdminHeader';
 export default function AdminDash() {
   
   return (
+    <>
+    <Sidebar></Sidebar>
+    <AdminHeader></AdminHeader>
     <div className='admin-dash-content'>
           <div>
         <section class="home-section">
@@ -150,5 +154,6 @@ export default function AdminDash() {
   </section>
     </div>
     </div>
+    </>
   )
 }

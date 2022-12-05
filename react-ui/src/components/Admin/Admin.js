@@ -16,10 +16,20 @@ export default function Admin() {
 
 <>
 
-<div>
-
 <Sidebar />
 <AdminDash></AdminDash>
+{/* <Sidebar /> */}
+{/* <AdminDash/> */}
+
+{/* <div>
+
+<Sidebar/>
+<div className="wrapper d-flex flex-column min-vh-100 bg-light">
+        <AdminHeader />
+</div> */}
+    
+
+{/* <AdminDash></AdminDash> */}
 
 
 {/* <BrowserRouter>
@@ -64,8 +74,8 @@ export default function Admin() {
             
         </Routes>
         </div>
-    </BrowserRouter> */}
-    </div>
+    // </BrowserRouter> */}
+   
     </>
   )
 }

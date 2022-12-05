@@ -2,6 +2,8 @@ import { React, useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
+import AdminHeader from './AdminHeader';
+import Sidebar from './Sidebar';
 export default function ApproveTrainers() {
 
   const [approval, setListOfTrainers] = useState([]);
@@ -49,7 +51,7 @@ export default function ApproveTrainers() {
   }
 
   const inprocess = async(id) => {
-    axios.get('/api/admin/traineractions/', { params: { id: id, action:'inprocess' } }).then((response) => {
+    axios.get('/api/admin/traineractions/', { params: { id: id, action:'pending' } }).then((response) => {
       if(response.data){
         var index = approval.findIndex(x => x._id == id)
         //approval[index].status = response.data.status
@@ -64,6 +66,9 @@ export default function ApproveTrainers() {
 
 
   return (
+    <>
+    <Sidebar></Sidebar>
+    <AdminHeader></AdminHeader>
     <div className="home-section app-trainers">
       <ToastContainer />
       <link
@@ -172,5 +177,6 @@ export default function ApproveTrainers() {
         </div>
       </div>
     </div>
+    </>
   )
 }

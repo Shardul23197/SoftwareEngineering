@@ -13,9 +13,15 @@ import {
     MDBTextArea
   } from 'mdb-react-ui-kit';
   import '../../App.css'; 
+import AdminHeader from './AdminHeader';
+import Sidebar from './Sidebar';
+
 
 export default function Adminprofile() {
   return (
+    <>
+    <Sidebar></Sidebar>
+    <AdminHeader></AdminHeader>
     <div className='home-section '>
         <div className="row">
         <div className="col-md-3 border-right">
@@ -92,6 +98,6 @@ export default function Adminprofile() {
         </div>
     </div>
       </div>
-
+</>
   )
 }

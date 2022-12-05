@@ -1,5 +1,8 @@
 import { React, useState, useEffect } from 'react';
 import "../../App.css";
+import AdminHeader from './AdminHeader';
+import Sidebar from './Sidebar';
+
 
 export default function ShowTrainers() {
 
@@ -21,6 +24,9 @@ export default function ShowTrainers() {
 
 
   return (
+    <>
+    <Sidebar></Sidebar>
+    <AdminHeader></AdminHeader>
     <div className="home-section app-trainers">
     <link
       rel="stylesheet"
@@ -101,5 +107,6 @@ export default function ShowTrainers() {
       </div>
     </div>
   </div>
+  </>
   );
 }

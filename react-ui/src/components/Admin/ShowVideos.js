@@ -4,8 +4,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Table from 'react-bootstrap/Table';
-
-
+import AdminHeader from './AdminHeader';
+import Sidebar from './Sidebar';
 export default function ShowVideos() {
 
   const [video, setListOfVideos] = useState([]);
@@ -38,8 +38,9 @@ export default function ShowVideos() {
 
   
   return (
-
-    
+    <>
+    <Sidebar></Sidebar>
+    <AdminHeader></AdminHeader>
     <div className="home-section app-trainers">
 
 <ToastContainer />
@@ -152,5 +153,6 @@ export default function ShowVideos() {
       </div>
     </div>
   </div>
+  </>
   );
 }

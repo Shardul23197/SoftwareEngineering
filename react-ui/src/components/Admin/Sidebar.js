@@ -1,10 +1,12 @@
 import React from 'react'
 import '../../App.css'; 
 import { Link } from "react-router-dom";
+import AdminHeader from './AdminHeader';
 
 export default function Sidebar() {
   return (
-    
+    <>
+   
     <div>
       <div class="sidebar">
     <div class="logo-details">
@@ -63,5 +65,6 @@ export default function Sidebar() {
       </ul>
   </div>
     </div>
+    </>
   )
 }
