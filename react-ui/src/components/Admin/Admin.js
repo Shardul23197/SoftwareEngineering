@@ -4,7 +4,7 @@ import AdminHeader from './AdminHeader';
 import ShowUsers from './ShowUsers';
 import ShowTrainers from './ShowTrainers';
 import ApproveTrainers from './ApproveTrainers';
-import { BrowserRouter, Switch, Route,Routes } from "react-router-dom";
+import { BrowserRouter,  Route,Routes } from "react-router-dom";
 import AdminDash from './AdminDash';
 import Adminprofile from './Adminprofile';
 import ShowVideos from './ShowVideos';
@@ -13,30 +13,16 @@ export default function Admin() {
   
     
     return (
-    //   <React.Fragment>
-    //   <Sidebar />
-    //   <div className="wrapper d-flex flex-column min-vh-100 bg-light">
-    //     <AdminHeader />
 
-    //     <div className="body flex-grow-1 px-3"> 
+<>
 
-    //   <BrowserRouter>
-    //     <Switch>
-    //       <Route component={ShowUsers} path="/showusers" exact />
-    //       <Route component={ShowTrainers} path="/showtrainers" />
-    //       <Route component={ApproveTrainers} path="/approvetrainers" />
-    //     </Switch>
-    //   </BrowserRouter>
+<div>
+
+<Sidebar />
+<AdminDash></AdminDash>
 
 
-    //       <AdminContent />
-    //       <ShowUsers></ShowUsers>
-    //       <ApproveTrainers></ApproveTrainers>
-    //     </div>
-      
-    // </React.Fragment>
-
-<BrowserRouter>
+{/* <BrowserRouter>
 
 <Sidebar />
       <div className="wrapper d-flex flex-column min-vh-100 bg-light">
@@ -78,7 +64,9 @@ export default function Admin() {
             
         </Routes>
         </div>
-    </BrowserRouter>
+    </BrowserRouter> */}
+    </div>
+    </>
   )
 }
 

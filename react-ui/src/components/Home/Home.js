@@ -13,7 +13,7 @@ export default function Home() {
   };
 
   const routeToAdmin = () => {
-    navigate("/login");
+    navigate("/admin");
   };
   return (
     <>

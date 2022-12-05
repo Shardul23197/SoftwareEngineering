@@ -59,6 +59,11 @@ function App() {
                     <Login />
                 </UnauthenticatedRoute>    
             }/>
+            <Route path='/admin' element={
+                <UnauthenticatedRoute>
+                    <Admin></Admin>
+                </UnauthenticatedRoute>    
+            }/>
             <Route path='/twoFactor' element={
                 <UnverifiedRoute>
                     <TwoFactor />
