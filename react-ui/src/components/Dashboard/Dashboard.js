@@ -30,7 +30,6 @@ export default function Dashboard() {
     { heading: 'Duration', value: 'duration' },
     { heading: 'Description', value: 'description' },
     { heading: 'Meeting Link', value: 'meetingLink' },
-    { heading: 'Booked' },
     { heading: 'Action' }
   ];
   const [dataTable, setDataTable] = useState([]);

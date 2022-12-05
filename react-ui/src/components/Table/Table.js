@@ -20,18 +20,11 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   if (onBookClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                if (index >= columns.length-2)
-                  return '';
-                if (columnsItem.heading === 'Meeting Link') {
-                  let href = `${item[`${columnsItem.value}`]}`;
-                  return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
-                }
+                if (index !== columns.length-1)
+                  return <td>{item[`${columnsItem.value}`]}</td>;
                 
-                return <td>{item[`${columnsItem.value}`]}</td>;
+                return ''
               })}
-              <td>
-                  {item.customerId === '' ? 'No' : 'Yes'}
-              </td>
               <td>
                 <button value={item.id} onClick={onBookClick} type="button" class="btn btn-primary">
                   Book
@@ -42,18 +35,11 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   else if (onCancelClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                if (index >= columns.length-2)
-                  return '';
-                if (columnsItem.heading === 'Meeting Link') {
-                  let href = `${item[`${columnsItem.value}`]}`;
-                  return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
-                }
+                if (index !== columns.length-1)
+                  return <td>{item[`${columnsItem.value}`]}</td>;
                 
-                return <td>{item[`${columnsItem.value}`]}</td>;
+                return ''
               })}
-              <td>
-                  {item.customerId === '' ? 'No' : 'Yes'}
-              </td>
               <td>
                 <button value={item.id} onClick={onCancelClick} type="button" class="btn btn-danger">
                   Cancel
@@ -64,19 +50,11 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   else if (onDeleteClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                console.log(columnsItem)
-                if (index >= columns.length-2)
-                  return '';
-                if (columnsItem.heading === 'Meeting Link') {
-                  let href = `${item[`${columnsItem.value}`]}`;
-                  return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
-                }
+                if (index !== columns.length-1)
+                  return <td>{item[`${columnsItem.value}`]}</td>;
                 
-                return <td>{item[`${columnsItem.value}`]}</td>;
+                return ''
               })}
-              <td>
-                  {item.customerId === '' ? 'No' : 'Yes'}
-              </td>
               <td>
                 <button value={item.id} onClick={onDeleteClick} type="button" class="btn btn-danger">
                   Delete
