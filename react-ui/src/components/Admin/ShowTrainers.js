@@ -27,7 +27,7 @@ export default function ShowTrainers() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers container">
+    <div className="home-section app-trainers">
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -42,14 +42,14 @@ export default function ShowTrainers() {
                   return (
                     <table className="table">
                   <thead>
-                    <tr>
+                    <tr style={{textAlign:'center'}}>
                       <th>NAME</th>
                       <th>EMAIL</th>
                       <th>ROLE</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr style={{textAlign:'center'}}>
                     <td>{trainer.name}</td>
                       <td>{trainer.email}</td>
                       <td>{trainer.role}</td>

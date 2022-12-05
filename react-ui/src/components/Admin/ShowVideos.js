@@ -41,7 +41,7 @@ export default function ShowVideos() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers container">
+    <div className="home-section app-trainers">
 
 <ToastContainer />
     <link
@@ -76,7 +76,7 @@ export default function ShowVideos() {
             {video.map((video)=>{
                   return (
               <Table striped bordered hover>
-                <thead>
+                <thead style={{textAlign:'center'}}>
                   <tr>
                     <th>Title</th>
                     <th>Genre</th>
@@ -88,7 +88,7 @@ export default function ShowVideos() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr style={{textAlign:'center'}}>
                     <td>{video.title}</td>
                     <td>{video.genre}</td>
                     <td>{video.description}</td>

@@ -50,12 +50,7 @@ export default function Sidebar() {
             <span class="links_name" >Add Profile</span>
           </Link>
         </li>
-        <li>
-          <Link to="/feedback">
-            <i class='bx bx-coin-stack' ></i>
-            <span class="links_name" >Feedback</span>
-          </Link>
-        </li>
+
         <li>
           <Link to="/homepage">
             <i class='bx bx-log-out'></i>

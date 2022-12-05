@@ -26,7 +26,7 @@ export default function ShowUsers() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers container">
+    <div className="home-section app-trainers ">
       <link
         rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -40,7 +40,7 @@ export default function ShowUsers() {
                 {user.map((user)=>{
                   return (
                     <table className="table">
-                  <thead>
+                  <thead style={{textAlign:'center'}}>
                     <tr>
                       <th>PHOTO</th>
                       <th>NAME</th>
@@ -50,7 +50,7 @@ export default function ShowUsers() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr style={{textAlign:'center'}}>
                       <td><img src={user.profileImage} width="150px" height="100px"></img></td>
                       <td>{user.fullName}</td>
                       <td>{user.email}</td>

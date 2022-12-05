@@ -9,7 +9,7 @@ export default function AdminDash() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className='admin-dash-content container'>
+    <div className='admin-dash-content'>
           <div>
         <section class="home-section">
       <div class="home-content">
@@ -27,7 +27,7 @@ export default function AdminDash() {
         </div>
         <div class="box">
           <div class="right-side">
-            <div class="box-topic">Total Users</div>
+            <div class="box-topic">Users</div>
             <div class="number">38,876</div>
             <div class="indicator">
               <i class='bx bx-up-arrow-alt'></i>
@@ -38,7 +38,7 @@ export default function AdminDash() {
         </div>
         <div class="box">
           <div class="right-side">
-            <div class="box-topic">Total Trainers</div>
+            <div class="box-topic">Trainers</div>
             <div class="number">12,876</div>
             <div class="indicator">
               <i class='bx bx-up-arrow-alt'></i>
@@ -49,7 +49,7 @@ export default function AdminDash() {
         </div>
         <div class="box">
           <div class="right-side">
-            <div class="box-topic">Total Videos</div>
+            <div class="box-topic">Videos</div>
             <div class="number">11,086</div>
             <div class="indicator">
               <i class='bx bx-down-arrow-alt down'></i>

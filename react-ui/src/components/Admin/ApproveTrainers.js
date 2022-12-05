@@ -69,7 +69,7 @@ export default function ApproveTrainers() {
     <>
     <Sidebar></Sidebar>
     <AdminHeader></AdminHeader>
-    <div className="home-section app-trainers container">
+    <div className="home-section app-trainers">
       <ToastContainer />
       <link
         rel="stylesheet"
@@ -89,21 +89,21 @@ export default function ApproveTrainers() {
                   </div>
                 </div>
               </div>
-              <div class="panel-body table-responsive">
+              <div class="panel-body">
               {approval.map((approval)=>{
                   return (
                 <table class="table">
-                  <thead>
+                  <thead style={{textAlign:'center'}}>
                   <tr>
-                      <th>EMAIL</th>
-                      <th>DESCRIPTION</th>
-                      <th>STATUS</th>
-                      <th>ACTION</th>
+                      <th style={{width:'40vh'}}>EMAIL</th>
+                      <th style={{width:'40vh'}}>DESCRIPTION</th>
+                      <th style={{width:'20vh'}}>STATUS</th>
+                      <th style={{width:'60vh'}}>ACTION</th>
 
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr style={{textAlign:'center'}}>
                       <td>{approval.email}</td>
                       <td>{approval.description}</td>
                       <td>{approval.status}</td>
