@@ -121,7 +121,11 @@ const Search = () => {
                                                 src={video.url}
                                             /> : ""}
                                             <br/>
-                                            {video.postedBy && category === 'videos' ? <Card.Text>Uploaded By <Link to={'/profile/' + video.postedBy._id}>{video.postedBy.fullName}</Link></Card.Text> : ""}
+                                            {console.log(JSON.stringify(video))}
+                                            {video.postedBy && category === 'videos' ? 
+                                                <Card.Text>Uploaded By <Link to={'/profile/' + video.postedBy._id}>{video.postedBy.fullName}</Link></Card.Text> 
+                                                : 
+                                            ""}
                                         </Card.Body>
                                     </MDBCard>
                                     : ""}

@@ -27,6 +27,10 @@ const AppointmentSchema = new Schema({
     customerId: {
         type: String,
         default: ''
+    },
+    customerEmail: {
+        type: String,
+        default: ''
     }
 });
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Appointment = require('../models/Appointment');
 const nodemailer = require('nodemailer');
+const { ObjectId } = require('mongodb');
 
 const formatDate = (date) => {
     const dateAmOrPm = date.getHours() / 12 === 1 ? 'PM' : 'AM';
@@ -19,18 +20,6 @@ const formatDate = (date) => {
 
     return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} at ${dateHour}:${dateMinute}:${dateSecond} ${dateAmOrPm}`;
 }
-
-
-
-
-
-// TODO: - Clean up commented code in functs
-//       - Perform validation of tokens at beginning of each method
-
-
-
-
-
 
 // @route GET /api/scheduling/listAppointments
 // @desc Get a list of appointments for a trainer
@@ -49,18 +38,39 @@ router.post('/listAppointments', async (req, res) => {
     }
 
     let email = session.email;
-    const { trainerId, filterStartTime, filterEndTime } = req.body;
-    
     const user = await User.findOne({ email: email });
-    // Check if user exists and if they are a trainer
+    // Check if user exists
     if (!user) {
         let err = 'Could not find the given email!';
         res.status(401).send(err);
         return;
     }    
 
+
+    const { profileId, isTrainer, filterStartTime, filterEndTime } = req.body;
+
     // Build the filters for the appointments
-    let filters = { trainerId };
+    let filters = {};
+    if (profileId) {
+        let tmp = { profile: new ObjectId(profileId) };
+        console.log(tmp);
+        const trainer = await User.findOne(tmp);
+        // Check if trainer exists
+        if (!trainer) {
+            let err = 'Could not find the given profileId!';
+            res.status(401).send(err);
+            return;
+        }    
+
+        filters.trainerId = trainer._id;
+    }
+    if (isTrainer === 'true') {
+        filters.trainerId = user._id.toString();
+        // filters.customerId = {  $ne: '', };
+    }
+    else if (isTrainer === 'false') {
+        filters.customerEmail = user.email;
+    }
     if (filterStartTime && filterEndTime) {
         filters.startTime = {
             $gt: filterStartTime, 
@@ -72,6 +82,7 @@ router.post('/listAppointments', async (req, res) => {
             $gt: filterStartTime
         };
     }
+    console.log(filters);
 
     const appointments = await Appointment.find(filters);
     console.log(appointments);
@@ -209,52 +220,95 @@ router.post('/openAppointments', async (req, res) => {
     res.status(200).json(savedAppointments);
 });
 
-// @route POST /api/scheduling/closeAppointment
+// @route POST /api/scheduling/cancelAppointment
 // @desc Remove an appointment from the database
 // @access Public
-router.post('/closeAppointment', async (req, res) => {
-    // // Get the access token from the header
-    // const { authorization } = req.headers;
-    // const accessToken = authorization.split(' ')[1];
+router.post('/cancelAppointment', async (req, res) => {
+    // Get the access token from the header
+    const { authorization } = req.headers;
+    const accessToken = authorization.split(' ')[1];
   
-    // let session = await Session.findOne({ accessToken: accessToken });
-    // // Check if a session with this trainer exists
-    // if (!session) {
-    //     let err = 'Could not find the given accessToken!';
-    //     res.status(401).json(err);
-    //     return;
-    // }
+    let session = await Session.findOne({ accessToken: accessToken });
+    // Check if a session with this trainer exists
+    if (!session) {
+        let err = 'Could not find the given accessToken!';
+        res.status(401).json(err);
+        return;
+    }
 
-    // let email = session.email;
-    const { email, appointmentId } = req.body; // get appointmentId from body
+    let email = session.email;
+    const { appointmentId } = req.body; // get appointmentId from body
     
-    const trainer = await User.findOne({ email: email });
-    // Check if trainer exists
-    if (!trainer) {
+    const user = await User.findOne({ email: email });
+    // Check if user exists
+    if (!user) {
         let err = 'Could not find the given email!';
         res.status(401).send(err);
         return;
     }
-    // Check if trainer is a trainer
-    if (trainer.role !== 'trainer') {
-        let err = 'You must be a trainer to close appointments!';
-        res.status(401).send(err);
-        return;
-    }
-    
-    const closedAppointment = await Appointment.findByIdAndDelete(appointmentId).exec();
-    if (!closedAppointment) {
-        let err = 'Could not find the specified appointment!';
-        res.status(401).send(err);
-        return;
-    }
 
-    // Email the customer if the appointment was booked
-    if (closedAppointment.customerId) {
-    
-        const customer = await User.findOne({ _id: closedAppointment.customerId });
-        // Check if customer exists
-        if (!customer)
+    // Check if user is a trainer
+    if (user.role === 'trainer') {
+        // Find the appointment to delete
+        const deletedAppointment = await Appointment.findByIdAndDelete(appointmentId).exec();
+        if (!deletedAppointment) {
+            let err = 'Could not find the requested appointment!';
+            res.status(401).send(err);
+            return;
+        }
+
+        // Email the customer if the appointment was booked
+        if (deletedAppointment.customerId) {
+        
+            const customer = await User.findOne({ _id: deletedAppointment.customerId });
+            // Check if customer exists
+            if (!customer)
+                return;
+
+            // async process from here to endif
+            
+            // Create a SMTP transporter to send mail to the trainer
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
+                    pass: `${process.env.SCHEDULING_EMAIL_PASSWORD}`
+                }
+            });
+
+            // Configure the email
+            const mailOptions = {
+                from: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
+                to: customer.email,
+                subject: 'Appointment Cancellation',
+                text:
+                `Dear ${customer.name},\n\nYou are receiving this because ${trainer.name} canceled your appointment for`
+                + ` ${formatDate(new Date(closedAppointment.startTime))}. Please note you will need to`
+                + ` schedule a new appointment with ${trainer.name} because of this cancellation.\n\n`
+                + `Sincerely,\nThe Fitocity Team`
+            };
+
+            // Send the eamil
+            transporter.sendMail(mailOptions, (err) => {
+                if (err)
+                    console.error(err);
+            });
+        }
+    }
+    // Check if user is a trainer
+    else if (user.role === 'user') {
+        // Find the appointment to cancel/close
+        const canceledAppointment = await Appointment.findByIdAndUpdate(appointmentId).exec();
+        if (!canceledAppointment) {
+            let err = 'Could not find the requested appointment!';
+            res.status(401).send(err);
+            return;
+        }
+
+        // Email the trainer
+        const trainer = await User.findOne({ _id: canceledAppointment.customerId });
+        // Check if trainer exists
+        if (!trainer)
             return;
 
         // async process from here to endif
@@ -271,12 +325,11 @@ router.post('/closeAppointment', async (req, res) => {
         // Configure the email
         const mailOptions = {
             from: `${process.env.SCHEDULING_EMAIL_ADDRESS}`,
-            to: customer.email,
+            to: trainer.email,
             subject: 'Appointment Cancellation',
             text:
-            `Dear ${customer.name},\n\nYou are receiving this because ${trainer.name} canceled your appointment for`
-            + ` ${formatDate(new Date(closedAppointment.startTime))}. Please note you will need to`
-            + ` schedule a new appointment with ${trainer.name} because of this cancellation.\n\n`
+            `Dear ${trainer.name},\n\nYou are receiving this because ${user.name} canceled your appointment for`
+            + ` ${formatDate(new Date(closedAppointment.startTime))}.\n\n`
             + `Sincerely,\nThe Fitocity Team`
         };
 
@@ -286,6 +339,12 @@ router.post('/closeAppointment', async (req, res) => {
                 console.error(err);
         });
     }
+    else {
+        let error = 'User did not have a role specified';
+        res.status(401).json(error);
+        return;
+    }
+
 
     res.status(200).json(closedAppointment);
 });
@@ -345,6 +404,7 @@ router.post('/bookAppointment', async (req, res) => {
 
   // Change the customerId of the appointment (i.e. book the appointment)
   appointment.customerId = user._id;
+  appointment.customerEmail = user.email;
   await appointment.save();
 
   res.status(200).json(appointment);

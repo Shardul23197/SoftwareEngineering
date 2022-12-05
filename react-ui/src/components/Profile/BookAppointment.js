@@ -21,25 +21,27 @@ import Table from '../Table/Table';
 import qs from "qs";
 
 export default function BookAppointment() {
-  // Trainer ID from parameters
-  const { id } = useParams()
+  // Trainer's profile ID from parameters
+  const { profileId } = useParams()
 
   // Auth token and refresh token state
   const existingAuthtoken = localStorage.getItem("authToken") || "";
   const [authToken] = useState(existingAuthtoken);
 
-  const column = [
+  // Appointment table information
+  const columns = [
     { heading: 'Title', value: 'title' },
     { heading: 'Date', value: 'date' },
     { heading: 'Time', value: 'time' },
     { heading: 'Duration', value: 'duration' },
     { heading: 'Description', value: 'description' },
+    { heading: 'Action' }
   ];
   const [dataTable, setDataTable] = useState([]);
 
-
-  //get user data
+  
   useEffect(() => {
+    console.log(`profileId: ${profileId}`);
     const headers = {
       Authorization: `Bearer ${authToken}`,
       "Content-Type": "application/x-www-form-urlencoded",
@@ -50,7 +52,7 @@ export default function BookAppointment() {
       headers: headers,
     });
     const formData = {
-      trainerId: id,
+      profileId: profileId,
       filterStartTime: Date.now()
     }
 
@@ -70,11 +72,11 @@ export default function BookAppointment() {
           appointments[i].date = `${dateTime.getFullYear()}/${dateTime.getMonth()+1}/${dateTime.getDate()+1}`;
           
           
-          const dateAmOrPm = dateTime.getHours() / 12 === 1 ? 'PM' : 'AM';
+          const dateAmOrPm = dateTime.getHours() / 12 >= 1 ? 'PM' : 'AM';
 
           let dateHour = dateTime.getHours();
           if (dateHour === 0) dateHour = 12;
-          else if (dateHour > 12) dateHour -= - 12;
+          else if (dateHour > 12) dateHour -= 12;
 
 
           let dateMinute = dateTime.getMinutes().toString();
@@ -89,7 +91,7 @@ export default function BookAppointment() {
         console.error(error);
         setDataTable([]);
       });
-  }, [authToken, id]);
+  }, [authToken, profileId]);
 
   const onBookClick = (event) => {
     event.preventDefault();
@@ -150,8 +152,11 @@ export default function BookAppointment() {
                     className="justify-content-center align-items-center h-100"
                   >
                     <div>
-                    {console.log(dataTable)}
-                      <Table data={dataTable} column={column} onBookClick={onBookClick} />
+                      {dataTable.length === 0 ?
+                        <h2>The trainer does not have any available appointments!</h2>
+                      :
+                        <Table data={dataTable} columns={columns} onBookClick={onBookClick} />
+                      }
                     </div>
                   </MDBRow>
                 </MDBCardBody>
