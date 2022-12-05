@@ -29,6 +29,7 @@ import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 import TrainerMessages from './components/Chat/TrainerMessages';
 import BookAppointment from './components/Profile/BookAppointment';
+import Admin from './components/Admin/Admin'
 
 const pubnub = new PubNub({
   publishKey: 'pub-c-1a2459c5-bfde-409d-8ddb-86e9f45aaaa7',
