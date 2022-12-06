@@ -113,7 +113,6 @@ export default function BookAppointment() {
     instance
       .post("/api/scheduling/bookAppointment", qs.stringify(formData))
       .then((res) => {
-        console.log(res);
         setDataTable(dataTable
           .filter(apt => apt._id !== dataTable[event.target.value]._id) // filter out booked apt
           .map(apt => { // decrement ids of each row
@@ -121,6 +120,8 @@ export default function BookAppointment() {
             return apt;
           })
         );
+
+        toast('Appointment booked successfully!')
       })
       .catch((error) => {
         console.error(error);
