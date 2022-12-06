@@ -224,7 +224,9 @@ router.get('/trainerlist', async (req, res) => {
       for (let i = 0; i < user.length; i++) {
         let userId = (hex.test(user[i].userId)) ? mongoose.Types.ObjectId(user[i].userId) : user[i].userId;
         x = await User.findOne({ _id: userId }).populate('profile')
-        t.push({fullName: x.profile.fullName, profileImage: x.profile.profileImage})
+        let fullName = x.profile ? x.profile.fullName : "user";
+        let image =   x.profile ? x.profile.profileImage : "https://ui-avatars.com/api/?name=ME&size=256";
+        t.push({fullName: fullName, profileImage: image })
       }
       for (let i = 0; i < user.length; i++) {
       user[i] = {...user[i], ...t[i]}
