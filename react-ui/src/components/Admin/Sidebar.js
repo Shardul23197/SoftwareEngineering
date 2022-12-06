@@ -1,9 +1,34 @@
-import React from 'react'
+import React, {useState} from 'react'
+import { useSelector } from 'react-redux'
 import '../../App.css'; 
-import { Link } from "react-router-dom";
-import AdminHeader from './AdminHeader';
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+  const role = useSelector(state => state.role)
+  const existingAuthtoken = localStorage.getItem('authToken') || '';
+  const [authToken] = useState(existingAuthtoken);
+  const onLogout = async (event) => {
+      const headers = {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      const instance = axios.create({
+          baseURL: 'http://localhost:5000',
+          withCredentials: true,
+          headers: headers
+      });
+        
+      // Terminate the user's session information
+      await instance.post('/auth/logout', {}).then((res) => {})
+        .catch((error) => console.error(error));
+  
+      // Navigate to home
+      localStorage.clear();
+      navigate('/');
+  };
+
   return (
     <>
    
@@ -52,13 +77,13 @@ export default function Sidebar() {
         </li>
 
         <li>
-          <Link to="/">
-            <i class='bx bx-log-out'></i>
-            <span class="links_name" >Log out</span>
-          </Link>
+          <button className='logoutbutton' onClick={onLogout} >
+              <i class='bx bx-coin-stack' ></i>
+              <span class="links_name">Logout</span>
+          </button>
         </li>
       </ul>
-  </div>
+    </div>
     </div>
     </>
   )

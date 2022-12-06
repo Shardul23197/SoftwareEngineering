@@ -333,7 +333,6 @@ export default function Home() {
           We are committed towards the goal of making the
             whole planet fit. We know the ferocity it takes to get fit!
             </p>
-            <p onClick={routeToAdmin}>Admin</p>
           </div>
        
 

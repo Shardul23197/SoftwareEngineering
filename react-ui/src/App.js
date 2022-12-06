@@ -160,41 +160,46 @@ function App() {
                     </PubNubProvider>
                 </PrivateRoute>    
             }/>
-
-
-<Route path='/admin' element={
-                <UnauthenticatedRoute>
+            <Route path='/admin' element={
+                <PrivateRoute>
                     <Admin></Admin>
-                </UnauthenticatedRoute>    
+                </PrivateRoute>    
+            }/>
+            <Route path='/admindash' element={
+                <PrivateRoute>
+                    <AdminDash></AdminDash>
+                </PrivateRoute>    
+            }/>
+            <Route path='/showtrainers' element={
+                <PrivateRoute>
+                    <ShowTrainers></ShowTrainers>
+                </PrivateRoute>
+            }/>
+            <Route path='/showusers' element={
+                <PrivateRoute>
+                    <ShowUsers></ShowUsers>
+                </PrivateRoute>
             }/>
 
-<Route path='/admindash' element={
-            <AdminDash></AdminDash>
-            }/>
-        <Route path='/showtrainers' element={
-            <ShowTrainers></ShowTrainers>
-            }/>
-        
-        <Route path='/showusers' element={
-            <ShowUsers></ShowUsers>
-            }/>
-
-        <Route path='/approvetrainers' element={
-            <ApproveTrainers></ApproveTrainers>
-            }/>
-
-        <Route path='/approvetrainers/:id' element={
+            <Route path='/approvetrainers' element={
+                <PrivateRoute>
                     <ApproveTrainers></ApproveTrainers>
-                    }/>
-
-
-
-<Route path='/adminprofile' element={
-            <Adminprofile></Adminprofile>
+                </PrivateRoute>
             }/>
-
-<Route path='/showvideos' element={
-            <ShowVideos></ShowVideos>
+            <Route path='/approvetrainers/:id' element={
+                <PrivateRoute>
+                    <ApproveTrainers></ApproveTrainers>
+                </PrivateRoute>
+            }/>
+            <Route path='/adminprofile' element={
+                <PrivateRoute>
+                    <Adminprofile></Adminprofile>
+                </PrivateRoute>
+            }/>
+            <Route path='/showvideos' element={
+                <PrivateRoute>
+                    <ShowVideos></ShowVideos>
+                </PrivateRoute>
             }/>
 
         </Routes>
