@@ -77,17 +77,17 @@ router.get('/google/callback',
             'google', 
             { 
                 scope: ['profile', 'email'], 
-                failureRedirect:'http://localhost:3000/login' 
+                failureRedirect:'https://fitocity.herokuapp.com/login' 
             },
             async (err, user) => {
                 // console.log(`/google/callback user ${JSON.stringify(user)}`);
                 if (err) 
-                    res.redirect('http://localhost:3000/login');
+                    res.redirect('https://fitocity.herokuapp.com/login');
                 else {
                     // Get the session information for the user
                     getSession(user, (err, session) => {
                         if (err)
-                            res.redirect('http://localhost:3000/login');
+                            res.redirect('https://fitocity.herokuapp.com/login');
                         else {
                             const refreshToken = session.refreshToken;
                             const accessToken = session.accessToken;
@@ -99,8 +99,8 @@ router.get('/google/callback',
 
                             // Return the tokens
                             const dashboardUrl = url.format({
-                                protocol: 'http',
-                                host: 'localhost:3000',
+                                protocol: 'https',
+                                host: 'fitocity.herokuapp.com'
                                 pathname: pathname,
                                 query: {
                                     authToken: accessToken,
@@ -394,7 +394,7 @@ router.post('/forgotPassword',
             text:
             'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
             + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
-            + `http://localhost:3000/resetPassword?resetPasswordToken=${resetPasswordToken}\n\n`
+            + `https://fitocity.herokuapp.com/resetPassword?resetPasswordToken=${resetPasswordToken}\n\n`
             + 'If you did not request this, please ignore this email and your password will remain unchanged!\n',
         };
 

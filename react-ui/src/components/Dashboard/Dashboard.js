@@ -42,7 +42,7 @@ export default function Dashboard() {
       "Content-Type": "application/x-www-form-urlencoded",
     };
     const instance = axios.create({
-      baseURL: "http://localhost:5000",
+      baseURL: "https://fitocity.herokuapp.com",
       withCredentials: true,
       headers: headers,
     });
@@ -104,7 +104,7 @@ export default function Dashboard() {
       "Content-Type": "application/x-www-form-urlencoded",
     };
     const instance = axios.create({
-      baseURL: "http://localhost:5000",
+      baseURL: "https://fitocity.herokuapp.com",
       withCredentials: true,
       headers: headers,
     });
@@ -138,7 +138,7 @@ export default function Dashboard() {
       "Content-Type": "application/x-www-form-urlencoded",
     };
     const instance = axios.create({
-      baseURL: "http://localhost:5000",
+      baseURL: "https://fitocity.herokuapp.com",
       withCredentials: true,
       headers: headers,
     });
