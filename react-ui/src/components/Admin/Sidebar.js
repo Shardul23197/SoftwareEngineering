@@ -52,7 +52,7 @@ export default function Sidebar() {
         </li>
 
         <li>
-          <Link to="/homepage">
+          <Link to="/">
             <i class='bx bx-log-out'></i>
             <span class="links_name" >Log out</span>
           </Link>
