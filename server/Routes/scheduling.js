@@ -379,10 +379,10 @@ router.post('/cancelAppointment', async (req, res) => {
     };
 
     // Send the eamil
-    transporter.sendMail(mailOptions, (err) => {
-        if (err)
-            console.error(err);
-    });
+    // transporter.sendMail(mailOptions, (err) => {
+    //     if (err)
+    //         console.error(err);
+    // });
 
 console.log(canceledAppointment);
     res.status(200).json(canceledAppointment);
