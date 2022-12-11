@@ -11,7 +11,7 @@ import {
   MDBCard,
   MDBCardBody,
 } from "mdb-react-ui-kit";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 
 export default function Dashboard() {
@@ -115,7 +115,15 @@ export default function Dashboard() {
     instance
       .post("/api/scheduling/cancelAppointment", qs.stringify(formData))
       .then((res) => {
-        window.location.reload();
+        setDataTable(dataTable
+          .filter(apt => apt._id !== dataTable[event.target.value]._id) // filter out booked apt
+          .map(apt => { // decrement ids of each row
+            apt.id -= 1;
+            return apt;
+          })
+        );
+
+        toast('Appointment cancelled successfully!')
       })
       .catch((error) => {
         console.error(error);
@@ -141,7 +149,15 @@ export default function Dashboard() {
     instance
       .post("/api/scheduling/deleteAppointment", qs.stringify(formData))
       .then((res) => {
-        window.location.reload();
+        setDataTable(dataTable
+          .filter(apt => apt._id !== dataTable[event.target.value]._id) // filter out booked apt
+          .map(apt => { // decrement ids of each row
+            apt.id -= 1;
+            return apt;
+          })
+        );
+
+        toast('Appointment deleted successfully!')
       })
       .catch((error) => {
         console.error(error);

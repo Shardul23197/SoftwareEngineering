@@ -54,6 +54,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/scheduling', require(path.resolve(__dirname, './Routes/scheduling')));
     app.use('/api/chat', require(path.resolve(__dirname, './Routes/chat')));
     app.use('/api/message', require(path.resolve(__dirname, './Routes/message')));
+    app.use('/api/admin', require(path.resolve(__dirname, './Routes/admin')))
 
 
     app.get('*', function(req, res) {

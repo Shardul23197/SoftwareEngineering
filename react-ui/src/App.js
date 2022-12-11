@@ -29,6 +29,13 @@ import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 import TrainerMessages from './components/Chat/TrainerMessages';
 import BookAppointment from './components/Profile/BookAppointment';
+import Admin from './components/Admin/Admin'
+import AdminDash from './components/Admin/AdminDash'
+import ShowTrainers from './components/Admin/ShowTrainers'
+import ShowUsers from './components/Admin/ShowUsers'
+import ApproveTrainers from './components/Admin/ApproveTrainers'
+import Adminprofile from './components/Admin/Adminprofile'
+import ShowVideos from './components/Admin/ShowVideos';
 
 const pubnub = new PubNub({
   publishKey: 'pub-c-1a2459c5-bfde-409d-8ddb-86e9f45aaaa7',
@@ -153,6 +160,48 @@ function App() {
                     </PubNubProvider>
                 </PrivateRoute>    
             }/>
+            <Route path='/admin' element={
+                <PrivateRoute>
+                    <Admin></Admin>
+                </PrivateRoute>    
+            }/>
+            <Route path='/admindash' element={
+                <PrivateRoute>
+                    <AdminDash></AdminDash>
+                </PrivateRoute>    
+            }/>
+            <Route path='/showtrainers' element={
+                <PrivateRoute>
+                    <ShowTrainers></ShowTrainers>
+                </PrivateRoute>
+            }/>
+            <Route path='/showusers' element={
+                <PrivateRoute>
+                    <ShowUsers></ShowUsers>
+                </PrivateRoute>
+            }/>
+
+            <Route path='/approvetrainers' element={
+                <PrivateRoute>
+                    <ApproveTrainers></ApproveTrainers>
+                </PrivateRoute>
+            }/>
+            <Route path='/approvetrainers/:id' element={
+                <PrivateRoute>
+                    <ApproveTrainers></ApproveTrainers>
+                </PrivateRoute>
+            }/>
+            <Route path='/adminprofile' element={
+                <PrivateRoute>
+                    <Adminprofile></Adminprofile>
+                </PrivateRoute>
+            }/>
+            <Route path='/showvideos' element={
+                <PrivateRoute>
+                    <ShowVideos></ShowVideos>
+                </PrivateRoute>
+            }/>
+
         </Routes>
         </BrowserRouter>
         </AuthContext.Provider>

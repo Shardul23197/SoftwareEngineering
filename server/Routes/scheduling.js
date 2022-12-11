@@ -48,22 +48,25 @@ router.post('/listAppointments', async (req, res) => {
 
 
     const { profileId, isTrainer, filterStartTime, filterEndTime } = req.body;
-
+console.log(profileId);
     // Build the filters for the appointments
     let filters = {};
     if (profileId) {
-        let tmp = { profile: new ObjectId(profileId) };
-        console.log(tmp);
-        const trainer = await User.findOne(tmp);
+        const trainerProfile = await UserProfile.findById(profileId);
         // Check if trainer exists
-        if (!trainer) {
+        if (!trainerProfile) {
             let err = 'Could not find the given profileId!';
             res.status(401).send(err);
             return;
         }    
-
-        filters.trainerId = trainer._id;
-    }
+console.log(trainerProfile);
+console.log(trainerProfile.muscleMassGoal);
+console.log(trainerProfile.heightInches);
+console.log(trainerProfile.gender);
+console.log(trainerProfile.userId);
+// filters.trainerId = trainerProfile.userId;
+// console.log(filters.trainerId);
+}
     if (isTrainer === 'true') {
         filters.trainerId = user._id.toString();
         // filters.customerId = {  $ne: '', };
@@ -82,8 +85,10 @@ router.post('/listAppointments', async (req, res) => {
             $gt: filterStartTime
         };
     }
+    console.log(filters);
 
     const appointments = await Appointment.find(filters);
+    // console.log(appointments);
     // Check for an error
     if (!appointments) {
         let err = `Error finding appointments for ${email}!`;
@@ -95,7 +100,7 @@ router.post('/listAppointments', async (req, res) => {
 });
 
 // Returns an error if the request body does not follow the restrictions below
-const validateOpenAppointmentsRequest = async (req, trainerId) => {
+const validateOpenAppointmentsRequest = async (req, trainerProfileId) => {
     const { timestamps, title, description, duration } = req.body;
 
     if (!timestamps) return 'You must pass an array of times!'
@@ -121,14 +126,14 @@ const validateOpenAppointmentsRequest = async (req, trainerId) => {
         if (appointmentTimeDate.getDay() !== endDayDate.getDay())
             return 'appointmentTimeDate must be the same day of the week as endDayDate.'
 
-        let appointmentExistsAlready = await Appointment.findOne({ trainerId, startTime: appointmentTimeDate.getTime()});
+        let appointmentExistsAlready = await Appointment.findOne({ trainerProfileId, startTime: appointmentTimeDate.getTime()});
         if (appointmentExistsAlready)
             return `The following appointments already exists: ${appointmentTimeDate}`
     }
 }
 
 // Returns an error if the request body does not follow the restrictions below
-const createAppointmentsList = (trainterId, req) => {
+const createAppointmentsList = (trainerProfileId, req) => {
     const { timestamps, title, description, duration } = req.body;
 
     let appointmentsToOpen = [];
@@ -142,7 +147,7 @@ const createAppointmentsList = (trainterId, req) => {
                 title: title,
                 description: description,
                 duration: duration,
-                trainerId: trainterId,
+                trainerProfileId: trainerProfileId,
                 startTime: appointmentTimeDate.getTime(),
                 meetingLink: `https://zoom.us/j/${Math.floor(Math.random() * 99999999999)}`
             }));
@@ -198,7 +203,7 @@ router.post('/openAppointments', async (req, res) => {
     }
     
     // Validate the requested appointments
-    const validationErr = await validateOpenAppointmentsRequest(req, trainer._id);
+    const validationErr = await validateOpenAppointmentsRequest(req, trainer.profile);
     if (validationErr) {
         let err = validationErr;
         res.status(401).send(err);
@@ -206,7 +211,7 @@ router.post('/openAppointments', async (req, res) => {
     }
 
     
-    let appointmentsToOpen = createAppointmentsList(trainer._id, req);
+    let appointmentsToOpen = createAppointmentsList(trainer.profile, req);
 
     let savedAppointments = await Appointment.insertMany(appointmentsToOpen);
     if(!savedAppointments) {

@@ -27,7 +27,7 @@ const Navigation = () => {
         // Navigate to home
         localStorage.clear();
         navigate('/');
-      };
+    };
 
   return (
     <div class="sidebar">
@@ -102,9 +102,9 @@ const Navigation = () => {
           </Link>
         </li>: ""}
       <li>
-      <button className='logoutbutton' onClick={onLogout} >
-          <i class='bx bx-coin-stack' ></i>
-          <span class="links_name">Logout</span>
+        <button className='logoutbutton' onClick={onLogout} >
+            <i class='bx bx-coin-stack' ></i>
+            <span class="links_name">Logout</span>
         </button>
       </li>
     </ul>

@@ -5,7 +5,7 @@ const Table = ({ data, columns, onBookClick, onCancelClick, onDeleteClick }) => 
     <table>
       <thead>
         <tr>
-          {columns.map((item, index) => <TableHeadItem item={item} />)}
+          {columns.map((item, index) => <TableHeadItem item={item} onDeleteClick={onDeleteClick} />)}
         </tr>
       </thead>
       <tbody>
@@ -15,16 +15,23 @@ const Table = ({ data, columns, onBookClick, onCancelClick, onDeleteClick }) => 
   );
 }
 
-const TableHeadItem = ({ item }) => <th scope='col'>{item.heading}</th>
+const TableHeadItem = ({ item, onDeleteClick }) => {
+  if (!onDeleteClick && item.heading === 'Booked')
+    return '';
+
+  return (<th scope='col'>{item.heading}</th>);
+}
+
 const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) => {
   if (onBookClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
                 if (columnsItem.heading === 'Meeting Link') {
                     const href = `${columnsItem.value}`
-                    console.log(href)
                     return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
                 }
+                if (columnsItem.heading === 'Booked')
+                  return '';
                 if (columnsItem.heading !== 'Action')
                   return <td>{item[`${columnsItem.value}`]}</td>;
                 
@@ -42,9 +49,10 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
               {columns.map((columnsItem, index) => {
                 if (columnsItem.heading === 'Meeting Link') {
                     const href = `${columnsItem.value}`
-                    console.log(href)
                     return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
                 }
+                if (columnsItem.heading === 'Booked')
+                  return '';
                 if (columnsItem.heading !== 'Action')
                   return <td>{item[`${columnsItem.value}`]}</td>;
                 
@@ -60,10 +68,8 @@ const TableRow = ({ item, columns, onBookClick, onCancelClick, onDeleteClick }) 
   else if (onDeleteClick) {
     return (<tr>
               {columns.map((columnsItem, index) => {
-                console.log(columnsItem.heading)
                 if (columnsItem.heading === 'Meeting Link') {
                     const href = `${columnsItem.value}`
-                    console.log(href)
                     return <td><a href={href}>{item[`${columnsItem.value}`]}</a></td>;
                 }
                 if (columnsItem.heading === 'Booked') {

@@ -14,6 +14,10 @@ export default function Login() {
     const [error, setError] = useState(''); // String
     const navigate = useNavigate();
 
+    const [role, setRole] = useState("user");
+    let role_temp = ""
+  
+
     const onEmailChange = (event) => {
       setEmail(event.target.value);
     }
@@ -39,6 +43,17 @@ export default function Login() {
             headers: headers
         });
 
+        instance
+      .get("/api/users/profile/getdetails", { params: { email: email } })
+      .then((res) => {
+        setRole(res.data.role);
+        role_temp = res.data.role
+        console.log(res.data.role)
+      })
+      .catch((error) => {
+        if (error.response) console.log(error.response.data);
+      });
+
         const formData = {
             email: email,
             password: password
@@ -58,12 +73,18 @@ export default function Login() {
             store.dispatch({type: 'SET_EMAIL', payload: email});
 
             console.log(mfaRequired);
+            // console.log(role)
+            // console.log(role_temp)
             if (mfaRequired) {
                 navigate('/twoFactor');
                 return;
             }
+            else if(role_temp==="admin"){
+                navigate('/admindash')
+            }
             else {
                 navigate('/dashboard');
+                console.log(role)
                 return;
             }
         })
