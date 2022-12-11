@@ -4,11 +4,11 @@ import Card from 'react-bootstrap/Card';
 const SleepCard = ({ sleeps }) => {
 
     const formatDate = (date) => {
-      const dateAmOrPm = date.getHours() / 12 === 1 ? 'PM' : 'AM';
+      const dateAmOrPm = date.getHours() / 12 > 1 ? 'PM' : 'AM';
 
       let dateHour = date.getHours();
       if (dateHour === 0) dateHour = 12;
-      else if (dateHour > 12) dateHour -= - 12;
+      else if (dateHour > 12) dateHour -= 12;
 
       let dateSecond = date.getSeconds().toString();
       if (dateSecond.length === 1) dateSecond = '0' + dateSecond;

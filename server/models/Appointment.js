@@ -16,7 +16,7 @@ const AppointmentSchema = new Schema({
         type: String,
         required: true
     },
-    trainerId: {
+    trainerProfileId: {
         type: String,
         required: true
     },
